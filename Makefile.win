@@ -1,0 +1,12 @@
+BUILDPATH = ./build
+#CONFIG = Debug
+CONFIG = Release
+
+target = $(BUILDPATH)/$(CONFIG)/matlib.dll
+vcxproj = $(BUILDPATH)/src/matlib.vcxproj
+
+$(target) : $(vcxproj) ./src/*.c ./src/*.h ./include/rindow/*.h
+	cmake --build $(BUILDPATH) --config $(CONFIG)
+
+$(vcxproj) : ./CMakeLists.txt ./src/CMakeLists.txt ./tests/CMakeLists.txt
+	cmake -S . -B $(BUILDPATH)
