@@ -6,5 +6,5 @@ libdir=${exec_prefix}/lib
 Name: Rindow Matlib
 Description: Matrix calculation library useful for artificial intelligence and scientific calculations
 Version: %RINDOW_MATLIB_VERSION%
-Libs: -L${libdir} -lrindowmatlib
+Libs: -L${libdir} -lrindowmatlib -lm
 Cflags: -I${includedir}
