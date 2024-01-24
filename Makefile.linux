@@ -1,0 +1,17 @@
+BUILDPATH = ./build
+
+target = $(BUILDPATH)/rindowmatlib.so
+vcxproj = $(BUILDPATH)/src/rindowmatlib.vcxproj
+testmain = $(BUILDPATH)/test_main
+
+$(target) : $(vcxproj) ./src/*.c ./src/*.h ./include/rindow/*.h
+	cmake --build $(BUILDPATH)
+
+$(vcxproj) : ./CMakeLists.txt ./src/CMakeLists.txt ./tests/CMakeLists.txt
+	cmake -S . -B $(BUILDPATH)
+
+$(testmain) : $(vcxproj) ./tests/*.cpp
+	cmake --build $(BUILDPATH)
+
+test: $(testmain) $(target)
+	build/test_main

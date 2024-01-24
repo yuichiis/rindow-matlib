@@ -10,12 +10,13 @@
 #  > cmake --build build --config Release
 
 cmake_minimum_required(VERSION 3.14)
+#include (CMakePrintSystemInformation)
 
 #set(CMAKE_CONFIGURATION_TYPES Debug Release)
 ##set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug)
 ##set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
 
-project(rindow_matlib CXX)
+project(rindow_matlib LANGUAGES CXX C)
 
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)

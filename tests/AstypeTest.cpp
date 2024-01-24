@@ -132,7 +132,7 @@ TEST(AstypeTest, AstypeNormal) {
         1                           // int32_t incY,
     );
     EXPECT_THAT(i8R1, ContainerEq(i8X));
-    uint64_t u64R2[N] = {18446744073709551615,0,1,2,3};
+    uint64_t u64R2[N] = {18446744073709551615UL,0,1,2,3};
     EXPECT_THAT(u64R2, ContainerEq(u64Y));
 
     // uint8_t -> int64_t

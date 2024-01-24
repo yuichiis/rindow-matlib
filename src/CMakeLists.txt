@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 # プロジェクト名指定
-project(rindowmatlib CXX)
+project(rindowmatlib LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,13 +16,17 @@ find_package(Threads REQUIRED)
 
 file(GLOB_RECURSE srcfiles RELATIVE ${PROJECT_SOURCE_DIR} ./*.c)
 
-add_compile_options(-DRINDOW_COMPILING_DLL)
-if (MSVC)
-    add_compile_options(/openmp:experimental)
-endif()
 add_library(rindowmatlib SHARED ${srcfiles})
+target_compile_options(rindowmatlib PRIVATE -DRINDOW_COMPILING_DLL)
+if (MSVC)
+    target_compile_options(rindowmatlib PRIVATE /openmp:experimental)
+endif()
+target_include_directories(rindowmatlib PUBLIC ../include)
+if (NOT MSVC)
+    target_compile_options(rindowmatlib PRIVATE "-I${PROJECT_SOURCE_DIR}/../include")
+endif()
 
 # c++11
 #target_compile_features(greetings PRIVATE cxx_std_11)
 
-target_include_directories(rindowmatlib PUBLIC ../include)
+
