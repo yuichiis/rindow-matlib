@@ -1,0 +1,9 @@
+
+Package: rindow-matlib
+Maintainer: Rindow Developers <rindow@users.noreply.github.com>
+Architecture: amd64
+Depends: libc6 (>= 2.14)
+Version: %RINDOW_MATLIB_VERSION%-1+%OS_VERSION%
+Homepage: https://rindow.github.io/
+Description: Rindow Math Matrix library
+ Matrix calculation library useful for artificial intelligence and scientific calculations

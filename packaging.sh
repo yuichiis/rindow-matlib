@@ -1,0 +1,34 @@
+#!/bin/sh
+
+INSTALL_DIR=/usr
+CONFIG_DIR=
+LIB_DIR=$INSTALL_DIR/lib
+INC_DIR=$INSTALL_DIR/include/rindow
+
+PKG_WORK=pkgwork
+RINDOW_MATLIB_VERSION=`fgrep "# define RINDOW_MATLIB_VERSION" include/rindow/matlib.h | cut -d " " -f 4 | cut -d "\"" -f 2`
+. /etc/os-release
+OS_VERSION=$ID$VERSION_ID
+echo RINDOW_MATLIB_VERSION=$RINDOW_MATLIB_VERSION
+echo OS_VERSION=$OS_VERSION
+rm -rf $PKG_WORK
+mkdir -p $PKG_WORK$LIB_DIR
+mkdir -p $PKG_WORK$LIB_DIR/pkgconfig
+mkdir -p $PKG_WORK$INC_DIR
+mkdir -p $PKG_WORK/DEBIAN
+cp build$CONFIG_DIR/rindowmatlib.$RINDOW_MATLIB_VERSION.so $PKG_WORK$LIB_DIR/.
+chmod 744 $PKG_WORK$LIB_DIR/rindowmatlib.$RINDOW_MATLIB_VERSION.so
+cp include/rindow/matlib.h $PKG_WORK$INC_DIR/.
+chmod 444 $PKG_WORK$INC_DIR/matlib.h
+sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ debian/control | \
+sed -e s/%OS_VERSION%/$OS_VERSION/ > $PKG_WORK/DEBIAN/control
+sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ pkgconfig/rindowmatlib.pc | \
+sed -e s/%OS_VERSION%/$OS_VERSION/ > $PKG_WORK$LIB_DIR/pkgconfig/rindowmatlib.pc
+#sed -e s@%EXTENSION_DIR%@$EXTENSION_DIR@ debian/rules | \
+#sed -e s@%INI_DIR%@$INI_DIR@ debian/rules | \
+#	> $PKG_WORK/DEBIAN/rules
+#cp debian/changelog $PKG_WORK/DEBIAN/.
+#cp debian/copyright $PKG_WORK/DEBIAN/.
+
+rm -f rindow-opencl*.deb
+fakeroot dpkg-deb --build pkgwork .
