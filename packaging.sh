@@ -16,8 +16,8 @@ mkdir -p $PKG_WORK$LIB_DIR
 mkdir -p $PKG_WORK$LIB_DIR/pkgconfig
 mkdir -p $PKG_WORK$INC_DIR
 mkdir -p $PKG_WORK/DEBIAN
-cp build$CONFIG_DIR/rindowmatlib.$RINDOW_MATLIB_VERSION.so $PKG_WORK$LIB_DIR/.
-chmod 744 $PKG_WORK$LIB_DIR/rindowmatlib.$RINDOW_MATLIB_VERSION.so
+cp build$CONFIG_DIR/librindowmatlib.$RINDOW_MATLIB_VERSION.so $PKG_WORK$LIB_DIR/.
+chmod 744 $PKG_WORK$LIB_DIR/librindowmatlib.$RINDOW_MATLIB_VERSION.so
 cp include/rindow/matlib.h $PKG_WORK$INC_DIR/.
 chmod 444 $PKG_WORK$INC_DIR/matlib.h
 sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ debian/control | \
