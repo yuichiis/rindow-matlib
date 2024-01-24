@@ -5,6 +5,9 @@
 #endif
 #include "rindow/matlib.h"
 #include "common.h"
+//#ifdef HAVE_PTHREAD
+//#include <pthread.h>
+//#endif
 
 int32_t rindow_matlib_common_get_nprocs(void)
 {
@@ -36,17 +39,8 @@ int32_t rindow_matlib_common_get_num_threads(void)
 #else
     return 1;
 #endif
-}
 
-//int32_t rindow_matlib_common_get_corename(void)
-//{
-//    // "Sandybridge"
-//#ifdef _OPENMP
-//    return omp_get_num_procs();
-//#else
-//    return 1;
-//#endif
-//}
+}
 
 char* rindow_matlib_common_get_version(void)
 {
@@ -61,6 +55,22 @@ int32_t rindow_matlib_common_get_parallel(void)
     return RINDOW_MATLIB_SEQUENTIAL;
 #endif
 }
+
+//int32_t rindow_matlib_common_info(void)
+//{
+//#ifdef _OPENMP
+//    printf("omp stack size=%d\n",omp_get_stack_size());
+//    printf("omp max threads=%d\n",omp_get_num_procs());
+//    printf("omp max threads=%d\n",omp_get_max_threads());
+//    printf("omp in parallel=%d\n",omp_in_parallel());
+//    printf("omp num threads=%d\n",omp_get_num_threads());
+//#endif
+//
+//#ifdef _OPEHAVE_PTHREADNMP
+//    printf("get_nprocs_conf() = %d\n",get_nprocs_conf());
+//    printf("get_nprocs() = %d\n",get_nprocs());
+//#endif
+//}
 
 
 #define RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(data_type) { \
