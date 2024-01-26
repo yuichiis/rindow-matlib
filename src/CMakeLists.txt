@@ -25,7 +25,7 @@ target_compile_options(rindowmatlib PRIVATE -DRINDOW_COMPILING_DLL)
 if (MSVC)
     target_compile_options(rindowmatlib PRIVATE /openmp:experimental)
 elseif(UNIX)
-    target_compile_features(rindowmatlib PRIVATE -O2 -fopenmp -msse2)
+    target_compile_options(rindowmatlib PRIVATE -O2 -fopenmp -msse2)
 endif()
 
 target_include_directories(rindowmatlib PUBLIC ../include)
