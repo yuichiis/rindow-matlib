@@ -12,6 +12,7 @@
 #include <omp.h>
 #endif
 
+#include <stdlib.h>
 #ifndef _OPENMP
     #ifdef _MSC_VER
       #include <sysinfoapi.h>
@@ -19,7 +20,6 @@
       #include <sys/sysinfo.h>
       #include <pthread.h>
     #endif
-    #include <stdlib.h>
     #include <memory.h>
 #endif
 
