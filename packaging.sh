@@ -1,6 +1,6 @@
 #!/bin/sh
 
-INSTALL_DIR=/usr/local
+INSTALL_DIR=/usr
 CONFIG_DIR=
 LIB_DIR=$INSTALL_DIR/lib
 INC_DIR=$INSTALL_DIR/include/rindow
