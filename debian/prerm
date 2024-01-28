@@ -3,11 +3,11 @@ set -e
 
 if [ "$1" != "upgrade" ]
 then
-    update-alternatives --remove librindowmatrib.so \
-                        /usr/lib/rindowmatrib-serial/librindowmatrib.so
+    update-alternatives --remove librindowmatlib.so \
+                        /usr/lib/rindowmatlib-serial/librindowmatlib.so
 
-    update-alternatives --remove librindowmatrib.so \
-                        /usr/lib/rindowmatrib-openmp/librindowmatrib.so
+    update-alternatives --remove librindowmatlib.so \
+                        /usr/lib/rindowmatlib-openmp/librindowmatlib.so
 fi
 
 
