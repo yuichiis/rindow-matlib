@@ -26,7 +26,7 @@ cp build$CONFIG_DIR/${libname}seq.so ./${libname}-serial.so
 for type in openmp serial
 do
     mkdir -p $PKG_WORK$LIB_DIR/$name-$type
-    cp ./$name-$type.so $PKG_WORK$LIB_DIR/$name-$type/$libname.$RINDOW_MATLIB_VERSION.so
+    cp ./$libname-$type.so $PKG_WORK$LIB_DIR/$name-$type/$libname.$RINDOW_MATLIB_VERSION.so
     chmod 744 $PKG_WORK$LIB_DIR/$name-$type/$libname.$RINDOW_MATLIB_VERSION.so
     ( cd $PKG_WORK$LIB_DIR/$name-$type ; ln -s $libname.$RINDOW_MATLIB_VERSION.so $libname.so )
     ( cd $PKG_WORK$LIB_DIR/$name-$type ; ln -s $libname.$RINDOW_MATLIB_VERSION.so $libname.$RINDOW_MATLIB_MAJOR_VERSION.so )
