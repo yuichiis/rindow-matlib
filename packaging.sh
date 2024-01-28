@@ -40,8 +40,11 @@ sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ debian/control | \
 sed -e s/%OS_VERSION%/$OS_VERSION/ > $PKG_WORK/DEBIAN/control
 sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ pkgconfig/rindowmatlib.pc | \
 sed -e s@%INSTALL_DIR%@$INSTALL_DIR@ > $PKG_WORK$LIB_DIR/pkgconfig/rindowmatlib.pc
-cp debian/postinst $PKG_WORK/DEBIAN/.
-cp debian/prerm $PKG_WORK/DEBIAN/.
+for script in postinst prerm
+do
+    cp debian/$script $PKG_WORK/DEBIAN/.
+    chmod 555 $PKG_WORK/DEBIAN/$script
+done
 #sed -e s@%EXTENSION_DIR%@$EXTENSION_DIR@ debian/rules | \
 #sed -e s@%INI_DIR%@$INI_DIR@ debian/rules | \
 #	> $PKG_WORK/DEBIAN/rules
