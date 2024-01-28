@@ -17,24 +17,36 @@ mkdir -p $PKG_WORK$LIB_DIR
 mkdir -p $PKG_WORK$LIB_DIR/pkgconfig
 mkdir -p $PKG_WORK$INC_DIR
 mkdir -p $PKG_WORK/DEBIAN
-for name in librindowmatlib librindowmatlibseq
+
+## runtime
+name=librindowmatlib
+cp build$CONFIG_DIR/${name}.so ./${name}-openmp.so
+cp build$CONFIG_DIR/${name}seq.so ./${name}-serial.so
+for type in openmp serial
 do
-    cp build$CONFIG_DIR/$name.so $PKG_WORK$LIB_DIR/$name.$RINDOW_MATLIB_VERSION.so
-    chmod 744 $PKG_WORK$LIB_DIR/$name.$RINDOW_MATLIB_VERSION.so
-    ( cd $PKG_WORK$LIB_DIR ; ln -s $name.$RINDOW_MATLIB_VERSION.so $name.so )
-    ( cd $PKG_WORK$LIB_DIR ; ln -s $name.$RINDOW_MATLIB_VERSION.so $name.$RINDOW_MATLIB_MAJOR_VERSION.so )
+    mkdir -p $PKG_WORK$LIB_DIR/$name-$type
+    cp ./$name-$type.so $PKG_WORK$LIB_DIR/$name-$type/$name.$RINDOW_MATLIB_VERSION.so
+    chmod 744 $PKG_WORK$LIB_DIR/$name-$type/$name.$RINDOW_MATLIB_VERSION.so
+    ( cd $PKG_WORK$LIB_DIR/$name-$type ; ln -s $name.$RINDOW_MATLIB_VERSION.so $name.so )
+    ( cd $PKG_WORK$LIB_DIR/$name-$type ; ln -s $name.$RINDOW_MATLIB_VERSION.so $name.$RINDOW_MATLIB_MAJOR_VERSION.so )
 done
+rm ./${name}-openmp.so
+rm ./${name}-serial.so
+
+## dev
 cp include/rindow/matlib.h $PKG_WORK$INC_DIR/.
 chmod 444 $PKG_WORK$INC_DIR/matlib.h
 sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ debian/control | \
 sed -e s/%OS_VERSION%/$OS_VERSION/ > $PKG_WORK/DEBIAN/control
 sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ pkgconfig/rindowmatlib.pc | \
 sed -e s@%INSTALL_DIR%@$INSTALL_DIR@ > $PKG_WORK$LIB_DIR/pkgconfig/rindowmatlib.pc
+cp debian/postinst $PKG_WORK/DEBIAN/.
+cp debian/prerm $PKG_WORK/DEBIAN/.
 #sed -e s@%EXTENSION_DIR%@$EXTENSION_DIR@ debian/rules | \
 #sed -e s@%INI_DIR%@$INI_DIR@ debian/rules | \
 #	> $PKG_WORK/DEBIAN/rules
 #cp debian/changelog $PKG_WORK/DEBIAN/.
 #cp debian/copyright $PKG_WORK/DEBIAN/.
 
-rm -f rindow-opencl*.deb
+rm -f rindow-matlib_*.deb
 fakeroot dpkg-deb --build pkgwork .
