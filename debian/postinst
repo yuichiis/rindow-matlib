@@ -1,13 +1,13 @@
 #! /bin/sh
 set -e
 
-update-alternatives --install /usr/lib/librindowmatrib.so.0 \
-                    librindowmatrib.so.0 \
-                    /usr/lib/rindowmatrib-serial/libblas.so.0 90
+update-alternatives --install /usr/lib/librindowmatrib.so \
+                    librindowmatrib.so \
+                    /usr/lib/rindowmatrib-serial/libblas.so 90
 
-update-alternatives --install /usr/lib/librindowmatrib.so.0 \
-                    librindowmatrib.so.0 \
-                    /usr/lib/rindowmatrib-openmp/libblas.so.0 95
+update-alternatives --install /usr/lib/librindowmatrib.so \
+                    librindowmatrib.so \
+                    /usr/lib/rindowmatrib-openmp/libblas.so 95
 
 
 

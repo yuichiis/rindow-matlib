@@ -19,19 +19,20 @@ mkdir -p $PKG_WORK$INC_DIR
 mkdir -p $PKG_WORK/DEBIAN
 
 ## runtime
-name=librindowmatlib
-cp build$CONFIG_DIR/${name}.so ./${name}-openmp.so
-cp build$CONFIG_DIR/${name}seq.so ./${name}-serial.so
+name=rindowmatlib
+libname=lib$name
+cp build$CONFIG_DIR/${libname}.so ./${libname}-openmp.so
+cp build$CONFIG_DIR/${libname}seq.so ./${libname}-serial.so
 for type in openmp serial
 do
     mkdir -p $PKG_WORK$LIB_DIR/$name-$type
-    cp ./$name-$type.so $PKG_WORK$LIB_DIR/$name-$type/$name.$RINDOW_MATLIB_VERSION.so
-    chmod 744 $PKG_WORK$LIB_DIR/$name-$type/$name.$RINDOW_MATLIB_VERSION.so
-    ( cd $PKG_WORK$LIB_DIR/$name-$type ; ln -s $name.$RINDOW_MATLIB_VERSION.so $name.so )
-    ( cd $PKG_WORK$LIB_DIR/$name-$type ; ln -s $name.$RINDOW_MATLIB_VERSION.so $name.$RINDOW_MATLIB_MAJOR_VERSION.so )
+    cp ./$name-$type.so $PKG_WORK$LIB_DIR/$name-$type/$libname.$RINDOW_MATLIB_VERSION.so
+    chmod 744 $PKG_WORK$LIB_DIR/$name-$type/$libname.$RINDOW_MATLIB_VERSION.so
+    ( cd $PKG_WORK$LIB_DIR/$name-$type ; ln -s $libname.$RINDOW_MATLIB_VERSION.so $libname.so )
+    ( cd $PKG_WORK$LIB_DIR/$name-$type ; ln -s $libname.$RINDOW_MATLIB_VERSION.so $libname.$RINDOW_MATLIB_MAJOR_VERSION.so )
 done
-rm ./${name}-openmp.so
-rm ./${name}-serial.so
+rm ./${libname}-openmp.so
+rm ./${libname}-serial.so
 
 ## dev
 cp include/rindow/matlib.h $PKG_WORK$INC_DIR/.
