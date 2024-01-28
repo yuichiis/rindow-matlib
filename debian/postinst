@@ -3,11 +3,11 @@ set -e
 
 update-alternatives --install /usr/lib/librindowmatrib.so \
                     librindowmatrib.so \
-                    /usr/lib/rindowmatrib-serial/libblas.so 90
+                    /usr/lib/rindowmatrib-serial/librindowmatrib.so 90
 
 update-alternatives --install /usr/lib/librindowmatrib.so \
                     librindowmatrib.so \
-                    /usr/lib/rindowmatrib-openmp/libblas.so 95
+                    /usr/lib/rindowmatrib-openmp/librindowmatrib.so 95
 
 
 

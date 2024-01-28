@@ -4,10 +4,10 @@ set -e
 if [ "$1" != "upgrade" ]
 then
     update-alternatives --remove librindowmatrib.so \
-                        /usr/lib/rindowmatrib-serial/libblas.so
+                        /usr/lib/rindowmatrib-serial/librindowmatrib.so
 
     update-alternatives --remove librindowmatrib.so \
-                        /usr/lib/rindowmatrib-openmp/libblas.so
+                        /usr/lib/rindowmatrib-openmp/librindowmatrib.so
 fi
 
 
