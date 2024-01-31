@@ -24,8 +24,6 @@ message(STATUS "gmock_SOURCE_DIR = ${gmock_SOURCE_DIR}")
 message(STATUS "Config = ${CMAKE_BUILD_TYPE}")
 message(STATUS "MULTI CONFIG = ${GENERATOR_IS_MULTI_CONFIG}")
 
-enable_testing()
-
 file(GLOB_RECURSE testfiles RELATIVE ${PROJECT_SOURCE_DIR} ./*.cpp)
 
 #add_executable(test_main test_main.cpp)
@@ -38,3 +36,11 @@ include(GoogleTest)
 gtest_discover_tests(test_main)
 
 find_package(Threads REQUIRED)
+
+add_test(
+  NAME main_test
+  COMMAND test_main
+  CONFIGURATIONS Release
+)
+
+set(INSTALL_TARGETS ${INSTALL_TARGETS} EXCLUDING gmock gmock_main gtest gtest_main)

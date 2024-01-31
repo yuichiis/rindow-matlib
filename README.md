@@ -50,3 +50,32 @@ There are 2 choices for the alternative librindowmatlib.so (providing /usr/lib/l
 Press <enter> to keep the current choice[*], or type selection number: 2
 ```
 
+How to build from source code on Windows
+========================================
+You can also build and use from source code.
+
+### download source code
+
+Download source code from release and unzip
+
+- https://github.com/rindow/rindow-matlib/releases
+
+### Build and Install
+
+Build with Visual Studio.
+
+```shell
+C> cd \path\to\here
+C> mkdir build
+C> cd build
+C> cmake ..
+C> cmake --config Release
+C> ctest
+```
+
+
+```shell
+$ nmake clean
+$ nmake
+$ nmake test
+```

@@ -16,4 +16,8 @@ $(testmain) : $(vcxproj) ./tests/*.cpp
 	cmake --build $(BUILDPATH) --config $(CONFIG)
 
 test: $(testmain) $(target)
-	build\\$(CONFIG)\\test_main.exe
+	cd build
+	ctest
+
+install:
+	cmake --install ./build --prefix ./pkgwork

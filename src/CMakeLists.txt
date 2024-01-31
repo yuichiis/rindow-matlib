@@ -1,7 +1,5 @@
-# cmakeのバージョン
 cmake_minimum_required(VERSION 3.13)
 
-# プロジェクト名指定
 project(rindowmatlib LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -39,3 +37,8 @@ endif()
 #target_compile_features(greetings PRIVATE cxx_std_11)
 
 
+install(
+    TARGETS rindowmatlib
+    DESTINATION lib
+    RUNTIME DESTINATION bin
+)

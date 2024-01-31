@@ -37,9 +37,9 @@ rm ./${libname}-serial.so
 ## dev
 cp include/rindow/matlib.h $PKG_WORK$INC_DIR/.
 chmod 444 $PKG_WORK$INC_DIR/matlib.h
-sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ debian/control | \
-sed -e s/%OS_VERSION%/$OS_VERSION/ > $PKG_WORK/DEBIAN/control
-sed -e s/%RINDOW_MATLIB_VERSION%/$RINDOW_MATLIB_VERSION/ pkgconfig/rindowmatlib.pc | \
+sed -e s@%RINDOW_MATLIB_VERSION%@$RINDOW_MATLIB_VERSION@ debian/control.in | \
+sed -e s@%OS_VERSION%@$OS_VERSION@ > $PKG_WORK/DEBIAN/control
+sed -e s@%RINDOW_MATLIB_VERSION%@$RINDOW_MATLIB_VERSION@ pkgconfig/rindowmatlib.pc.in | \
 sed -e s@%INSTALL_DIR%@$INSTALL_DIR@ > $PKG_WORK$LIB_DIR/pkgconfig/rindowmatlib.pc
 for script in postinst prerm
 do

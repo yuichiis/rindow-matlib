@@ -11,6 +11,7 @@
 
 cmake_minimum_required(VERSION 3.14)
 #include (CMakePrintSystemInformation)
+enable_testing()
 
 #set(CMAKE_CONFIGURATION_TYPES Debug Release)
 ##set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug)
@@ -23,4 +24,6 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(./src)
+add_subdirectory(./include)
+add_subdirectory(./pkgconfig)
 add_subdirectory(./tests)
