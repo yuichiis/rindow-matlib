@@ -17,7 +17,7 @@ enable_testing()
 ##set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug)
 ##set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
 
-project(rindow_matlib LANGUAGES CXX C)
+project(rindow_matlib VERSION 1.0.0 LANGUAGES CXX C)
 
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -25,5 +25,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(./src)
 add_subdirectory(./include)
-add_subdirectory(./pkgconfig)
 add_subdirectory(./tests)
+if(UNIX)
+    add_subdirectory(./pkgconfig)
+endif()
