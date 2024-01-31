@@ -29,6 +29,7 @@ elseif(UNIX)
     add_library(rindowmatlibseq SHARED ${srcfiles})
     target_compile_options(rindowmatlibseq PRIVATE -DRINDOW_COMPILING_DLL)
     target_compile_options(rindowmatlibseq PRIVATE "-I${PROJECT_SOURCE_DIR}/include")
+    target_compile_options(rindowmatlibseq PRIVATE "-I${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
 target_include_directories(rindowmatlib PUBLIC "${PROJECT_SOURCE_DIR}/include")
