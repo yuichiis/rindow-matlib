@@ -34,10 +34,10 @@ endif()
 
 target_include_directories(rindowmatlib PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(rindowmatlib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-if (UNIX)
-    target_compile_options(rindowmatlib PRIVATE "-I${PROJECT_SOURCE_DIR}/include")
-    target_compile_options(rindowmatlib PRIVATE "-I${CMAKE_CURRENT_BINARY_DIR}")
-endif()
+#if (UNIX)
+#    target_compile_options(rindowmatlib PRIVATE "-I${PROJECT_SOURCE_DIR}/include")
+#    target_compile_options(rindowmatlib PRIVATE "-I${CMAKE_CURRENT_BINARY_DIR}")
+#endif()
 
 # c++11
 #target_compile_features(greetings PRIVATE cxx_std_11)
