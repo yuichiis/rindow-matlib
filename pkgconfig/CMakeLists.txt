@@ -1,5 +1,10 @@
 project(pkgconfig)
 
+add_custom_target(
+    pkgconfig ALL
+    DEPENDS rindowmatlib.pc
+)
+
 add_custom_command(
     OUTPUT rindowmatlib.pc
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/rindowmatlib.pc.in
