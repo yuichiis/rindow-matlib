@@ -46,4 +46,5 @@ install(
     TARGETS rindowmatlib
     DESTINATION lib
     RUNTIME DESTINATION bin
+    COMPONENT ${PROJECT_NAME}
 )
