@@ -31,10 +31,11 @@ elseif(UNIX)
     target_compile_options(rindowmatlibseq PRIVATE "-I${PROJECT_SOURCE_DIR}/include")
 endif()
 
-target_include_directories(rindowmatlib PUBLIC ../include)
+target_include_directories(rindowmatlib PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(rindowmatlib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-if (NOT MSVC)
+if (UNIX)
     target_compile_options(rindowmatlib PRIVATE "-I${PROJECT_SOURCE_DIR}/include")
+    target_compile_options(rindowmatlib PRIVATE "-I${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
 # c++11
