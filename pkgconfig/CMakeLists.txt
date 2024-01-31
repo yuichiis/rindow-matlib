@@ -1,5 +1,3 @@
-project(pkgconfig)
-
 add_custom_target(
     pkgconfig ALL
     DEPENDS rindowmatlib.pc
