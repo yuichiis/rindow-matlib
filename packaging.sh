@@ -6,7 +6,7 @@ LIB_DIR=$INSTALL_DIR/lib
 INC_DIR=$INSTALL_DIR/include/rindow
 
 PKG_WORK=pkgwork
-RINDOW_MATLIB_VERSION=`fgrep "#define RINDOW_MATLIB_VERSION" include/rindow/matlib.h | cut -d " " -f 3 | cut -d "\"" -f 2`
+RINDOW_MATLIB_VERSION=`fgrep "project(rindow_matlib VERSION" CMakeLists.txt | cut -d " " -f 3 | cut -d "\"" -f 2`
 RINDOW_MATLIB_MAJOR_VERSION=`echo $RINDOW_MATLIB_VERSION | cut -d "." -f 1`
 . /etc/os-release
 OS_VERSION=$ID$VERSION_ID

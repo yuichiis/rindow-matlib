@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
 
-project(rindowmatlib LANGUAGES CXX C)
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -9,10 +7,15 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-
 find_package(Threads REQUIRED)
 
-file(GLOB_RECURSE srcfiles RELATIVE ${PROJECT_SOURCE_DIR} ./*.c)
+set(RINDOW_MATLIB_VERSION ${PROJECT_VERSION})
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+)
+
+file(GLOB_RECURSE srcfiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./*.c)
 
 add_library(rindowmatlib SHARED ${srcfiles})
 target_compile_options(rindowmatlib PRIVATE -DRINDOW_COMPILING_DLL)
@@ -25,12 +28,13 @@ elseif(UNIX)
     endif()
     add_library(rindowmatlibseq SHARED ${srcfiles})
     target_compile_options(rindowmatlibseq PRIVATE -DRINDOW_COMPILING_DLL)
-    target_compile_options(rindowmatlibseq PRIVATE "-I${PROJECT_SOURCE_DIR}/../include")
+    target_compile_options(rindowmatlibseq PRIVATE "-I${PROJECT_SOURCE_DIR}/include")
 endif()
 
 target_include_directories(rindowmatlib PUBLIC ../include)
+target_include_directories(rindowmatlib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 if (NOT MSVC)
-    target_compile_options(rindowmatlib PRIVATE "-I${PROJECT_SOURCE_DIR}/../include")
+    target_compile_options(rindowmatlib PRIVATE "-I${PROJECT_SOURCE_DIR}/include")
 endif()
 
 # c++11

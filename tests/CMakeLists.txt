@@ -1,7 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(test_matlib CXX)
-
 ## If you want to build the Release version, type the following command
 ## cmake -B build -DCMAKE_BUILD_TYPE=Release
 #set(CMAKE_CONFIGURATION_TYPES Debug Release)
@@ -24,7 +22,7 @@ message(STATUS "gmock_SOURCE_DIR = ${gmock_SOURCE_DIR}")
 message(STATUS "Config = ${CMAKE_BUILD_TYPE}")
 message(STATUS "MULTI CONFIG = ${GENERATOR_IS_MULTI_CONFIG}")
 
-file(GLOB_RECURSE testfiles RELATIVE ${PROJECT_SOURCE_DIR} ./*.cpp)
+file(GLOB_RECURSE testfiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./*.cpp)
 
 #add_executable(test_main test_main.cpp)
 add_executable(test_main ${testfiles})

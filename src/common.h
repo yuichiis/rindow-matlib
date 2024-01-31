@@ -1,6 +1,8 @@
 #ifndef RINDOW_MATLIB_COMMON_H_
 #define RINDOW_MATLIB_COMMON_H_
 
+#include "config.h"
+
 #include <stdint.h>
 
 #ifdef _MSC_VER

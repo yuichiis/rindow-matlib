@@ -3,9 +3,6 @@
 
 #include <stdint.h>
 
-#define RINDOW_MATLIB_VERSION "0.1.0"
-
-
 enum rindow_matlib_dtype {
     rindow_matlib_dtype_unknown   = 0,
     rindow_matlib_dtype_bool      = 1,
