@@ -16,11 +16,11 @@ add_custom_target(debianpostinst ALL DEPENDS postinst)
 add_custom_command(
     OUTPUT postinst
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/postinst.in
-    COMMAND sed -e s@%INSTALL_DIR%@${CMAKE_INSTALL_PREFIX}@ ${CMAKE_CURRENT_SOURCE_DIR}/postinst.in > ${CMAKE_CURRENT_BINARY_DIR}/postinst
+    COMMAND sed -e s@%INSTALL_DIR%@${CMAKE_INSTALL_PREFIX}@ ${CMAKE_CURRENT_SOURCE_DIR}/postinst.in > ${CMAKE_CURRENT_BINARY_DIR}/postinst ; chmod 555 ${CMAKE_CURRENT_BINARY_DIR}/postinst
 )
 add_custom_target(debianprerm ALL DEPENDS prerm)
 add_custom_command(
     OUTPUT prerm
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/prerm.in
-    COMMAND sed -e s@%INSTALL_DIR%@${CMAKE_INSTALL_PREFIX}@ ${CMAKE_CURRENT_SOURCE_DIR}/prerm.in > ${CMAKE_CURRENT_BINARY_DIR}/prerm
+    COMMAND sed -e s@%INSTALL_DIR%@${CMAKE_INSTALL_PREFIX}@ ${CMAKE_CURRENT_SOURCE_DIR}/prerm.in > ${CMAKE_CURRENT_BINARY_DIR}/prerm ; chmod 555 ${CMAKE_CURRENT_BINARY_DIR}/prerm
 )
