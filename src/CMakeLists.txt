@@ -37,11 +37,6 @@ if(UNIX)
     target_include_directories(rindowmatlibseq PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
-
-# c++11
-#target_compile_features(greetings PRIVATE cxx_std_11)
-
-
 if (MSVC)
     install(
         TARGETS rindowmatlib
@@ -49,10 +44,16 @@ if (MSVC)
         RUNTIME DESTINATION bin
         COMPONENT ${PROJECT_NAME}
     )
-else()
+elseif(UNIX)
     install(
         TARGETS rindowmatlib
-        DESTINATION lib
+        DESTINATION lib/rindowmatlib-openmp
+        COMPONENT ${PROJECT_NAME}
+    )
+    install(
+        TARGETS rindowmatlibseq
+        RENAME rindowmatlib.so
+        DESTINATION lib/rindowmatlib-serial
         COMPONENT ${PROJECT_NAME}
     )
 endif()
