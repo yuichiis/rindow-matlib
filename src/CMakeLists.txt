@@ -52,8 +52,8 @@ elseif(UNIX)
     )
     install(
         TARGETS rindowmatlibseq
-        RENAME "rindowmatlib-serial/rindowmatlib.so"
-        DESTINATION lib
+        DESTINATION lib/rindowmatlib-serial
+        RENAME rindowmatlib.so
         COMPONENT ${PROJECT_NAME}
     )
 endif()
