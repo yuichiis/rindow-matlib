@@ -33,6 +33,7 @@ set(CPACK_PACKAGE_CONTACT "Rindow Developers <rindow@users.noreply.github.com>")
 #set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rindow Developers <rindow@users.noreply.github.com>")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://rindow.github.io/")
 
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Templates/CPack.GenericDescription.txt")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
