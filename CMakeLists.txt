@@ -26,10 +26,8 @@ project(rindow-matlib VERSION 0.1.0 LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(UNIX)
-    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-    include(Packing)
-endif()
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(Packing)
 
 add_subdirectory(./src)
 add_subdirectory(./include)

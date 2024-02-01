@@ -17,7 +17,11 @@ $(testmain) : $(vcxproj) ./tests/*.cpp
 
 test: $(testmain) $(target)
 	cd build
-	ctest
+	ctest -C $(CONFIG)
 
 install:
-	cmake --install ./build --prefix ./pkgwork
+	cmake --install ./build --component rindow-matlib --prefix ./pkgwork  --config $(CONFIG)
+
+packaging:
+	cd build
+	cpack -C $(CONFIG)

@@ -40,8 +40,12 @@ endif()
 if (MSVC)
     install(
         TARGETS rindowmatlib
-        DESTINATION lib
         RUNTIME DESTINATION bin
+        COMPONENT ${PROJECT_NAME}
+    )
+    install(
+        TARGETS rindowmatlib
+        ARCHIVE DESTINATION lib
         COMPONENT ${PROJECT_NAME}
     )
 elseif(UNIX)
