@@ -4,10 +4,10 @@ set -e
 if [ "$1" != "upgrade" ]
 then
     update-alternatives --remove librindowmatlib.so \
-                        /usr/lib/rindowmatlib-serial/librindowmatlib.so
+                        %INSTALL_DIR%/lib/rindowmatlib-serial/librindowmatlib.so
 
     update-alternatives --remove librindowmatlib.so \
-                        /usr/lib/rindowmatlib-openmp/librindowmatlib.so
+                        %INSTALL_DIR%/lib/rindowmatlib-openmp/librindowmatlib.so
 fi
 
 

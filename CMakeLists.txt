@@ -31,7 +31,7 @@ add_subdirectory(./src)
 add_subdirectory(./include)
 add_subdirectory(./tests)
 if(UNIX)
-    add_subdirectory(./pkgconfig)
+    add_subdirectory(./debian)
 endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")

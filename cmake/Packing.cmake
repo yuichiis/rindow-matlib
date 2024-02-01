@@ -51,9 +51,11 @@ set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}-1+${_var_id}${_var_version_id}")
 set(CPACK_PACKAGE_CONTACT "Rindow Developers <rindow@users.noreply.github.com>")
 #set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rindow Developers <rindow@users.noreply.github.com>")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://rindow.github.io/mathematics/")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Templates/CPack.GenericDescription.txt")
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/debian/CPack.GenericDescription.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${PROJECT_SOURCE_DIR}/README.md")
+
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${PROJECT_BINARY_DIR}/debian/postinst;${PROJECT_BINARY_DIR}/debian/prerm")
 
 # package name for deb. If set, then instead of some-application-0.9.2-Linux.deb
 # you'll get some-application_0.9.2_amd64.deb (note the underscores too)
