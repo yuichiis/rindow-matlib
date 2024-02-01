@@ -65,8 +65,9 @@ set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)#ONE_PER_GROUP)
 # without this you won't be able to pack only specified component
 set(CPACK_DEB_COMPONENT_INSTALL YES)
 
-include(CPack)
 set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.7)")
+
+include(CPack)
 
 #set(CPACK_INSTALL_CMAKE_PROJECTS "pkgwork rindow_matlib ....")
