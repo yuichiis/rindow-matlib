@@ -46,7 +46,7 @@ string(REGEX REPLACE "^\"(.*)\"$" "\\1" _var_id "${_var_id}")
 string(REGEX REPLACE "^\"(.*)\"$" "\\1" _var_version_id "${_var_version_id}")
 string(REGEX REPLACE "^\"(.*)\"$" "\\1" _var_codename "${_var_codename}")
 
-set(TEST_PACKAGE_VERSION "${_var_id}${_var_version_id}${_var_codename}")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}-1+${_var_id}${_var_version_id}")
 
 set(CPACK_PACKAGE_CONTACT "Rindow Developers <rindow@users.noreply.github.com>")
 #set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Rindow Developers <rindow@users.noreply.github.com>")
