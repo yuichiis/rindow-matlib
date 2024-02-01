@@ -72,4 +72,6 @@ set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.14)")
 
 include(CPack)
 
+set(CMAKE_INSTALL_PREFIX "${CPACK_PACKAGING_INSTALL_PREFIX}")
+
 #set(CPACK_INSTALL_CMAKE_PROJECTS "pkgwork rindow_matlib ....")
