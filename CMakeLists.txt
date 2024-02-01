@@ -13,7 +13,6 @@ cmake_minimum_required(VERSION 3.14)
 #include (CMakePrintSystemInformation)
 enable_testing()
 
-
 #set(CMAKE_CONFIGURATION_TYPES Debug Release)
 ##set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug)
 ##set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
@@ -27,14 +26,17 @@ project(rindow-matlib VERSION 0.1.0 LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+if(UNIX)
+    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+    include(Packing)
+endif()
+
 add_subdirectory(./src)
 add_subdirectory(./include)
 add_subdirectory(./tests)
 
 if(UNIX)
     add_subdirectory(./debian)
-    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-    include(Packing)
 endif()
 
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
