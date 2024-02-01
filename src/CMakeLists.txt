@@ -42,9 +42,17 @@ endif()
 #target_compile_features(greetings PRIVATE cxx_std_11)
 
 
-install(
-    TARGETS rindowmatlib
-    DESTINATION lib
-    RUNTIME DESTINATION bin
-    COMPONENT ${PROJECT_NAME}
-)
+if (MSVC)
+    install(
+        TARGETS rindowmatlib
+        DESTINATION lib
+        RUNTIME DESTINATION bin
+        COMPONENT ${PROJECT_NAME}
+    )
+else()
+    install(
+        TARGETS rindowmatlib
+        DESTINATION lib
+        COMPONENT ${PROJECT_NAME}
+    )
+endif()
