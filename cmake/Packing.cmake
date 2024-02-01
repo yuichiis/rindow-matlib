@@ -5,6 +5,7 @@
 #set(CPACK_PACKAGE_CONTACT "Rindow Developers <rindow@users.noreply.github.com>")
 #set(CPACK_PACKAGE_LICENSE "BSD3-Clause")
 
+set(CPACK_COMPONENTS_ALL  ${PROJECT_NAME})
 # these are cache variables, so they could be overwritten with -D,
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME}
     CACHE STRING "The resulting package name"
@@ -14,6 +15,7 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Rindow Math Matrix library"
     CACHE STRING "Package description for the package metadata"
 )
 set(CPACK_PACKAGE_VENDOR "Rindow")
+
 
 set(CPACK_VERBATIM_VARIABLES YES)
 
