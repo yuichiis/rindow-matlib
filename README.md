@@ -143,7 +143,7 @@ void printMatrix(int m, int n, void *matrix)
         std::cout << std::endl;
     }
 }
-int main(int ac, char* av)
+int main(int ac, char **av)
 {
     const int M = 2;
     const int N = 3;
@@ -169,6 +169,27 @@ int main(int ac, char* av)
     );
     std::cout << std::endl << "Results:" << std::endl;
     printMatrix(M, N, sY);
+
+    char *mode;
+    switch(rindow_matlib_common_get_parallel()) {
+        case RINDOW_MATLIB_SEQUENTIAL: {
+            mode = "SEQUENTIAL";
+            break;
+        }
+        case RINDOW_MATLIB_THREAD: {
+            mode = "THREAD";
+            break;
+        }
+        case RINDOW_MATLIB_OPENMP: {
+            mode = "OPENMP";
+            break;
+        } default: {
+            mode = "UNKOWN";
+            break;
+        }
+    }
+    std::cout << mode  << std::endl;
+    return 0;
 }
 ```
 
@@ -176,7 +197,6 @@ int main(int ac, char* av)
 
 C> cl /EHsc -I.\path\to\include sample.cpp \path\to\lib\rindowmatlib.lib
 
-### build the sample program on Windows.
+### build the sample program on Ubuntu.
 
-C> cl /EHsc -I.\path\to\include sample.cpp \path\to\lib\rindowmatlib.lib
-
+$ g++ sample.cpp -lrindowmatlib -lm
