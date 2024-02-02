@@ -30,13 +30,6 @@ endif()
 target_include_directories(rindowmatlib PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(rindowmatlib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
-if(UNIX)
-    add_library(rindowmatlib.seq SHARED ${srcfiles})
-    set_target_properties(rindowmatlib.seq PROPERTIES OUTPUT_NAME rindowmatlib)
-    target_compile_options(rindowmatlib.seq PRIVATE -DRINDOW_COMPILING_DLL)
-    target_include_directories(rindowmatlib.seq PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_include_directories(rindowmatlib.seq PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-endif()
 
 if (MSVC)
     install(
@@ -55,10 +48,6 @@ elseif(UNIX)
         DESTINATION lib/rindowmatlib-openmp
         COMPONENT ${PROJECT_NAME}
     )
-    install(
-        TARGETS rindowmatlib.seq
-        DESTINATION lib/rindowmatlib-serial
-        RENAME rindowmatlib.so
-        COMPONENT ${PROJECT_NAME}
-    )
 endif()
+
+add_subdirectory(./seq)
