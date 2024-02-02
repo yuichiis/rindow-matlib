@@ -31,7 +31,7 @@ target_include_directories(rindowmatlib PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(rindowmatlib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 if(UNIX)
-    add_library(rindowmatlib.seq SHARED OUTPUT_NAME seq/rindowmatlib.so ${srcfiles})
+    add_library(rindowmatlib.seq SHARED OUTPUT_NAME_Release seq/rindowmatlib.so ${srcfiles})
     target_compile_options(rindowmatlib.seq PRIVATE -DRINDOW_COMPILING_DLL)
     target_include_directories(rindowmatlib.seq PUBLIC "${PROJECT_SOURCE_DIR}/include")
     target_include_directories(rindowmatlib.seq PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
