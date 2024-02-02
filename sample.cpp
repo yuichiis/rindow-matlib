@@ -12,7 +12,7 @@ void printMatrix(int m, int n, void *matrix)
         std::cout << std::endl;
     }
 }
-int main(int ac, char* av)
+int main(int ac, char **av)
 {
     const int M = 2;
     const int N = 3;
