@@ -31,10 +31,10 @@ target_include_directories(rindowmatlib PUBLIC "${PROJECT_SOURCE_DIR}/include")
 target_include_directories(rindowmatlib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 if(UNIX)
-    add_library(rindowmatlibseq SHARED ${srcfiles})
-    target_compile_options(rindowmatlibseq PRIVATE -DRINDOW_COMPILING_DLL)
-    target_include_directories(rindowmatlibseq PUBLIC "${PROJECT_SOURCE_DIR}/include")
-    target_include_directories(rindowmatlibseq PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+    add_library(rindowmatlib.seq SHARED ${srcfiles})
+    target_compile_options(rindowmatlib.seq PRIVATE -DRINDOW_COMPILING_DLL)
+    target_include_directories(rindowmatlib.seq PUBLIC "${PROJECT_SOURCE_DIR}/include")
+    target_include_directories(rindowmatlib.seq PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
 if (MSVC)
@@ -55,7 +55,7 @@ elseif(UNIX)
         COMPONENT ${PROJECT_NAME}
     )
     install(
-        TARGETS rindowmatlibseq
+        TARGETS rindowmatlib.seq
         DESTINATION lib/rindowmatlib-serial
         RENAME rindowmatlib.so
         COMPONENT ${PROJECT_NAME}
