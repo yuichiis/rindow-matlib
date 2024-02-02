@@ -3,7 +3,7 @@ set -e
 
 update-alternatives --install %INSTALL_DIR%/lib/librindowmatlib.so \
                     librindowmatlib.so \
-                    %INSTALL_DIR%/lib/rindowmatlib-serial/librindowmatlib.seq.so 90
+                    %INSTALL_DIR%/lib/rindowmatlib-serial/librindowmatlib.so 90
 
 update-alternatives --install %INSTALL_DIR%/lib/librindowmatlib.so \
                     librindowmatlib.so \

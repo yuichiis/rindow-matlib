@@ -38,4 +38,23 @@ int main(int ac, char **av)
     );
     std::cout << std::endl << "Results:" << std::endl;
     printMatrix(M, N, sY);
+
+    switch(rindow_matlib_common_get_parallel()) {
+        case RINDOW_MATLIB_SEQUENTIAL: {
+            std::cout << "SEQUENTIAL" << std::endl;
+            break;
+        }
+        case RINDOW_MATLIB_THREAD: {
+            std::cout << "THREAD" << std::endl;
+            break;
+        }
+        case RINDOW_MATLIB_OPENMP: {
+            std::cout << "OPENMP" << std::endl;
+            break;
+        } default {
+            std::cout << "UNKOWN" << std::endl;
+            break;
+        }
+    }
+    return 0;
 }
