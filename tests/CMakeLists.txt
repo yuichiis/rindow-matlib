@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
 ## If you want to build the Release version, type the following command
-## cmake -B build -DCMAKE_BUILD_TYPE=Release
 #set(CMAKE_CONFIGURATION_TYPES Debug Release)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -17,14 +16,9 @@ FetchContent_Declare(
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
-message(STATUS "gtest_SOURCE_DIR = ${gtest_SOURCE_DIR}")
-message(STATUS "gmock_SOURCE_DIR = ${gmock_SOURCE_DIR}")
-message(STATUS "Config = ${CMAKE_BUILD_TYPE}")
-message(STATUS "MULTI CONFIG = ${GENERATOR_IS_MULTI_CONFIG}")
 
 file(GLOB_RECURSE testfiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./*.cpp)
 
-#add_executable(test_main test_main.cpp)
 add_executable(test_main ${testfiles})
 target_link_libraries(test_main GTest::gtest_main)
 target_link_libraries(test_main rindowmatlib)

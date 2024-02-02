@@ -34,10 +34,13 @@ Download the pre-build binary file.
 
 Please install using the apt command. 
 
-If you use this library under the PHP, you must set it to serial mode.
+```shell
+$ sudo apt install ./rindow-matlib_X.X.X_amd64.deb
+```
+
+If you use this library under the PHP, you must set it to "serial" mode.
 
 ```shell
-$ sudo apt install ./rindow-matlib_X.X.X-X+ubuntuXX.XX_amd64.deb
 $ sudo update-alternatives --config librindowmatlib.so
 There are 2 choices for the alternative librindowmatlib.so (providing /usr/lib/librindowmatlib.so).
 
@@ -66,16 +69,114 @@ Build with Visual Studio.
 
 ```shell
 C> cd \path\to\here
-C> mkdir build
+C> cmake -S . -B build
+C> cmake --build build --config Release
 C> cd build
-C> cmake ..
-C> cmake --config Release
-C> ctest
+C> ctest -C Release
+C> cpack -C Release
+C> cd ..\packages
 ```
-
+Unzip the package file from packages directory.
 
 ```shell
-$ nmake clean
-$ nmake
-$ nmake test
+C> PATH %PATH%;C:\path\to\bin
 ```
+
+How to build from source code on Ubuntu
+=======================================
+You can also build and use from source code.
+
+### download source code
+
+Download source code from release and extract
+
+- https://github.com/rindow/rindow-matlib/releases
+
+### Build and Install
+
+Build with cmake.
+
+```shell
+$ cd \path\to\here
+$ cmake -S . -B build
+$ cmake --build build --config Release
+$ (cd build; ctest -C Release)
+$ (cd build; cpack -C Release)
+```
+Install with apt commnand.
+
+```shell
+$ sudo apt install ./packages/rindow-matlib_0.1.0_amd64.deb
+```
+
+If you use this library under the PHP, you must set it to "serial" mode.
+
+```shell
+$ sudo update-alternatives --config librindowmatlib.so
+There are 2 choices for the alternative librindowmatlib.so (providing /usr/lib/librindowmatlib.so).
+
+  Selection    Path                                             Priority   Status
+------------------------------------------------------------
+* 0            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        auto mode
+  1            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        manual mode
+  2            /usr/lib/rindowmatlib-serial/librindowmatlib.so   90        manual mode
+
+Press <enter> to keep the current choice[*], or type selection number: 2
+```
+
+How to use
+==========
+
+### sample program
+```cpp
+#include <iostream>
+#include <iomanip>
+#include <rindow/matlib.h>
+
+void printMatrix(int m, int n, void *matrix)
+{
+    float *v = (float *)matrix;
+    for(int i=0; i<m; i++) {
+        for(int j=0; j<n; j++) {
+            std::cout << std::setw(4) << v[i*n+j] << ",";
+        }
+        std::cout << std::endl;
+    }
+}
+int main(int ac, char* av)
+{
+    const int M = 2;
+    const int N = 3;
+    // float
+    float sX[N] = {1, 2, 3};
+    float sY[M][N] = {{1,10,100}, {-1,-10,-100}};
+    float alpha = 2.0;
+    std::cout << "X:" << std::endl;
+    printMatrix(1, N, sX);
+    std::cout << std::endl << "Y:" << std::endl;
+    printMatrix(M, N, sY);
+    std::cout << std::endl << "alpha:" << std::endl;
+    std::cout << std::setw(4) << alpha << std::endl;
+    rindow_matlib_s_add(
+        RINDOW_MATLIB_NO_TRANS, // int32_t trans,
+        M,      // int32_t m,
+        N,      // int32_t n,
+        alpha,    // float alpha,
+        (float *)&sX,     // float *x,
+        1,      // int32_t incX,
+        (float *)&sY,     // float *a,
+        N       // int32_t ldA
+    );
+    std::cout << std::endl << "Results:" << std::endl;
+    printMatrix(M, N, sY);
+}
+```
+
+### build the sample program on Windows.
+
+C> cl /EHsc -I.\path\to\include sample.cpp \path\to\lib\rindowmatlib.lib
+
+### build the sample program on Windows.
+
+C> cl /EHsc -I.\path\to\include sample.cpp \path\to\lib\rindowmatlib.lib
+
