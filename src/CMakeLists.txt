@@ -32,7 +32,7 @@ target_include_directories(rindowmatlib PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 if(UNIX)
     add_library(rindowmatlib.seq SHARED ${srcfiles})
-    set_target_properties(rindowmatlib.seq PROPERTIES OUTPUT_NAME seq/rindowmatlib)
+    set_target_properties(rindowmatlib.seq PROPERTIES OUTPUT_NAME rindowmatlib)
     target_compile_options(rindowmatlib.seq PRIVATE -DRINDOW_COMPILING_DLL)
     target_include_directories(rindowmatlib.seq PUBLIC "${PROJECT_SOURCE_DIR}/include")
     target_include_directories(rindowmatlib.seq PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
