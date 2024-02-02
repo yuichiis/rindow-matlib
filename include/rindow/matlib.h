@@ -61,11 +61,11 @@ enum rindow_matlib_dtype {
 //#define RINDOW_MATLIB_CONJ_NO_TRANS  114
 
 // Matlib is compiled for sequential use
-#define RINDOW_MATLIB_SEQUENTIAL 0;
+#define RINDOW_MATLIB_SEQUENTIAL 0
 // Matlib is compiled using normal threading model
-#define RINDOW_MATLIB_THREAD     1;
+#define RINDOW_MATLIB_THREAD     1
 // Matlib is compiled using OpenMP threading model
-#define RINDOW_MATLIB_OPENMP     2;
+#define RINDOW_MATLIB_OPENMP     2
 
 
 static inline int32_t rindow_matlib_common_dtype_to_valuesize(int32_t dtype)

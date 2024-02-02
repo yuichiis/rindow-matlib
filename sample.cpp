@@ -51,7 +51,7 @@ int main(int ac, char **av)
         case RINDOW_MATLIB_OPENMP: {
             std::cout << "OPENMP" << std::endl;
             break;
-        } default {
+        } default: {
             std::cout << "UNKOWN" << std::endl;
             break;
         }
