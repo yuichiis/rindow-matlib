@@ -106,7 +106,7 @@ $ (cd build; cpack -C Release)
 Install with apt commnand.
 
 ```shell
-$ sudo apt install ./packages/rindow-matlib_0.1.0_amd64.deb
+$ sudo apt install ./packages/rindow-matlib_X.X.X_amd64.deb
 ```
 
 If you use this library under the PHP, you must set it to "serial" mode.
@@ -130,6 +130,7 @@ How to use
 ### sample program
 ```cpp
 #include <iostream>
+#include <string>
 #include <iomanip>
 #include <rindow/matlib.h>
 
@@ -170,7 +171,7 @@ int main(int ac, char **av)
     std::cout << std::endl << "Results:" << std::endl;
     printMatrix(M, N, sY);
 
-    char *mode;
+    std::string mode;
     switch(rindow_matlib_common_get_parallel()) {
         case RINDOW_MATLIB_SEQUENTIAL: {
             mode = "SEQUENTIAL";
