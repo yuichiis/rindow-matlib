@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "common.h": "c",
-        "matlib.h": "c"
-    }
+        "matlib.h": "c",
+        "cmath": "cpp",
+        "algorithm": "cpp",
+        "iostream": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
