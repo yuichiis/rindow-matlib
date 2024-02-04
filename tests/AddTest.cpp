@@ -3,87 +3,73 @@
 
 #include "rindow/matlib.h"
 #include <stdbool.h>
+#include "Utils.h"
 
 using testing::ContainerEq;
+using RindowTest::Utils;
 
 namespace {
-TEST(AddTest, AddNormal) {
-    const int M = 2;
-    const int N = 3;
-    // float
-    float sX[N] = {1, 2, 3};
-    float sY[M][N] = {{1,10,100}, {-1,-10,-100}};
-    rindow_matlib_s_add(
-        RINDOW_MATLIB_NO_TRANS, // int32_t trans,
-        M,      // int32_t m,
-        N,      // int32_t n,
-        2.0,    // float alpha,
-        (float *)&sX,     // float *x,
-        1,      // int32_t incX,
-        (float *)&sY,     // float *a,
-        N       // int32_t ldA
-    );
-    float sR1[N] = {1,2,3};
-    EXPECT_THAT(sR1, ContainerEq(sX));
-    float sR2[M][N] = {{3,14,106}, {1,-6,-94}};
-    EXPECT_THAT(sR2, ContainerEq(sY));
 
-    // double
-    double dX[N] = {1, 2, 3};
-    double dY[M][N] = {{1,10,100}, {-1,-10,-100}};
-    rindow_matlib_d_add(
+template <typename T>
+class AddTest : public ::testing::Test {
+protected:
+    virtual void test_matlib_add(
+        int32_t trans, int32_t m, int32_t n,
+        float alpha, float *x, int32_t incX, float *a, int32_t ldA)
+    {
+        rindow_matlib_s_add(trans, m, n, alpha, x, incX, a, ldA);
+    }
+    virtual void test_matlib_add(
+        int32_t trans, int32_t m, int32_t n,
+        double alpha, double *x, int32_t incX, double *a, int32_t ldA)
+    {
+        rindow_matlib_d_add(trans, m, n, alpha, x, incX, a, ldA);
+    }
+};
+typedef ::testing::Types<float, double> TestTypes;
+TYPED_TEST_SUITE(AddTest, TestTypes);
+
+TYPED_TEST(AddTest, AddNormal) {
+    const int32_t M = 2;
+    const int32_t N = 3;
+    // float
+    TypeParam X[N] = {1, 2, 3};
+    TypeParam Y[M][N] = {{1,10,100}, {-1,-10,-100}};
+    test_matlib_add(
         RINDOW_MATLIB_NO_TRANS, // int32_t trans,
-        M,      // int32_t m,
-        N,      // int32_t n,
-        2.0,    // float alpha,
-        (double *)&dX,     // float *x,
-        1,      // int32_t incX,
-        (double *)&dY,     // float *a,
-        N       // int32_t ldA
+        M,              // int32_t m,
+        N,              // int32_t n,
+        (TypeParam)2.0, // alpha,
+        (TypeParam *)X, // *x,
+        1,              // int32_t incX,
+        (TypeParam *)Y, // *a,
+        N               // int32_t ldA
     );
-    double dR1[N] = {1,2,3};
-    EXPECT_THAT(dR1, ContainerEq(dX));
-    double dR2[M][N] = {{3,14,106}, {1,-6,-94}};
-    EXPECT_THAT(dR2, ContainerEq(dY));
+    TypeParam R1[N] = {1,2,3};
+    EXPECT_THAT(R1, ContainerEq(X));
+    TypeParam R2[M][N] = {{3,14,106}, {1,-6,-94}};
+    EXPECT_THAT(R2, ContainerEq(Y));
 }
 
-TEST(AddTest, AddTrans) {
-    const int M = 2;
-    const int N = 3;
+TYPED_TEST(AddTest, AddTrans) {
+    const int32_t M = 2;
+    const int32_t N = 3;
     // float
-    float sX[N] = {1, 2, 3};
-    float sY[N][M] = {{1,10}, {100,-1}, {-10,-100}};
-    rindow_matlib_s_add(
+    TypeParam X[N] = {1, 2, 3};
+    TypeParam Y[N][M] = {{1,10}, {100,-1}, {-10,-100}};
+    test_matlib_add(
         RINDOW_MATLIB_TRANS, // int32_t trans,
-        N,      // int32_t m,
-        M,      // int32_t n,
-        1.0,    // float alpha,
-        (float *)&sX,     // float *x,
-        1,      // int32_t incX,
-        (float *)&sY,     // float *a,
-        M       // int32_t ldA
+        N,              // int32_t m,
+        M,              // int32_t n,
+        (TypeParam)1.0, // alpha,
+        (TypeParam *)X, // *x,
+        1,              // int32_t incX,
+        (TypeParam *)Y, // *a,
+        M               // int32_t ldA
     );
-    float sR1[N] = {1,2,3};
-    EXPECT_THAT(sR1, ContainerEq(sX));
-    float sR2[N][M] = {{2,11},{102,1},{-7,-97}};
-    EXPECT_THAT(sR2, ContainerEq(sY));
-
-    // double
-    double dX[N] = {1, 2, 3};
-    double dY[N][M] = {{1,10}, {100,-1}, {-10,-100}};
-    rindow_matlib_d_add(
-        RINDOW_MATLIB_TRANS, // int32_t trans,
-        N,      // int32_t m,
-        M,      // int32_t n,
-        1.0,    // float alpha,
-        (double *)&dX,     // float *x,
-        1,      // int32_t incX,
-        (double *)&dY,     // float *a,
-        M       // int32_t ldA
-    );
-    double dR1[N] = {1,2,3};
-    EXPECT_THAT(dR1, ContainerEq(dX));
-    double dR2[N][M] = {{2,11},{102,1},{-7,-97}};
-    EXPECT_THAT(dR2, ContainerEq(dY));
+    TypeParam R1[N] = {1,2,3};
+    EXPECT_THAT(R1, ContainerEq(X));
+    TypeParam R2[N][M] = {{2,11},{102,1},{-7,-97}};
+    EXPECT_THAT(R2, ContainerEq(Y));
 }
 }

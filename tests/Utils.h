@@ -21,13 +21,13 @@ public:
     static std::unique_ptr<T[]> array(std::initializer_list<T> values);
 
     template <typename T>
-    static bool isclose(size_t n, T *trues, T *x);
+    static bool isclose(int32_t n, T *trues, T *x);
 
     template <typename T>
-    static bool isclose(size_t n, T *trues, T *x, T rtol);
+    static bool isclose(int32_t n, T *trues, T *x, T rtol);
 
     template <typename T>
-    static bool isclose(size_t n, T *trues, T *x, T rtol, T atol);
+    static bool isclose(int32_t n, T *trues, T *x, T rtol, T atol);
 }; // class Utils
 
 } // namespace RindowTest    

@@ -21,12 +21,12 @@ std::unique_ptr<T[]> Utils::fill(std::initializer_list<int> sizes, T value) {
 
 template <typename T>
 std::unique_ptr<T[]> Utils::zeros(std::initializer_list<int> sizes) {
-    return fill(sizes, T(0));
+    return fill(sizes, (T)0);
 }
 
 template <typename T>
 std::unique_ptr<T[]> Utils::ones(std::initializer_list<int> sizes) {
-    return fill(sizes, T(1));
+    return fill(sizes, (T)1);
 }
 
 template <typename T>
@@ -53,19 +53,19 @@ template std::unique_ptr<int32_t[]> Utils::ones<int32_t>(std::initializer_list<i
 template std::unique_ptr<int32_t[]> Utils::array<int32_t>(std::initializer_list<int32_t> values);
 
 template <typename T>
-bool Utils::isclose(size_t size, T *trues, T *x) {
+bool Utils::isclose(int32_t size, T *trues, T *x) {
     T rtol = (T)1e-04;
     return isclose(size,trues,x,rtol);
 }
 
 template <typename T>
-bool Utils::isclose(size_t size, T *trues, T *x,T rtol) {
+bool Utils::isclose(int32_t size, T *trues, T *x,T rtol) {
     T atol = (T)1e-07;
     return isclose(size,trues,x,rtol,atol);
 }
 
 template <typename T>
-bool Utils::isclose(size_t size, T *trues, T *x, T rtol, T atol) {
+bool Utils::isclose(int32_t size, T *trues, T *x, T rtol, T atol) {
     if(rtol==0.0) {
         rtol = (T)1e-04;
     }
@@ -73,7 +73,7 @@ bool Utils::isclose(size_t size, T *trues, T *x, T rtol, T atol) {
         atol = (T)1e-07;
     }
     T amaxDiff = 0;
-    for(size_t i=0; i<size; i++) {
+    for(int32_t i=0; i<size; i++) {
         T v = trues[i] - x[i];
         if(v<0) {
             v = -v;
@@ -83,7 +83,7 @@ bool Utils::isclose(size_t size, T *trues, T *x, T rtol, T atol) {
         }
     }
     T amaxX = 0;
-    for(size_t i=0; i<size; i++) {
+    for(int32_t i=0; i<size; i++) {
         T v = x[i];
         if(v<0) {
             v = -v;
@@ -99,11 +99,11 @@ bool Utils::isclose(size_t size, T *trues, T *x, T rtol, T atol) {
     }
     return true;
 }
-template bool Utils::isclose<float>(size_t size, float *trues, float *x);
-template bool Utils::isclose<float>(size_t size, float *trues, float *x, float rtol);
-template bool Utils::isclose<float>(size_t size, float *trues, float *x, float rtol, float atol);
-template bool Utils::isclose<double>(size_t size, double *trues, double *x);
-template bool Utils::isclose<double>(size_t size, double *trues, double *x, double rtol);
-template bool Utils::isclose<double>(size_t size, double *trues, double *x, double rtol, double atol);
+template bool Utils::isclose<float>(int32_t size, float *trues, float *x);
+template bool Utils::isclose<float>(int32_t size, float *trues, float *x, float rtol);
+template bool Utils::isclose<float>(int32_t size, float *trues, float *x, float rtol, float atol);
+template bool Utils::isclose<double>(int32_t size, double *trues, double *x);
+template bool Utils::isclose<double>(int32_t size, double *trues, double *x, double rtol);
+template bool Utils::isclose<double>(int32_t size, double *trues, double *x, double rtol, double atol);
 
 }
