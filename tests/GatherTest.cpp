@@ -14,7 +14,7 @@ namespace {
 template <typename T>
 class GatherTest : public ::testing::Test {
 protected:
-    void calcShapes(
+    void calcGatherShapes(
         std::initializer_list<int32_t> shapeX,
         std::initializer_list<int32_t> shapeA,
         int32_t *m,int32_t *n,int32_t *k,int32_t *numClass, int32_t *outputSize
@@ -28,7 +28,26 @@ protected:
         *outputSize = (*n)*(*k);
     }   
 
-    void calcShapes(
+    int32_t calcScatterShapes(
+        std::initializer_list<int32_t> shapeX,
+        std::initializer_list<int32_t> shapeA,
+        int32_t numClass,
+        int32_t *m,int32_t *n,int32_t *k, int32_t *outputSize
+        )
+    {
+        int32_t ndimX = (int32_t)shapeX.size();
+        int32_t tmpA = std::accumulate(shapeA.begin(), shapeA.begin()+ndimX, 1, std::multiplies<int32_t>());
+        *n = std::accumulate(shapeX.begin(), shapeX.end(), 1, std::multiplies<int32_t>());
+        if(tmpA!=*n) {
+            return tmpA;
+        }
+        *k = std::accumulate(shapeA.begin()+ndimX, shapeA.end(), 1, std::multiplies<int32_t>());
+        *m = 1;
+        *outputSize = numClass*(*k);
+        return 0;
+    }   
+
+    void calcGatherShapes(
         int32_t axis,
         std::initializer_list<int32_t> shapeX,
         std::initializer_list<int32_t> shapeA,
@@ -96,7 +115,7 @@ TYPED_TEST(GatherTest, GatherNormal1Dby1D) {
 
     int32_t X[shapeX] = {3,2,1,1};
     TypeParam A[shapeA] = {10,11,12,13,14,15,16,17,18,19};
-    calcShapes({shapeX},{shapeA},&m,&n,&k,&numClass,&outputSize);
+    calcGatherShapes({shapeX},{shapeA},&m,&n,&k,&numClass,&outputSize);
     TypeParam B[shapeX];
     
     ASSERT_EQ(1,      m);
@@ -129,7 +148,7 @@ TYPED_TEST(GatherTest, GatherNormal1Dby2D) {
         1,2,3
     };
     TypeParam A[shapeA] = {10,11,12,13,14,15,16,17,18,19};
-    calcShapes({shapeX0,shapeX1},{shapeA},&m,&n,&k,&numClass,&outputSize);
+    calcGatherShapes({shapeX0,shapeX1},{shapeA},&m,&n,&k,&numClass,&outputSize);
     TypeParam B[shapeX0*shapeX1];
     
     ASSERT_EQ(1,                m);
@@ -169,7 +188,7 @@ TYPED_TEST(GatherTest, GatherNormal2Dby1D) {
         0, 2, 0,
         1, 0, 0
     };
-    calcShapes({shapeX},{shapeA0,shapeA1},&m,&n,&k,&numClass,&outputSize);
+    calcGatherShapes({shapeX},{shapeA0,shapeA1},&m,&n,&k,&numClass,&outputSize);
     TypeParam B[shapeX*shapeA1];
     
     ASSERT_EQ(1,                m);
@@ -211,7 +230,7 @@ TYPED_TEST(GatherTest, GatherNormal2Dby2D) {
         0, 0, 3,
         4, 0, 0
     };
-    calcShapes({shapeX0,shapeX1},{shapeA0,shapeA1},&m,&n,&k,&numClass,&outputSize);
+    calcGatherShapes({shapeX0,shapeX1},{shapeA0,shapeA1},&m,&n,&k,&numClass,&outputSize);
     TypeParam B[shapeX0*shapeX1*shapeA1];
     
     ASSERT_EQ(1,                m);
@@ -235,4 +254,168 @@ TYPED_TEST(GatherTest, GatherNormal2Dby2D) {
     EXPECT_THAT(R1, ContainerEq(B));
 }
 
+TYPED_TEST(GatherTest, ScatterAddExNormal1Dby1D) {
+    const int32_t reverse = true; 
+    const int32_t addMode = true;
+    const int32_t shapeX = 4;
+    const int32_t shapeA = 10;
+    const int32_t dtype = rindow_matlib_dtype_int32;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t numClass;
+    int32_t outputSize;
+
+    int32_t X[shapeX] = {3,2,1,4};
+    TypeParam B[shapeX] = {13,12,11,14};
+    calcGatherShapes({shapeX},{shapeA},&m,&n,&k,&numClass,&outputSize);
+    TypeParam A[shapeA] = {1,1,1,1,1,1,1,1,1,1};
+    
+    ASSERT_EQ(1,      m);
+    ASSERT_EQ(shapeX, n);
+    ASSERT_EQ(1,      k);
+    ASSERT_EQ(shapeA, numClass);
+    ASSERT_EQ(shapeX, outputSize);
+
+    int32_t rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
+    ASSERT_EQ(0,rc);
+
+    TypeParam R1[shapeA] = {1,12,13,14,15,1,1,1,1,1};
+    EXPECT_THAT(R1, ContainerEq(A));
+}
+
+TYPED_TEST(GatherTest, testScatterExNormal2Dby2D) {
+    const int32_t reverse = true;
+    const int32_t addMode = false;
+    const int32_t numClass = 10;
+    const int32_t shapeX = 2*3;
+    const int32_t shapeA = 2*3;
+    const int32_t shapeB = numClass*shapeA/shapeX;
+    const int32_t dtype = rindow_matlib_dtype_int32;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t outputSize;
+    int32_t rc;
+
+    int32_t X[shapeX] = {
+        3,2,1,
+        5,6,7
+    };
+    TypeParam A[shapeA] = {
+        13,12,11,
+        15,16,17
+    };
+    TypeParam B[shapeB] = {100,100,100,100,100,100,100,100,100,100};
+    rc = calcScatterShapes({2,3},{2,3},numClass,&m,&n,&k,&outputSize);
+    ASSERT_EQ(0,rc);
+    
+    ASSERT_EQ(1,                m);
+    ASSERT_EQ(shapeX,           n);
+    ASSERT_EQ(shapeA/shapeX,    k);
+    ASSERT_EQ(shapeB,           outputSize);
+
+    rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
+    ASSERT_EQ(0,rc);
+
+    TypeParam R1[shapeB] = {100,11,12,13,100,15,16,17,100,100};
+    EXPECT_THAT(R1, ContainerEq(B));
+}
+
+TYPED_TEST(GatherTest, testScatterExNormal2Dby1D) {
+    const int32_t reverse = true;
+    const int32_t addMode = false;
+    const int32_t numClass = 4;
+    const int32_t shapeX = 2;
+    const int32_t shapeA0 = 2;
+    const int32_t shapeA1 = 3;
+    const int32_t shapeB = numClass*shapeA1;
+    const int32_t dtype = rindow_matlib_dtype_int32;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t outputSize;
+    int32_t rc;
+
+    int32_t X[shapeX] = {3,1};
+    TypeParam A[shapeA0*shapeA1] = {
+        1,2,3,
+        2,3,4
+    };
+    TypeParam B[shapeB] = {100,100,100,100,100,100,100,100,100,100,100,100};
+    rc = calcScatterShapes({shapeX},{shapeA0,shapeA1},numClass,&m,&n,&k,&outputSize);
+    ASSERT_EQ(0,rc);
+    
+    ASSERT_EQ(1,        m);
+    ASSERT_EQ(shapeX,   n);
+    ASSERT_EQ(shapeA1,  k);
+    ASSERT_EQ(shapeB,   outputSize);
+
+    rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
+    ASSERT_EQ(0,rc);
+
+    TypeParam R1[shapeB] = {
+        100, 100, 100,
+          2,   3,   4,
+        100, 100, 100,
+          1,   2,   3
+    };
+    EXPECT_THAT(R1, ContainerEq(B));
+}
+
+TYPED_TEST(GatherTest, testScatterExNormal3Dby2D) {
+    const int32_t reverse = true;
+    const int32_t addMode = false;
+    const int32_t numClass = 4;
+    const int32_t shapeX0 = 2;
+    const int32_t shapeX1 = 3;
+    const int32_t shapeA0 = 2;
+    const int32_t shapeA1 = 3;
+    const int32_t shapeA2 = 3;
+    const int32_t shapeB = numClass*shapeA2;
+    const int32_t dtype = rindow_matlib_dtype_int32;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t outputSize;
+    int32_t rc;
+
+    int32_t X[shapeX0*shapeX1] = {
+        2, 1, 0,
+        1, 2, 3
+    };
+    TypeParam A[shapeA0*shapeA1*shapeA2] = {
+        0,0,3,
+        0,2,0,
+        1,0,0,
+
+        0,2,0,
+        0,0,3,
+        4,0,0
+    };
+    TypeParam B[shapeB] = {
+        100,100,100,
+        100,100,100,
+        100,100,100,
+        100,100,100
+    };
+    rc = calcScatterShapes({shapeX0,shapeX1},{shapeA0,shapeA1,shapeA2},numClass,&m,&n,&k,&outputSize);
+    ASSERT_EQ(0,rc);
+    
+    ASSERT_EQ(1,                m);
+    ASSERT_EQ(shapeX0*shapeX1,  n);
+    ASSERT_EQ(shapeA2,          k);
+    ASSERT_EQ(shapeB,           outputSize);
+
+    rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
+    ASSERT_EQ(0,rc);
+
+    TypeParam R1[shapeB] = {
+        1, 0, 0,
+        0, 2, 0,
+        0, 0, 3,
+        4, 0, 0
+    };
+    EXPECT_THAT(R1, ContainerEq(B));
+}
 }
