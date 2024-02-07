@@ -2,6 +2,12 @@
 #include "common.h"
 #include <math.h>
 
+/**
+ *     A[m,n] := 1 (A[m,n] >= X[n])
+ *     A[m,n] := 0 (A[m,n] <  X[n])
+ */
+
+
 // *** CAUTION ***
 // if NaN set 0.0
 // if equal set 1.0
