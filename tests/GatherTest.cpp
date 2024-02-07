@@ -47,28 +47,6 @@ protected:
         return 0;
     }   
 
-    void calcGatherShapes(
-        int32_t axis,
-        std::initializer_list<int32_t> shapeX,
-        std::initializer_list<int32_t> shapeA,
-        int32_t *m,int32_t *n,int32_t *k,int32_t *numClass, int32_t *outputSize
-        )
-    {
-        int32_t ndim = shapeA.size();
-        if(axis<0) {
-            axis = ndim+axis;
-        }
-        auto postfixShape = shapeA.begin();
-        *m = 1;
-        for(int32_t i=0;i<axis;i++) {
-            *m *= *postfixShape;
-        }
-        *numClass = *postfixShape++;
-        *n = std::accumulate(postfixShape, shapeA.end(), 1, std::multiplies<int32_t>());
-        *k = 1;
-        *outputShape = (*n)*(*k);
-    }
-
     virtual int32_t test_matlib_gather(
         int32_t reverse, int32_t addMode, int32_t n, int32_t k,
         int32_t numClass, int32_t dtype, int32_t *x,
@@ -258,7 +236,8 @@ TYPED_TEST(GatherTest, ScatterAddExNormal1Dby1D) {
     const int32_t reverse = true; 
     const int32_t addMode = true;
     const int32_t shapeX = 4;
-    const int32_t shapeA = 10;
+    const int32_t shapeA = 4;
+    const int32_t shapeB = 10;
     const int32_t dtype = rindow_matlib_dtype_int32;
     int32_t m;
     int32_t n;
@@ -267,21 +246,21 @@ TYPED_TEST(GatherTest, ScatterAddExNormal1Dby1D) {
     int32_t outputSize;
 
     int32_t X[shapeX] = {3,2,1,4};
-    TypeParam B[shapeX] = {13,12,11,14};
-    calcGatherShapes({shapeX},{shapeA},&m,&n,&k,&numClass,&outputSize);
-    TypeParam A[shapeA] = {1,1,1,1,1,1,1,1,1,1};
+    TypeParam A[shapeA] = {13,12,11,14};
+    TypeParam B[shapeB] = {1,1,1,1,1,1,1,1,1,1};
+    calcGatherShapes({shapeX},{shapeB},&m,&n,&k,&numClass,&outputSize);
     
     ASSERT_EQ(1,      m);
     ASSERT_EQ(shapeX, n);
     ASSERT_EQ(1,      k);
-    ASSERT_EQ(shapeA, numClass);
-    ASSERT_EQ(shapeX, outputSize);
+    ASSERT_EQ(shapeB, numClass);
+    ASSERT_EQ(shapeA, outputSize);
 
-    int32_t rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
+    int32_t rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
-    TypeParam R1[shapeA] = {1,12,13,14,15,1,1,1,1,1};
-    EXPECT_THAT(R1, ContainerEq(A));
+    TypeParam R1[shapeB] = {1,12,13,14,15,1,1,1,1,1};
+    EXPECT_THAT(R1, ContainerEq(B));
 }
 
 TYPED_TEST(GatherTest, testScatterExNormal2Dby2D) {
