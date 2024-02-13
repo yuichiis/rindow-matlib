@@ -3,6 +3,7 @@
 
 #include "rindow/matlib.h"
 #include <stdbool.h>
+#include <math.h>
 
 using testing::ContainerEq;
 
