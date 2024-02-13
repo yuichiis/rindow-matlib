@@ -33,7 +33,7 @@ TYPED_TEST(AddTest, AddNormal) {
     // float
     TypeParam X[N] = {1, 2, 3};
     TypeParam Y[M][N] = {{1,10,100}, {-1,-10,-100}};
-    test_matlib_add(
+    this->test_matlib_add(
         (int32_t)RINDOW_MATLIB_NO_TRANS, // int32_t trans,
         M,              // int32_t m,
         N,              // int32_t n,
@@ -55,7 +55,7 @@ TYPED_TEST(AddTest, AddTrans) {
     // float
     TypeParam X[N] = {1, 2, 3};
     TypeParam Y[N][M] = {{1,10}, {100,-1}, {-10,-100}};
-    test_matlib_add(
+    this->test_matlib_add(
         RINDOW_MATLIB_TRANS, // int32_t trans,
         N,              // int32_t m,
         M,              // int32_t n,

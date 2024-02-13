@@ -40,7 +40,7 @@ TYPED_TEST(BandpartTest, Array3DUpper) {
     const int32_t upper = -1;
     auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
+    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,1,1,1,1,
         0,1,1,1,1,
@@ -65,7 +65,7 @@ TYPED_TEST(BandpartTest, Array2DLower) {
     const int32_t upper = 0;
     auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
+    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,0,0,0,0,
         1,1,0,0,0,
@@ -84,7 +84,7 @@ TYPED_TEST(BandpartTest, Array2DIdentity) {
     const int32_t upper = 0;
     auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
+    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,0,0,0,0,
         0,1,0,0,0,
@@ -103,7 +103,7 @@ TYPED_TEST(BandpartTest, Array2DUpper1) {
     const int32_t upper = 1;
     auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
+    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,1,0,0,0,
         0,1,1,0,0,
@@ -122,7 +122,7 @@ TYPED_TEST(BandpartTest, Array2DLower1) {
     const int32_t upper = 0;
     auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
+    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,0,0,0,0,
         1,1,0,0,0,

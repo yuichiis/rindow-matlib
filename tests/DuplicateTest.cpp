@@ -40,7 +40,7 @@ TYPED_TEST(DuplicateTest, DuplicateOnce) {
     TypeParam X[N] = {1,2,3,4,5,6,};
     TypeParam A[M*N];
 
-    test_matlib_duplicate(trans,M,N,X,incX,A,ldA);
+    this->test_matlib_duplicate(trans,M,N,X,incX,A,ldA);
 
     TypeParam R1[N] = {1,2,3,4,5,6,};
     EXPECT_THAT(R1, ContainerEq(X));
@@ -61,7 +61,7 @@ TYPED_TEST(DuplicateTest, DuplicateTwice) {
     TypeParam X[N] = {1,2,3,4,5,6,};
     TypeParam A[M*N];
 
-    test_matlib_duplicate(trans,M,N,X,incX,A,ldA);
+    this->test_matlib_duplicate(trans,M,N,X,incX,A,ldA);
 
     TypeParam R1[N] = {1,2,3,4,5,6,};
     EXPECT_THAT(R1, ContainerEq(X));
@@ -83,7 +83,7 @@ TYPED_TEST(DuplicateTest, DuplicateTranspose) {
     TypeParam X[N] = {1,2,3,4,5,6,};
     TypeParam A[N*M];
 
-    test_matlib_duplicate(trans,N,M,X,incX,A,ldA);
+    this->test_matlib_duplicate(trans,N,M,X,incX,A,ldA);
 
     TypeParam R1[N] = {1,2,3,4,5,6,};
     EXPECT_THAT(R1, ContainerEq(X));

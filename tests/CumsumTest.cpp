@@ -41,7 +41,7 @@ TYPED_TEST(CumsumTest, CumsumNormal) {
     TypeParam X[N] = {1,2,1,2};
     TypeParam Y[N];
 
-    test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
+    this->test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
 
     TypeParam R1[N] = {1,3,4,6};
     EXPECT_THAT(R1, ContainerEq(Y));
@@ -56,7 +56,7 @@ TYPED_TEST(CumsumTest, CumsumExclusive) {
     TypeParam X[N] = {1,2,1,2};
     TypeParam Y[N];
 
-    test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
+    this->test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
 
     TypeParam R1[N] = {0,1,3,4};
     EXPECT_THAT(R1, ContainerEq(Y));
@@ -71,7 +71,7 @@ TYPED_TEST(CumsumTest, CumsumReverse) {
     TypeParam X[N] = {1,2,1,2};
     TypeParam Y[N];
 
-    test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
+    this->test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
 
     TypeParam R1[N] = {6,4,3,1};
     EXPECT_THAT(R1, ContainerEq(Y));
@@ -86,7 +86,7 @@ TYPED_TEST(CumsumTest, CumsumNaN) {
     TypeParam X[N] = {1,2,NAN,2};
     TypeParam Y[N];
 
-    test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
+    this->test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
 
     EXPECT_EQ(1.0, Y[0]);
     EXPECT_EQ(3.0, Y[1]);
@@ -103,7 +103,7 @@ TYPED_TEST(CumsumTest, CumsumNaNReverse) {
     TypeParam X[N] = {1,2,NAN,2};
     TypeParam Y[N];
 
-    test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
+    this->test_matlib_cumsum(N, X, incX, exclusive, reverse, Y, incY);
 
     EXPECT_TRUE(isnan(Y[0]));
     EXPECT_TRUE(isnan(Y[1]));

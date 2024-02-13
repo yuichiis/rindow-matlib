@@ -122,7 +122,7 @@ TYPED_TEST(ReduceGatherTest, GatherNormal1DbyAxis0) {
     ASSERT_EQ(shapeA0,  numClass);
     ASSERT_EQ(shapeB,   outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,A,B);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,A,B);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB] = {1,2,4};
@@ -171,7 +171,7 @@ TYPED_TEST(ReduceGatherTest, GatherNormal2DbyAxis0) {
     ASSERT_EQ(shapeA0,          numClass);
     ASSERT_EQ(shapeB,           outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,A,B);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,A,B);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB] = {
@@ -214,7 +214,7 @@ TYPED_TEST(ReduceGatherTest, GatherNormal1DbyAxis1) {
     ASSERT_EQ(shapeA1,  numClass);
     ASSERT_EQ(shapeB,   outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,A,B);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,A,B);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB] = {3,4,2,1};
@@ -264,7 +264,7 @@ TYPED_TEST(ReduceGatherTest, GatherNormal2DbyAxis1) {
     ASSERT_EQ(shapeA1,          numClass);
     ASSERT_EQ(shapeB,           outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,A,B);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,A,B);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB] = {
@@ -307,7 +307,7 @@ TYPED_TEST(ReduceGatherTest, ScatterAddExNormal1DbyAxis0) {
     ASSERT_EQ(shapeB0,  numClass);
     ASSERT_EQ(shapeA,   outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB0*shapeB1] = {
@@ -351,7 +351,7 @@ TYPED_TEST(ReduceGatherTest, ScatterAddExNormal1DbyAxis1) {
     ASSERT_EQ(shapeB1,  numClass);
     ASSERT_EQ(shapeA,   outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB0*shapeB1] = {
@@ -396,7 +396,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal1DbyAxis0) {
     ASSERT_EQ(numClass,         numClass);
     ASSERT_EQ(shapeB0*shapeB1,  outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB0*shapeB1] = {
@@ -454,7 +454,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal2DbyAxis0) {
     ASSERT_EQ(numClass,         numClass);
     ASSERT_EQ(shapeB0*shapeB1*shapeB2,  outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB0*shapeB1*shapeB2] = {
@@ -503,7 +503,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal1DbyAxis1) {
     ASSERT_EQ(numClass,         numClass);
     ASSERT_EQ(shapeB0*shapeB1,  outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB0*shapeB1] = {
@@ -563,7 +563,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal2DbyAxis1) {
     ASSERT_EQ(numClass,         numClass);
     ASSERT_EQ(shapeB0*shapeB1*shapeB2,  outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB0*shapeB1*shapeB2] = {
@@ -630,7 +630,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal3DbyAxis1) {
     ASSERT_EQ(numClass,         numClass);
     ASSERT_EQ(shapeB0*shapeB1*shapeB2*shapeB3,  outputSize);
 
-    rc = test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
+    rc = this->test_matlib_reducegather(reverse,addMode,m,n,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB0*shapeB1*shapeB2*shapeB3] = {

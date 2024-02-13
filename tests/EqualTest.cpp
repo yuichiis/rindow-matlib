@@ -53,7 +53,7 @@ TYPED_TEST(EqualTest, EqualNormal) {
     TypeParam X[N] = {100,10,-1000};
     TypeParam Y[N] = {100,-10,-1000};
 
-    test_matlib_equal(N, X, incX, Y, incY);
+    this->test_matlib_equal(N, X, incX, Y, incY);
 
     TypeParam R1[N] = {1,0,1};
     EXPECT_THAT(R1, ContainerEq(Y));
@@ -62,7 +62,7 @@ TYPED_TEST(EqualTest, EqualNormal) {
     bool boolX[N] = {true,true,false};
     bool boolY[N] = {true,false,false};
 
-    test_matlib_equal(N, boolX, incX, boolY, incY);
+    this->test_matlib_equal(N, boolX, incX, boolY, incY);
 
     bool boolR1[N] = {1,0,1};
     EXPECT_THAT(boolR1, ContainerEq(boolY));

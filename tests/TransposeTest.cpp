@@ -67,7 +67,7 @@ TYPED_TEST(TransposeTest, Array1DNormal) {
     int32_t perm[ndim]  = { 0 };
     int32_t rc;
 
-    rc = test_matlib_transpose(
+    rc = this->test_matlib_transpose(
         ndim,   // int32_t ndim,
         shape,  // int32_t shape[ndim],
         perm,   // int32_t perm[ndim],
@@ -99,7 +99,7 @@ TYPED_TEST(TransposeTest, Array2DNormal) {
     int32_t perm[ndim]  = { 1, 0 };
     int32_t rc;
 
-    rc = test_matlib_transpose(
+    rc = this->test_matlib_transpose(
         ndim,   // int32_t ndim,
         shape,  // int32_t shape[ndim],}
         perm,   // int32_t perm[ndim],
@@ -136,7 +136,7 @@ TYPED_TEST(TransposeTest, Array3DNormal) {
     int32_t perm[ndim]  = { 2, 1, 0 };
     int32_t rc;
 
-    rc = test_matlib_transpose(
+    rc = this->test_matlib_transpose(
         ndim,   // int32_t ndim,
         shape,  // int32_t shape[ndim],}
         perm,   // int32_t perm[ndim],
@@ -174,7 +174,7 @@ TYPED_TEST(TransposeTest, Array3D2Normal) {
     int32_t perm[ndim]  = { 0, 2, 1 };
     int32_t rc;
 
-    rc = test_matlib_transpose(
+    rc = this->test_matlib_transpose(
         ndim,   // int32_t ndim,
         shape,  // int32_t shape[ndim],}
         perm,   // int32_t perm[ndim],

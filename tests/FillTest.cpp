@@ -45,7 +45,7 @@ TYPED_TEST(FillTest, FillNormal) {
     TypeParam X[N];
     TypeParam value = (TypeParam)123;
 
-    test_matlib_fill(N, &value, X, incX);
+    this->test_matlib_fill(N, &value, X, incX);
 
     TypeParam R1[N] = {(TypeParam)123, (TypeParam)123, (TypeParam)123};
     EXPECT_THAT(R1, ContainerEq(X));

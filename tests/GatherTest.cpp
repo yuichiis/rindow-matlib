@@ -100,7 +100,7 @@ TYPED_TEST(GatherTest, GatherNormal1Dby1D) {
     ASSERT_EQ(shapeA, numClass);
     ASSERT_EQ(shapeX, outputSize);
 
-    int32_t rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
+    int32_t rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeX] = {13,12,11,11};
@@ -133,7 +133,7 @@ TYPED_TEST(GatherTest, GatherNormal1Dby2D) {
     ASSERT_EQ(shapeA,           numClass);
     ASSERT_EQ(shapeX0*shapeX1,  outputSize);
 
-    int32_t rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
+    int32_t rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeX0*shapeX1] = {
@@ -173,7 +173,7 @@ TYPED_TEST(GatherTest, GatherNormal2Dby1D) {
     ASSERT_EQ(shapeA0,          numClass);
     ASSERT_EQ(shapeX*shapeA1,   outputSize);
 
-    int32_t rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
+    int32_t rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeX*shapeA1] = {
@@ -215,7 +215,7 @@ TYPED_TEST(GatherTest, GatherNormal2Dby2D) {
     ASSERT_EQ(shapeA0,          numClass);
     ASSERT_EQ(shapeX0*shapeX1*shapeA1,  outputSize);
 
-    int32_t rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
+    int32_t rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,A,B);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeX0*shapeX1*shapeA1] = {
@@ -254,7 +254,7 @@ TYPED_TEST(GatherTest, ScatterAddExNormal1Dby1D) {
     ASSERT_EQ(shapeB, numClass);
     ASSERT_EQ(shapeA, outputSize);
 
-    int32_t rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
+    int32_t rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB] = {1,12,13,14,15,1,1,1,1,1};
@@ -292,7 +292,7 @@ TYPED_TEST(GatherTest, testScatterExNormal2Dby2D) {
     ASSERT_EQ(shapeA/shapeX,    k);
     ASSERT_EQ(shapeB,           outputSize);
 
-    rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
+    rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB] = {100,11,12,13,100,15,16,17,100,100};
@@ -328,7 +328,7 @@ TYPED_TEST(GatherTest, testScatterExNormal2Dby1D) {
     ASSERT_EQ(shapeA1,  k);
     ASSERT_EQ(shapeB,   outputSize);
 
-    rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
+    rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB] = {
@@ -384,7 +384,7 @@ TYPED_TEST(GatherTest, testScatterExNormal3Dby2D) {
     ASSERT_EQ(shapeA2,          k);
     ASSERT_EQ(shapeB,           outputSize);
 
-    rc = test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
+    rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,B,A);
     ASSERT_EQ(0,rc);
 
     TypeParam R1[shapeB] = {

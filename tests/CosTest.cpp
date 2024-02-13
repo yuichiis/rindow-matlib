@@ -32,7 +32,7 @@ TYPED_TEST(CosTest, CosNormal) {
     const int32_t incX = 1;
     TypeParam X[N] = {1.0, 2.0, 4.0, 9.0};
 
-    test_matlib_cos(N, X, incX);
+    this->test_matlib_cos(N, X, incX);
 
     TypeParam R1[N] = {cosf(1),cosf(2),cosf(4),cosf(9)};
     EXPECT_TRUE(Utils::isclose(N,R1,X));

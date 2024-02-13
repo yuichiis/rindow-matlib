@@ -31,7 +31,7 @@ TYPED_TEST(GreaterEqualTest, GreaterEqualNormal) {
     
     TypeParam X[N] =    {-2,1,2};
     TypeParam A[M][N] = {{-1,0,4}, {2,0,2}};
-    test_matlib_greater_equal(
+    this->test_matlib_greater_equal(
         M,              // int32_t m,
         N,              // int32_t n,
         (TypeParam *)A, // *a,
@@ -50,7 +50,7 @@ TYPED_TEST(GreaterEqualTest, GreaterEqualNormal2) {
     
     TypeParam X[N] =    {-1,1};
     TypeParam A[M][N] = {{-2,0}, {-2,2}, {0,2}};
-    test_matlib_greater_equal(
+    this->test_matlib_greater_equal(
         M,              // int32_t m,
         N,              // int32_t n,
         (TypeParam *)A, // *a,

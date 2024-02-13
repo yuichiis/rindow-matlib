@@ -31,7 +31,7 @@ TYPED_TEST(GreaterTest, GreaterNormal) {
     
     TypeParam X[N] =    {-2,1,2};
     TypeParam A[M][N] = {{-1,0,4}, {2,0,2}};
-    test_matlib_greater(
+    this->test_matlib_greater(
         M,              // int32_t m,
         N,              // int32_t n,
         (TypeParam *)A, // *a,
@@ -50,7 +50,7 @@ TYPED_TEST(GreaterTest, GreaterNormal2) {
     
     TypeParam X[N] =    {-1,1};
     TypeParam A[M][N] = {{-2,0}, {-2,2}, {0,2}};
-    test_matlib_greater(
+    this->test_matlib_greater(
         M,              // int32_t m,
         N,              // int32_t n,
         (TypeParam *)A, // *a,
