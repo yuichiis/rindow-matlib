@@ -30,6 +30,19 @@ TYPED_TEST(NDArrayTest, Information) {
     EXPECT_EQ(3, a->at(0)->size());
     EXPECT_EQ(6, a->num_items());
     EXPECT_EQ(3, a->at(0)->num_items());
+
+    // alloc with signed int32
+    const int32_t M = 2;
+    const int32_t N = 3;
+    ndarray_t a2 = NDArray<TypeParam>::alloc({M,N});
+    EXPECT_EQ(2, a2->ndim());
+
+    // alloc with unsigned int32
+    const uint32_t M3 = 2;
+    const uint32_t N3 = 3;
+    ndarray_t a3 = NDArray<TypeParam>::alloc({M3,N3});
+    EXPECT_EQ(2, a3->ndim());
+
 }
 TYPED_TEST(NDArrayTest, setvalues) {
     using ndarray_t = NDArray<TypeParam>::ndarray_t;
@@ -213,6 +226,18 @@ TYPED_TEST(NDArrayTest, fill) {
     std::copy_n(a->vbegin(), 6, X);
     TypeParam R1[6] = {123,123,123,123,123,123};
     EXPECT_THAT(R1, ContainerEq(X));
+
+    // alloc with signed int32
+    const int32_t M = 2;
+    const int32_t N = 3;
+    ndarray_t a2 = NDArray<TypeParam>::fill({M,N},123);
+    EXPECT_EQ(2, a2->ndim());
+
+    // alloc with unsigned int32
+    const uint32_t M3 = 2;
+    const uint32_t N3 = 3;
+    ndarray_t a3 = NDArray<TypeParam>::fill({M3,N3},123);
+    EXPECT_EQ(2, a3->ndim());
 }
 TYPED_TEST(NDArrayTest, ones) {
     using ndarray_t = NDArray<TypeParam>::ndarray_t;
@@ -225,6 +250,18 @@ TYPED_TEST(NDArrayTest, ones) {
     std::copy_n(a->vbegin(), 6, X);
     TypeParam R1[6] = {1,1,1,1,1,1};
     EXPECT_THAT(R1, ContainerEq(X));
+
+    // alloc with signed int32
+    const int32_t M = 2;
+    const int32_t N = 3;
+    ndarray_t a2 = NDArray<TypeParam>::ones({M,N});
+    EXPECT_EQ(2, a2->ndim());
+
+    // alloc with unsigned int32
+    const uint32_t M3 = 2;
+    const uint32_t N3 = 3;
+    ndarray_t a3 = NDArray<TypeParam>::ones({M3,N3});
+    EXPECT_EQ(2, a3->ndim());
 }
 TYPED_TEST(NDArrayTest, zeros) {
     using ndarray_t = NDArray<TypeParam>::ndarray_t;
@@ -237,6 +274,18 @@ TYPED_TEST(NDArrayTest, zeros) {
     std::copy_n(a->vbegin(), 6, X);
     TypeParam R1[6] = {0,0,0,0,0,0};
     EXPECT_THAT(R1, ContainerEq(X));
+
+    // alloc with signed int32
+    const int32_t M = 2;
+    const int32_t N = 3;
+    ndarray_t a2 = NDArray<TypeParam>::zeros({M,N});
+    EXPECT_EQ(2, a2->ndim());
+
+    // alloc with unsigned int32
+    const uint32_t M3 = 2;
+    const uint32_t N3 = 3;
+    ndarray_t a3 = NDArray<TypeParam>::zeros({M3,N3});
+    EXPECT_EQ(2, a3->ndim());
 }
 TYPED_TEST(NDArrayTest, RawDatas) {
     using ndarray_t = NDArray<TypeParam>::ndarray_t;
