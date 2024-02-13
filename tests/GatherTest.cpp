@@ -91,7 +91,7 @@ TYPED_TEST(GatherTest, GatherNormal1Dby1D) {
 
     int32_t X[shapeX] = {3,2,1,1};
     TypeParam A[shapeA] = {10,11,12,13,14,15,16,17,18,19};
-    calcGatherShapes({shapeX},{shapeA},&m,&n,&k,&numClass,&outputSize);
+    this->calcGatherShapes({shapeX},{shapeA},&m,&n,&k,&numClass,&outputSize);
     TypeParam B[shapeX];
     
     ASSERT_EQ(1,      m);
@@ -124,7 +124,7 @@ TYPED_TEST(GatherTest, GatherNormal1Dby2D) {
         1,2,3
     };
     TypeParam A[shapeA] = {10,11,12,13,14,15,16,17,18,19};
-    calcGatherShapes({shapeX0,shapeX1},{shapeA},&m,&n,&k,&numClass,&outputSize);
+    this->calcGatherShapes({shapeX0,shapeX1},{shapeA},&m,&n,&k,&numClass,&outputSize);
     TypeParam B[shapeX0*shapeX1];
     
     ASSERT_EQ(1,                m);
@@ -164,7 +164,7 @@ TYPED_TEST(GatherTest, GatherNormal2Dby1D) {
         0, 2, 0,
         1, 0, 0
     };
-    calcGatherShapes({shapeX},{shapeA0,shapeA1},&m,&n,&k,&numClass,&outputSize);
+    this->calcGatherShapes({shapeX},{shapeA0,shapeA1},&m,&n,&k,&numClass,&outputSize);
     TypeParam B[shapeX*shapeA1];
     
     ASSERT_EQ(1,                m);
@@ -206,7 +206,7 @@ TYPED_TEST(GatherTest, GatherNormal2Dby2D) {
         0, 0, 3,
         4, 0, 0
     };
-    calcGatherShapes({shapeX0,shapeX1},{shapeA0,shapeA1},&m,&n,&k,&numClass,&outputSize);
+    this->calcGatherShapes({shapeX0,shapeX1},{shapeA0,shapeA1},&m,&n,&k,&numClass,&outputSize);
     TypeParam B[shapeX0*shapeX1*shapeA1];
     
     ASSERT_EQ(1,                m);
@@ -246,7 +246,7 @@ TYPED_TEST(GatherTest, ScatterAddExNormal1Dby1D) {
     int32_t X[shapeX] = {3,2,1,4};
     TypeParam A[shapeA] = {13,12,11,14};
     TypeParam B[shapeB] = {1,1,1,1,1,1,1,1,1,1};
-    calcGatherShapes({shapeX},{shapeB},&m,&n,&k,&numClass,&outputSize);
+    this->calcGatherShapes({shapeX},{shapeB},&m,&n,&k,&numClass,&outputSize);
     
     ASSERT_EQ(1,      m);
     ASSERT_EQ(shapeX, n);
@@ -284,7 +284,7 @@ TYPED_TEST(GatherTest, testScatterExNormal2Dby2D) {
         15,16,17
     };
     TypeParam B[shapeB] = {100,100,100,100,100,100,100,100,100,100};
-    rc = calcScatterShapes({2,3},{2,3},numClass,&m,&n,&k,&outputSize);
+    rc = this->calcScatterShapes({2,3},{2,3},numClass,&m,&n,&k,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(1,                m);
@@ -320,7 +320,7 @@ TYPED_TEST(GatherTest, testScatterExNormal2Dby1D) {
         2,3,4
     };
     TypeParam B[shapeB] = {100,100,100,100,100,100,100,100,100,100,100,100};
-    rc = calcScatterShapes({shapeX},{shapeA0,shapeA1},numClass,&m,&n,&k,&outputSize);
+    rc = this->calcScatterShapes({shapeX},{shapeA0,shapeA1},numClass,&m,&n,&k,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(1,        m);
@@ -376,7 +376,7 @@ TYPED_TEST(GatherTest, testScatterExNormal3Dby2D) {
         100,100,100,
         100,100,100
     };
-    rc = calcScatterShapes({shapeX0,shapeX1},{shapeA0,shapeA1,shapeA2},numClass,&m,&n,&k,&outputSize);
+    rc = this->calcScatterShapes({shapeX0,shapeX1},{shapeA0,shapeA1,shapeA2},numClass,&m,&n,&k,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(1,                m);
