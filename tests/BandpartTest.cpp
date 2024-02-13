@@ -2,11 +2,13 @@
 #include <gmock/gmock.h>
 
 #include "rindow/matlib.h"
+#include "rindow/ndarray.h"
 #include <stdbool.h>
 #include "Utils.h"
 
 using testing::ContainerEq;
 using RindowTest::Utils;
+using rindow::math::NDArray;
 
 namespace {
 
@@ -36,9 +38,9 @@ TYPED_TEST(BandpartTest, Array3DUpper) {
     const int32_t K = 5;
     const int32_t lower = 0;
     const int32_t upper = -1;
-    auto a = Utils::ones<TypeParam>({M,N,K});
+    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a.get(),lower,upper);
+    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,1,1,1,1,
         0,1,1,1,1,
@@ -52,7 +54,7 @@ TYPED_TEST(BandpartTest, Array3DUpper) {
         0,0,0,1,1,
         0,0,0,0,1,
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a.get()));
+    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
 }
 
 TYPED_TEST(BandpartTest, Array2DLower) {
@@ -61,9 +63,9 @@ TYPED_TEST(BandpartTest, Array2DLower) {
     const int32_t K = 5;
     const int32_t lower = -1;
     const int32_t upper = 0;
-    auto a = Utils::ones<TypeParam>({M,N,K});
+    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a.get(),lower,upper);
+    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,0,0,0,0,
         1,1,0,0,0,
@@ -71,7 +73,7 @@ TYPED_TEST(BandpartTest, Array2DLower) {
         1,1,1,1,0,
         1,1,1,1,1,
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a.get()));
+    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
 }
 
 TYPED_TEST(BandpartTest, Array2DIdentity) {
@@ -80,9 +82,9 @@ TYPED_TEST(BandpartTest, Array2DIdentity) {
     const int32_t K = 5;
     const int32_t lower = 0;
     const int32_t upper = 0;
-    auto a = Utils::ones<TypeParam>({M,N,K});
+    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a.get(),lower,upper);
+    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,0,0,0,0,
         0,1,0,0,0,
@@ -90,7 +92,7 @@ TYPED_TEST(BandpartTest, Array2DIdentity) {
         0,0,0,1,0,
         0,0,0,0,1,
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a.get()));
+    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
 }
 
 TYPED_TEST(BandpartTest, Array2DUpper1) {
@@ -99,9 +101,9 @@ TYPED_TEST(BandpartTest, Array2DUpper1) {
     const int32_t K = 5;
     const int32_t lower = 0;
     const int32_t upper = 1;
-    auto a = Utils::ones<TypeParam>({M,N,K});
+    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a.get(),lower,upper);
+    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,1,0,0,0,
         0,1,1,0,0,
@@ -109,7 +111,7 @@ TYPED_TEST(BandpartTest, Array2DUpper1) {
         0,0,0,1,1,
         0,0,0,0,1,
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a.get()));
+    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
 }
 
 TYPED_TEST(BandpartTest, Array2DLower1) {
@@ -118,9 +120,9 @@ TYPED_TEST(BandpartTest, Array2DLower1) {
     const int32_t K = 5;
     const int32_t lower = 1;
     const int32_t upper = 0;
-    auto a = Utils::ones<TypeParam>({M,N,K});
+    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    test_matlib_bandpart(M,N,K,a.get(),lower,upper);
+    test_matlib_bandpart(M,N,K,a->data(),lower,upper);
     TypeParam R1[M*N*K] = {
         1,0,0,0,0,
         1,1,0,0,0,
@@ -128,7 +130,7 @@ TYPED_TEST(BandpartTest, Array2DLower1) {
         0,0,1,1,0,
         0,0,0,1,1,
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a.get()));
+    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
 }
 
 }

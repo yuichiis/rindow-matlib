@@ -4,10 +4,8 @@
 #include "rindow/matlib.h"
 #include <stdbool.h>
 #include <numeric>
-#include "Utils.h"
 
 using testing::ContainerEq;
-using RindowTest::Utils;
 
 namespace {
 
