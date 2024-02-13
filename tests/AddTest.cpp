@@ -34,12 +34,12 @@ TYPED_TEST(AddTest, AddNormal) {
     TypeParam X[N] = {1, 2, 3};
     TypeParam Y[M][N] = {{1,10,100}, {-1,-10,-100}};
     test_matlib_add(
-        RINDOW_MATLIB_NO_TRANS, // int32_t trans,
+        (int32_t)RINDOW_MATLIB_NO_TRANS, // int32_t trans,
         M,              // int32_t m,
         N,              // int32_t n,
         (TypeParam)2.0, // alpha,
         (TypeParam *)X, // *x,
-        1,              // int32_t incX,
+        (int32_t)1,              // int32_t incX,
         (TypeParam *)Y, // *a,
         N               // int32_t ldA
     );
