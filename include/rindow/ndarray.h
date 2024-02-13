@@ -209,6 +209,11 @@ public:
         std::copy(shape.begin(), shape.end(), std::back_inserter(shape2));
         return reshape(shape2);
     }
+    ndarray_t reshape(std::initializer_list<int32_t> shape) {
+        shape_t shape2;
+        std::copy(shape.begin(), shape.end(), std::back_inserter(shape2));
+        return reshape(shape2);
+    }
     ndarray_t reshape(const shape_t& shape) {
         auto num_items = std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<index_t>());
         if(num_items!=num_items_) {
@@ -390,6 +395,10 @@ private:
         return offset_+index;
     }
 };
+
+template <typename T>
+using ndarray_t = std::shared_ptr<NDArray<T>>;
+
 }
 }
 

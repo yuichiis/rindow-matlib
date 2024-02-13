@@ -1,0 +1,2672 @@
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
+#include "rindow/matlib.h"
+#include "rindow/ndarray.h"
+#include <stdbool.h>
+#include <numeric>
+
+using testing::ContainerEq;
+using rindow::math::NDArray;
+using rindow::math::ndarray_t;
+
+namespace {
+
+template <typename T>
+class Im2col2dTest : public ::testing::Test {
+protected:
+    ndarray_t<T> inputImages(
+        int32_t batches,
+        int32_t im_h,
+        int32_t im_w,
+        int32_t channels,
+        int32_t channels_first
+        )
+    {
+        auto images = NDArray<T>::range((T)(
+            batches*
+            im_h*im_w*
+            channels
+        ));
+        if(channels_first) {
+            images = images->reshape({
+                batches,
+                channels,
+                im_h,
+                im_w
+            });
+        } else {
+            images = images->reshape({
+                batches,
+                im_h,
+                im_w,
+                channels
+            });
+        }
+        return images;
+    }   
+
+    ndarray_t<T> outputCols(
+        int32_t batches,
+        int32_t im_h,
+        int32_t im_w,
+        int32_t channels,
+        int32_t kernel_h,
+        int32_t kernel_w,
+        int32_t stride_h,
+        int32_t stride_w,
+        int32_t padding,
+        int32_t channels_first,
+        int32_t dilation_h,
+        int32_t dilation_w,
+        int32_t cols_channels_first
+        )
+    {
+        int32_t out_h = ((im_h-(kernel_h-1)*dilation_h-1)/stride_h)+1;
+        int32_t out_w = ((im_w-(kernel_w-1)*dilation_w-1)/stride_w)+1;
+        int32_t padding_h;
+        int32_t padding_w;
+        if(padding) {
+            padding_h = ((im_h-1)*stride_h-im_h+(kernel_h-1)*dilation_h+1)/2;
+            padding_w = ((im_w-1)*stride_w-im_w+(kernel_w-1)*dilation_w+1)/2;
+            out_h = im_h;
+            out_w = im_w;
+        } else {
+            padding_h = 0;
+            padding_w = 0;
+        }
+
+        auto cols = NDArray<T>::zeros({
+            batches*
+            out_h*out_w*
+            kernel_h*kernel_w*
+            channels
+        });
+        if(cols_channels_first) {
+            cols = cols->reshape({
+                batches,
+                out_h,out_w,
+                channels,
+                kernel_h,kernel_w
+            });
+        } else {
+            cols = cols->reshape({
+                batches,
+                out_h,out_w,
+                kernel_h,kernel_w,
+                channels
+            });
+        }
+        return cols;
+    }
+
+    ndarray_t<T> trueCols(
+        int32_t batches,
+        int32_t im_h,
+        int32_t im_w,
+        int32_t channels,
+        int32_t kernel_h,
+        int32_t kernel_w,
+        int32_t stride_h,
+        int32_t stride_w,
+        int32_t padding,
+        int32_t channels_first,
+        int32_t dilation_h,
+        int32_t dilation_w,
+        int32_t cols_channels_first
+        )
+    {
+        int32_t out_h = ((im_h-(kernel_h-1)*dilation_h-1)/stride_h)+1;
+        int32_t out_w = ((im_w-(kernel_w-1)*dilation_w-1)/stride_w)+1;
+        int32_t padding_h;
+        int32_t padding_w;
+        if(padding) {
+            padding_h = ((im_h-1)*stride_h-im_h+(kernel_h-1)*dilation_h+1)/2;
+            padding_w = ((im_w-1)*stride_w-im_w+(kernel_w-1)*dilation_w+1)/2;
+            out_h = im_h;
+            out_w = im_w;
+        } else {
+            padding_h = 0;
+            padding_w = 0;
+        }
+
+        auto cols = NDArray<T>::zeros({
+            batches*
+            out_h*out_w*
+            kernel_h*kernel_w*
+            channels
+        });
+        if(cols_channels_first) {
+            cols = cols->reshape({
+                batches,
+                out_h,out_w,
+                channels,
+                kernel_h,kernel_w
+            });
+        } else {
+            cols = cols->reshape({
+                batches,
+                out_h,out_w,
+                kernel_h,kernel_w,
+                channels
+            });
+        }
+
+        auto truesBuffer = cols->buffer();
+        for(int32_t batch_id=0;batch_id<batches;batch_id++) {
+            for(int32_t channel_id=0;channel_id<channels;channel_id++) {
+                for(int32_t im_y=0;im_y<out_h;im_y++) {
+                    for(int32_t im_x=0;im_x<out_w;im_x++) {
+                        for(int32_t kernel_y=0;kernel_y<kernel_h;kernel_y++) {
+                            for(int32_t kernel_x=0;kernel_x<kernel_w;kernel_x++) {
+                                int32_t input_y = im_y*stride_h+kernel_y*dilation_h-padding_h;
+                                int32_t input_x = im_x*stride_w+kernel_x*dilation_w-padding_w;
+                                int32_t input_id;
+                                if(channels_first) {
+                                    input_id = (((batch_id*channels+channel_id)*im_h+input_y)*im_w+input_x);
+                                } else {
+                                    input_id = (((batch_id*im_h+input_y)*im_w+input_x)*channels+channel_id);
+                                }
+                                int32_t cols_id;
+                                if(cols_channels_first) {
+                                    cols_id = (((((batch_id*out_h+im_y)*out_w+im_x)
+                                                *channels+channel_id)*kernel_h+kernel_y)*kernel_w+kernel_x);
+                                } else {
+                                    cols_id = (((((batch_id*out_h+im_y)*out_w+im_x)
+                                                *kernel_h+kernel_y)*kernel_w+kernel_x)*channels+channel_id);
+                                }
+                                if(input_y>=0 && input_y<im_h && input_x>=0 && input_x<im_w) {
+                                    truesBuffer->at(cols_id) = (T)input_id;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return cols;
+    }
+
+    virtual int32_t test_get_dtype(
+        float value
+    )
+    {
+        return rindow_matlib_dtype_float32;
+    }
+
+    virtual int32_t test_get_dtype(
+        double value
+    )
+    {
+        return rindow_matlib_dtype_float64;
+    }
+};
+typedef ::testing::Types<float, double> TestTypes;
+TYPED_TEST_SUITE(Im2col2dTest, TestTypes);
+
+TYPED_TEST(Im2col2dTest, normal) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, kernel_h) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 4;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, kernel_w) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 4;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, stride_h) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 2;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, stride_w) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 2;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, dilation_h) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 2;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, dilation_w) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 2;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, normal_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = true;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, kernel_h_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 4;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = true;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, kernel_w_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 4;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = true;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, stride_h_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 2;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = true;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, stride_w_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 2;
+    const int32_t padding = false;
+    const int32_t channels_first = true;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, dilation_h_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = true;
+    const int32_t dilation_h = 2;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, dilation_w_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = true;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 2;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, normal_padding) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = true;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, kernel_h_padding) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 4;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = true;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, kernel_w_padding) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 4;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = true;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, stride_h_padding) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 2;
+    const int32_t stride_w = 1;
+    const int32_t padding = true;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, stride_w_padding) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 2;
+    const int32_t padding = true;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, dilation_h_padding) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = true;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 2;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, dilation_w_padding) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = true;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 2;
+    const int32_t cols_channels_first = false;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, normal_cols_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = true;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, kernel_h_cols_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 4;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = true;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, kernel_w_cols_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 4;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = true;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, stride_h_cols_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 2;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = true;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, stride_w_cols_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 2;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = true;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, dilation_h_cols_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 2;
+    const int32_t dilation_w = 1;
+    const int32_t cols_channels_first = true;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+TYPED_TEST(Im2col2dTest, dilation_w_cols_channels_first) {
+    TypeParam typeValue = 0;
+    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t reverse = false;
+
+    const int32_t batches = 2;
+    const int32_t im_h = 8;
+    const int32_t im_w = 8;
+    const int32_t channels = 3;
+    const int32_t kernel_h = 3;
+    const int32_t kernel_w = 3;
+    const int32_t stride_h = 1;
+    const int32_t stride_w = 1;
+    const int32_t padding = false;
+    const int32_t channels_first = false;
+    const int32_t dilation_h = 1;
+    const int32_t dilation_w = 2;
+    const int32_t cols_channels_first = true;
+
+    ndarray_t<TypeParam> images = inputImages(
+        batches,
+        im_h,im_w,
+        channels,
+        channels_first
+    );
+    ndarray_t<TypeParam> cols = outputCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    int32_t rc = rindow_matlib_im2col2d(
+        dtype,
+        reverse,
+        images->data(),
+        images->num_items(),
+        batches,
+
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+
+        dilation_w,
+        cols_channels_first,
+        cols->data(),
+        cols->num_items()
+    );
+    ASSERT_EQ(0,rc);
+
+    ndarray_t<TypeParam> trues = trueCols(
+        batches,
+        im_h,
+        im_w,
+        channels,
+        kernel_h,
+        kernel_w,
+        stride_h,
+        stride_w,
+        padding,
+        channels_first,
+        dilation_h,
+        dilation_w,
+        cols_channels_first
+    );
+
+    auto equal = std::equal(
+        cols->buffer()->begin(),cols->buffer()->end(),
+        trues->buffer()->begin());
+    EXPECT_TRUE(equal);
+}
+
+}
