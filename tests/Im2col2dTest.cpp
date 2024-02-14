@@ -440,7 +440,7 @@ TYPED_TEST_SUITE(Im2col2dTest, TestTypes);
 
 TYPED_TEST(Im2col2dTest, normal) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -475,7 +475,7 @@ TYPED_TEST(Im2col2dTest, normal) {
 }
 TYPED_TEST(Im2col2dTest, kernel_h) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -510,7 +510,7 @@ TYPED_TEST(Im2col2dTest, kernel_h) {
 }
 TYPED_TEST(Im2col2dTest, kernel_w) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -545,7 +545,7 @@ TYPED_TEST(Im2col2dTest, kernel_w) {
 }
 TYPED_TEST(Im2col2dTest, stride_h) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -580,7 +580,7 @@ TYPED_TEST(Im2col2dTest, stride_h) {
 }
 TYPED_TEST(Im2col2dTest, stride_w) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -615,7 +615,7 @@ TYPED_TEST(Im2col2dTest, stride_w) {
 }
 TYPED_TEST(Im2col2dTest, dilation_h) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -650,7 +650,7 @@ TYPED_TEST(Im2col2dTest, dilation_h) {
 }
 TYPED_TEST(Im2col2dTest, dilation_w) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -685,7 +685,7 @@ TYPED_TEST(Im2col2dTest, dilation_w) {
 }
 TYPED_TEST(Im2col2dTest, normal_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -720,7 +720,7 @@ TYPED_TEST(Im2col2dTest, normal_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, kernel_h_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -755,7 +755,7 @@ TYPED_TEST(Im2col2dTest, kernel_h_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, kernel_w_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -790,7 +790,7 @@ TYPED_TEST(Im2col2dTest, kernel_w_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, stride_h_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -825,7 +825,7 @@ TYPED_TEST(Im2col2dTest, stride_h_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, stride_w_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -860,7 +860,7 @@ TYPED_TEST(Im2col2dTest, stride_w_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, dilation_h_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -895,7 +895,7 @@ TYPED_TEST(Im2col2dTest, dilation_h_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, dilation_w_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -930,7 +930,7 @@ TYPED_TEST(Im2col2dTest, dilation_w_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, normal_padding) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -965,7 +965,7 @@ TYPED_TEST(Im2col2dTest, normal_padding) {
 }
 TYPED_TEST(Im2col2dTest, kernel_h_padding) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1000,7 +1000,7 @@ TYPED_TEST(Im2col2dTest, kernel_h_padding) {
 }
 TYPED_TEST(Im2col2dTest, kernel_w_padding) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1035,7 +1035,7 @@ TYPED_TEST(Im2col2dTest, kernel_w_padding) {
 }
 TYPED_TEST(Im2col2dTest, stride_h_padding) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1070,7 +1070,7 @@ TYPED_TEST(Im2col2dTest, stride_h_padding) {
 }
 TYPED_TEST(Im2col2dTest, stride_w_padding) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1105,7 +1105,7 @@ TYPED_TEST(Im2col2dTest, stride_w_padding) {
 }
 TYPED_TEST(Im2col2dTest, dilation_h_padding) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1140,7 +1140,7 @@ TYPED_TEST(Im2col2dTest, dilation_h_padding) {
 }
 TYPED_TEST(Im2col2dTest, dilation_w_padding) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1175,7 +1175,7 @@ TYPED_TEST(Im2col2dTest, dilation_w_padding) {
 }
 TYPED_TEST(Im2col2dTest, normal_cols_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1210,7 +1210,7 @@ TYPED_TEST(Im2col2dTest, normal_cols_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, kernel_h_cols_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1245,7 +1245,7 @@ TYPED_TEST(Im2col2dTest, kernel_h_cols_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, kernel_w_cols_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1280,7 +1280,7 @@ TYPED_TEST(Im2col2dTest, kernel_w_cols_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, stride_h_cols_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1315,7 +1315,7 @@ TYPED_TEST(Im2col2dTest, stride_h_cols_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, stride_w_cols_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1350,7 +1350,7 @@ TYPED_TEST(Im2col2dTest, stride_w_cols_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, dilation_h_cols_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
@@ -1385,7 +1385,7 @@ TYPED_TEST(Im2col2dTest, dilation_h_cols_channels_first) {
 }
 TYPED_TEST(Im2col2dTest, dilation_w_cols_channels_first) {
     TypeParam typeValue = 0;
-    const int32_t dtype = test_get_dtype(typeValue);
+    const int32_t dtype = this->test_get_dtype(typeValue);
 
     const int32_t batches = 2;
     const int32_t im_h = 8;
