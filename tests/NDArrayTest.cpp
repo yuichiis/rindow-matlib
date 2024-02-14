@@ -53,7 +53,7 @@ TYPED_TEST(NDArrayTest, setvalues) {
     a->at(1)->at(1)->scalar() = 5;
     a->at(1)->at(2)->scalar() = 6;
     TypeParam X1[6];
-    std::copy_n(a->vbegin(), 6, X1);
+    std::copy_n(a->buffer()->begin(), 6, X1);
     TypeParam R1[6] = {1,2,3,4,5,6};
     EXPECT_THAT(R1, ContainerEq(X1));
 
@@ -64,7 +64,7 @@ TYPED_TEST(NDArrayTest, setvalues) {
     a->at({1,1}) = 2;
     a->at({1,2}) = 1;
     TypeParam X2[6];
-    std::copy_n(a->vbegin(), 6, X2);
+    std::copy_n(a->buffer()->begin(), 6, X2);
     TypeParam R2[6] = {6,5,4,3,2,1};
     EXPECT_THAT(R2, ContainerEq(X2));
 }
@@ -72,19 +72,19 @@ TYPED_TEST(NDArrayTest, range) {
     // limit
     ndarray_t<TypeParam> a = NDArray<TypeParam>::range(6);
     TypeParam X[6];
-    std::copy_n(a->vbegin(), 6, X);
+    std::copy_n(a->buffer()->begin(), 6, X);
     TypeParam R1[6] = {0,1,2,3,4,5};
     EXPECT_THAT(R1, ContainerEq(X));
     // start, limit
     ndarray_t<TypeParam> a2 = NDArray<TypeParam>::range(1,7);
     TypeParam X2[6];
-    std::copy_n(a2->vbegin(), 6, X2);
+    std::copy_n(a2->buffer()->begin(), 6, X2);
     TypeParam R2[6] = {1,2,3,4,5,6};
     EXPECT_THAT(R2, ContainerEq(X2));
     // start, limit, delta
     ndarray_t<TypeParam> a3 = NDArray<TypeParam>::range(6,0,-1);
     TypeParam X3[6];
-    std::copy_n(a3->vbegin(), 6, X3);
+    std::copy_n(a3->buffer()->begin(), 6, X3);
     TypeParam R3[6] = {6,5,4,3,2,1};
     EXPECT_THAT(R3, ContainerEq(X3));
 }
@@ -205,7 +205,7 @@ TYPED_TEST(NDArrayTest, array) {
     // limit
     ndarray_t<TypeParam> a = NDArray<TypeParam>::array({1,2,3,4,5,6});
     TypeParam X[6];
-    std::copy_n(a->vbegin(), 6, X);
+    std::copy_n(a->buffer()->begin(), 6, X);
     TypeParam R1[6] = {1,2,3,4,5,6};
     EXPECT_THAT(R1, ContainerEq(X));
 }
@@ -216,7 +216,7 @@ TYPED_TEST(NDArrayTest, fill) {
     EXPECT_EQ(2, a->shape()[0]);
     EXPECT_EQ(3, a->shape()[1]);
     TypeParam X[6];
-    std::copy_n(a->vbegin(), 6, X);
+    std::copy_n(a->buffer()->begin(), 6, X);
     TypeParam R1[6] = {123,123,123,123,123,123};
     EXPECT_THAT(R1, ContainerEq(X));
 
@@ -239,7 +239,7 @@ TYPED_TEST(NDArrayTest, ones) {
     EXPECT_EQ(2, a->shape()[0]);
     EXPECT_EQ(3, a->shape()[1]);
     TypeParam X[6];
-    std::copy_n(a->vbegin(), 6, X);
+    std::copy_n(a->buffer()->begin(), 6, X);
     TypeParam R1[6] = {1,1,1,1,1,1};
     EXPECT_THAT(R1, ContainerEq(X));
 
@@ -417,7 +417,7 @@ TYPED_TEST(NDArrayTest, for_each) {
     });
 
     TypeParam X[2][3];
-    std::copy_n(a->vbegin(),6,(TypeParam *)X);
+    std::copy_n(a->buffer()->begin(), 6, (TypeParam *)X);
     TypeParam R[2][3] = {{11,12,13},{14,15,16}};
     EXPECT_THAT(R, ContainerEq(X));
 }
