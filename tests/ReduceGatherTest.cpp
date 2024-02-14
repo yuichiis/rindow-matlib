@@ -113,7 +113,7 @@ TYPED_TEST(ReduceGatherTest, GatherNormal1DbyAxis0) {
         1, 0, 0
     };
     TypeParam B[shapeB];
-    rc = calcGatherShapes({shapeX},{shapeA0,shapeA1},axis,&m,&n,&k,&numClass,&outputSize);
+    rc = this->calcGatherShapes({shapeX},{shapeA0,shapeA1},axis,&m,&n,&k,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(1,        m);
@@ -162,7 +162,7 @@ TYPED_TEST(ReduceGatherTest, GatherNormal2DbyAxis0) {
         5, 0, 0, 8
     };
     TypeParam B[shapeB];
-    rc = calcGatherShapes({shapeX0,shapeX1},{shapeA0,shapeA1,shapeA2},axis,&m,&n,&k,&numClass,&outputSize);
+    rc = this->calcGatherShapes({shapeX0,shapeX1},{shapeA0,shapeA1,shapeA2},axis,&m,&n,&k,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(1,                m);
@@ -205,7 +205,7 @@ TYPED_TEST(ReduceGatherTest, GatherNormal1DbyAxis1) {
         1, 0, 0
     };
     TypeParam B[shapeB];
-    rc = calcGatherShapes({shapeX},{shapeA0,shapeA1},axis,&m,&n,&k,&numClass,&outputSize);
+    rc = this->calcGatherShapes({shapeX},{shapeA0,shapeA1},axis,&m,&n,&k,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(shapeA0,  m);
@@ -255,7 +255,7 @@ TYPED_TEST(ReduceGatherTest, GatherNormal2DbyAxis1) {
         9, 0,11, 0
     };
     TypeParam B[shapeB];
-    rc = calcGatherShapes({shapeX0,shapeX1},{shapeA0,shapeA1,shapeA2},axis,&m,&n,&k,&numClass,&outputSize);
+    rc = this->calcGatherShapes({shapeX0,shapeX1},{shapeA0,shapeA1,shapeA2},axis,&m,&n,&k,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(shapeA0,          m);
@@ -299,7 +299,8 @@ TYPED_TEST(ReduceGatherTest, ScatterAddExNormal1DbyAxis0) {
         1,1,1,
         1,1,1
     };
-    calcGatherShapes({shapeX},{shapeB0,shapeB1},axis,&m,&n,&k,&numClass,&outputSize);
+    rc = this->calcGatherShapes({shapeX},{shapeB0,shapeB1},axis,&m,&n,&k,&numClass,&outputSize);
+    ASSERT_EQ(0,rc);
     
     ASSERT_EQ(1,        m);
     ASSERT_EQ(shapeB1,  n);
@@ -343,7 +344,8 @@ TYPED_TEST(ReduceGatherTest, ScatterAddExNormal1DbyAxis1) {
         1,1,1,
         1,1,1
     };
-    calcGatherShapes({shapeX},{shapeB0,shapeB1},axis,&m,&n,&k,&numClass,&outputSize);
+    rc = this->calcGatherShapes({shapeX},{shapeB0,shapeB1},axis,&m,&n,&k,&numClass,&outputSize);
+    ASSERT_EQ(0,rc);
     
     ASSERT_EQ(shapeB0,  m);
     ASSERT_EQ(1,        n);
