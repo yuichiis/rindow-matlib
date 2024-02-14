@@ -262,7 +262,7 @@ TYPED_TEST(NDArrayTest, zeros) {
     EXPECT_EQ(2, a->shape()[0]);
     EXPECT_EQ(3, a->shape()[1]);
     TypeParam X[6];
-    std::copy_n(a->vbegin(), 6, X);
+    std::copy_n(a->buffer()->begin(), 6, X);
     TypeParam R1[6] = {0,0,0,0,0,0};
     EXPECT_THAT(R1, ContainerEq(X));
 
