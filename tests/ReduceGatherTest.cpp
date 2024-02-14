@@ -389,7 +389,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal1DbyAxis0) {
         100, 100, 100,
         100, 100, 100
     };
-    rc = calcScatterShapes({shapeX},{shapeA},axis,numClass,&m,&n,&k,&outputSize);
+    rc = this->calcScatterShapes({shapeX},{shapeA},axis,numClass,&m,&n,&k,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(1,                m);
@@ -447,7 +447,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal2DbyAxis0) {
         100, 100, 100, 100,
         100, 100, 100, 100
     };
-    rc = calcScatterShapes({shapeX0,shapeX1},{shapeA0,shapeA1},axis,numClass,&m,&n,&k,&outputSize);
+    rc = this->calcScatterShapes({shapeX0,shapeX1},{shapeA0,shapeA1},axis,numClass,&m,&n,&k,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(1,                m);
@@ -496,7 +496,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal1DbyAxis1) {
         100, 100, 100,
         100, 100, 100
     };
-    rc = calcScatterShapes({shapeX},{shapeA},axis,numClass,&m,&n,&k,&outputSize);
+    rc = this->calcScatterShapes({shapeX},{shapeA},axis,numClass,&m,&n,&k,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(shapeA,           m);
@@ -556,7 +556,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal2DbyAxis1) {
         100, 100, 100, 100,
         100, 100, 100, 100
     };
-    rc = calcScatterShapes({shapeX0,shapeX1},{shapeA0,shapeA1},axis,numClass,&m,&n,&k,&outputSize);
+    rc = this->calcScatterShapes({shapeX0,shapeX1},{shapeA0,shapeA1},axis,numClass,&m,&n,&k,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(shapeA0,          m);
@@ -623,7 +623,7 @@ TYPED_TEST(ReduceGatherTest, ScatterNormal3DbyAxis1) {
         100,100,  100,100,
         100,100,  100,100
     };
-    rc = calcScatterShapes({shapeX0,shapeX1,shapeX2},{shapeA0,shapeA1,shapeA2},axis,numClass,&m,&n,&k,&outputSize);
+    rc = this->calcScatterShapes({shapeX0,shapeX1,shapeX2},{shapeA0,shapeA1,shapeA2},axis,numClass,&m,&n,&k,&outputSize);
     ASSERT_EQ(0,rc);
     
     ASSERT_EQ(shapeA0,          m);
