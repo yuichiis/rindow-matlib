@@ -25,7 +25,7 @@ protected:
 typedef ::testing::Types<float, double> TestTypes;
 TYPED_TEST_SUITE(CosTest, TestTypes);
 
-TYPED_TEST(CosTest, CosNormal) {
+TYPED_TEST(CosTest, Normal) {
     const int32_t M = 1;
     const int32_t N = 4;
     const int32_t incX = 1;

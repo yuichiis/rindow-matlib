@@ -2,6 +2,7 @@
 #include <gmock/gmock.h>
 
 #include "rindow/matlib.h"
+#include <limits>
 
 using testing::ContainerEq;
 
