@@ -3,7 +3,6 @@
 
 #include "rindow/matlib.h"
 #include "rindow/ndarray.h"
-#include <stdbool.h>
 #include "Utils.h"
 
 using testing::ContainerEq;

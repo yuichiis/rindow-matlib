@@ -2,7 +2,6 @@
 #include <gmock/gmock.h>
 
 #include "rindow/matlib.h"
-#include <stdbool.h>
 
 using testing::ContainerEq;
 
@@ -25,7 +24,7 @@ protected:
 typedef ::testing::Types<float, double> TestTypes;
 TYPED_TEST_SUITE(GreaterTest, TestTypes);
 
-TYPED_TEST(GreaterTest, GreaterNormal) {
+TYPED_TEST(GreaterTest, Normal) {
     const int32_t M = 2;
     const int32_t N = 3;
     
@@ -44,7 +43,7 @@ TYPED_TEST(GreaterTest, GreaterNormal) {
     TypeParam R2[M][N] = {{1,0,1},{1,0,0}};
     EXPECT_THAT(R2, ContainerEq(A));
 }
-TYPED_TEST(GreaterTest, GreaterNormal2) {
+TYPED_TEST(GreaterTest, Normal2) {
     const int32_t M = 3;
     const int32_t N = 2;
     
@@ -62,6 +61,37 @@ TYPED_TEST(GreaterTest, GreaterNormal2) {
     EXPECT_THAT(R1, ContainerEq(X));
     TypeParam R2[M][N] = {{0,0},{0,1},{1,1}};
     EXPECT_THAT(R2, ContainerEq(A));
+}
+TYPED_TEST(GreaterTest, non_a_numbers) {
+    const int32_t M = 4;
+    const int32_t N = 1;
+    TypeParam inf = std::numeric_limits<TypeParam>::infinity();
+    
+    TypeParam X1[N] =    { 0 };
+    TypeParam A1[M][N] = { inf, 0, -inf, NAN };
+    this->test_matlib_greater(
+        M,              // int32_t m,
+        N,              // int32_t n,
+        (TypeParam *)A1,// *a,
+        N,              // int32_t ldA
+        (TypeParam *)X1,// *x,
+        1               // int32_t incX,
+    );
+    TypeParam R1[M][N] = { 1, 0, 0, 0};
+    EXPECT_THAT(R1, ContainerEq(A1));
+
+    TypeParam X2[N] =    { NAN };
+    TypeParam A2[M][N] = { inf, 0, -inf, NAN };
+    this->test_matlib_greater(
+        M,              // int32_t m,
+        N,              // int32_t n,
+        (TypeParam *)A2,// *a,
+        N,              // int32_t ldA
+        (TypeParam *)X2,// *x,
+        1               // int32_t incX,
+    );
+    TypeParam R2[M][N] = { 0, 0, 0, 0};
+    EXPECT_THAT(R2, ContainerEq(A2));
 }
 
 }

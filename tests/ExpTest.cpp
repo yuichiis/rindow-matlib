@@ -2,7 +2,6 @@
 #include <gmock/gmock.h>
 
 #include "rindow/matlib.h"
-#include <stdbool.h>
 #include "Utils.h"
 
 using testing::ContainerEq;
