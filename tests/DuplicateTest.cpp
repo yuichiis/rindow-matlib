@@ -29,13 +29,15 @@ protected:
 typedef ::testing::Types<float, double> TestTypes;
 TYPED_TEST_SUITE(DuplicateTest, TestTypes);
 
-TYPED_TEST(DuplicateTest, DuplicateOnce) {
+TYPED_TEST(DuplicateTest, once) {
     const int32_t trans = RINDOW_MATLIB_NO_TRANS;
     const int32_t repeats = 1;
     const int32_t M = repeats;
     const int32_t N = 6;
     const int32_t incX = 1;
     const int32_t ldA = N;
+
+    // rows<cols
     TypeParam X[N] = {1,2,3,4,5,6,};
     TypeParam A[M*N];
 
@@ -50,44 +52,48 @@ TYPED_TEST(DuplicateTest, DuplicateOnce) {
     EXPECT_THAT(R2, ContainerEq(A));
 }
 
-TYPED_TEST(DuplicateTest, DuplicateTwice) {
+TYPED_TEST(DuplicateTest, broadcast) {
     const int32_t trans = RINDOW_MATLIB_NO_TRANS;
-    const int32_t repeats = 2;
+    const int32_t repeats = 3;
     const int32_t M = repeats;
-    const int32_t N = 6;
+    const int32_t N = 2;
     const int32_t incX = 1;
     const int32_t ldA = N;
-    TypeParam X[N] = {1,2,3,4,5,6,};
+
+    // rows>cols
+    TypeParam X[N] = {1,2};
     TypeParam A[M*N];
 
     this->test_matlib_duplicate(trans,M,N,X,incX,A,ldA);
 
-    TypeParam R1[N] = {1,2,3,4,5,6,};
+    TypeParam R1[N] = {1,2};
     EXPECT_THAT(R1, ContainerEq(X));
 
     TypeParam R2[M*N] = {
-        1,2,3,4,5,6,
-        1,2,3,4,5,6,
+        1,2,
+        1,2,
+        1,2,
     };
     EXPECT_THAT(R2, ContainerEq(A));
 }
 
-TYPED_TEST(DuplicateTest, DuplicateTranspose) {
+TYPED_TEST(DuplicateTest, transpose) {
     const int32_t trans = RINDOW_MATLIB_TRANS;
     const int32_t repeats = 2;
-    const int32_t M = repeats;
-    const int32_t N = 6;
+    const int32_t M = 6;
+    const int32_t N = repeats;
     const int32_t incX = 1;
-    const int32_t ldA = M;
-    TypeParam X[N] = {1,2,3,4,5,6,};
-    TypeParam A[N*M];
+    const int32_t ldA = N;
 
-    this->test_matlib_duplicate(trans,N,M,X,incX,A,ldA);
+    TypeParam X[M] = {1,2,3,4,5,6,};
+    TypeParam A[M*N];
 
-    TypeParam R1[N] = {1,2,3,4,5,6,};
+    this->test_matlib_duplicate(trans,M,N,X,incX,A,ldA);
+
+    TypeParam R1[M] = {1,2,3,4,5,6,};
     EXPECT_THAT(R1, ContainerEq(X));
 
-    TypeParam R2[N*M] = {
+    TypeParam R2[M*N] = {
         1,1,
         2,2,
         3,3,
