@@ -6,13 +6,15 @@
 static inline float rindow_matlib_s_random_range_sub(
     float low,float high)
 {
-    return low+(float)rindow_matlib_common_rand()/(float)RINDOW_MATLIB_COMMON_RAND_MAX/(float)2.0*(high-low);
+    float q=(float)((rindow_matlib_common_rand()%(RINDOW_MATLIB_COMMON_RAND_MAX-1))+1)/(float)RINDOW_MATLIB_COMMON_RAND_MAX;
+    return low+q*(high-low);
 }
 
 static inline double rindow_matlib_d_random_range_sub(
     double low,double high)
 {
-    return low+(double)rindow_matlib_common_rand()/(double)RINDOW_MATLIB_COMMON_RAND_MAX/2.0*(high-low);
+    double q=(double)((rindow_matlib_common_rand()%(RINDOW_MATLIB_COMMON_RAND_MAX-1))+1)/(double)RINDOW_MATLIB_COMMON_RAND_MAX;
+    return low+q*(high-low);
 }
 
 static inline int32_t rindow_matlib_i_random_range_sub(
