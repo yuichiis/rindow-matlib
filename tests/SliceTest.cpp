@@ -813,7 +813,7 @@ TYPED_TEST(SliceTest, stick2d_axis1_1to2) {
     };
     EXPECT_THAT(R1, ContainerEq(A));
 }
-TYPED_TEST(SliceTest, stick4d_axis0_1to1) {
+TYPED_TEST(SliceTest, stick4d_axis2_1to2) {
     const int32_t reverse = true;
     const int32_t shapeA0 = 2;
     const int32_t shapeA1 = 2;
@@ -839,8 +839,8 @@ TYPED_TEST(SliceTest, stick4d_axis0_1to1) {
           { 0, 0, 0}}}
     };
 
-    //   slice axis0
-    //          v
+    //        slice axis2
+    //                v
     TypeParam B[2][2][2][3] = {
         {{{ 0, 1, 2},
           { 3, 4, 5}},
