@@ -3,6 +3,7 @@
 
 #include "rindow/matlib.h"
 #include "Utils.h"
+#include <limits>
 
 using testing::ContainerEq;
 using RindowTest::Utils;
