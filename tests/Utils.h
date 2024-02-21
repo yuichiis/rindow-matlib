@@ -9,11 +9,7 @@ namespace RindowTest {
 class Utils {
 public:
     template <typename T>
-    static std::unique_ptr<T[]> fill(std::initializer_list<int> sizes, T value);
-
-    template <typename T>
-    static std::unique_ptr<T[]> zeros(std::initializer_list<int> sizes);
-
+    static void fill(int32_t size, T *x, T value);
     template <typename T>
     static void zeros(int32_t size, T *x);
     template <typename T>
