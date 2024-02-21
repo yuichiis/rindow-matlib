@@ -15,7 +15,11 @@ public:
     static std::unique_ptr<T[]> zeros(std::initializer_list<int> sizes);
 
     template <typename T>
-    static std::unique_ptr<T[]> ones(std::initializer_list<int> sizes);
+    static void zeros(int32_t size, T *x);
+    template <typename T>
+    static void ones(int32_t size, T *x);
+    template <typename T>
+    static void range(int32_t size, T *x);
 
     template <typename T>
     static std::unique_ptr<T[]> array(std::initializer_list<T> values);

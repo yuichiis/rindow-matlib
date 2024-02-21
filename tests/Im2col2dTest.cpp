@@ -2,20 +2,20 @@
 #include <gmock/gmock.h>
 
 #include "rindow/matlib.h"
-#include "rindow/ndarray.h"
+#include "Utils.h"
 #include <stdbool.h>
 #include <numeric>
+#include <vector>
 
 using testing::ContainerEq;
-using rindow::math::NDArray;
-using rindow::math::ndarray_t;
+using RindowTest::Utils;
 
 namespace {
 
 template <typename T>
 class Im2col2dTest : public ::testing::Test {
 protected:
-    ndarray_t<T> inputImages(
+    std::vector<T> inputImages(
         int32_t batches,
         int32_t im_h,
         int32_t im_w,
@@ -23,30 +23,36 @@ protected:
         int32_t channels_first
         )
     {
-        auto images = NDArray<T>::range((T)(
+        auto images = std::vector<T>(
             batches*
             im_h*im_w*
             channels
-        ));
-        if(channels_first) {
-            images = images->reshape({
-                batches,
-                channels,
-                im_h,
-                im_w
-            });
-        } else {
-            images = images->reshape({
-                batches,
-                im_h,
-                im_w,
-                channels
-            });
-        }
+        );
+        Utils::range<T>(
+            batches*
+            im_h*im_w*
+            channels,
+            images.data()
+        );
+        //if(channels_first) {
+        //    images = images->reshape({
+        //        batches,
+        //        channels,
+        //        im_h,
+        //        im_w
+        //    });
+        //} else {
+        //    images = images->reshape({
+        //        batches,
+        //        im_h,
+        //        im_w,
+        //        channels
+        //    });
+        //}
         return images;
     }   
 
-    ndarray_t<T> outputCols(
+    std::vector<T> outputCols(
         int32_t batches,
         int32_t im_h,
         int32_t im_w,
@@ -76,31 +82,38 @@ protected:
             padding_w = 0;
         }
 
-        auto cols = NDArray<T>::zeros({
+        auto cols = std::vector<T>(
             batches*
             out_h*out_w*
             kernel_h*kernel_w*
             channels
-        });
-        if(cols_channels_first) {
-            cols = cols->reshape({
-                batches,
-                out_h,out_w,
-                channels,
-                kernel_h,kernel_w
-            });
-        } else {
-            cols = cols->reshape({
-                batches,
-                out_h,out_w,
-                kernel_h,kernel_w,
-                channels
-            });
-        }
+        );
+        Utils::zeros<T>(
+            batches*
+            out_h*out_w*
+            kernel_h*kernel_w*
+            channels,
+            cols.data()
+        );
+        //if(cols_channels_first) {
+        //    cols = cols->reshape({
+        //        batches,
+        //        out_h,out_w,
+        //        channels,
+        //        kernel_h,kernel_w
+        //    });
+        //} else {
+        //    cols = cols->reshape({
+        //        batches,
+        //        out_h,out_w,
+        //        kernel_h,kernel_w,
+        //        channels
+        //    });
+        //}
         return cols;
     }
 
-    ndarray_t<T> trueCols(
+    std::vector<T> trueCols(
         int32_t batches,
         int32_t im_h,
         int32_t im_w,
@@ -130,29 +143,36 @@ protected:
             padding_w = 0;
         }
 
-        auto cols = NDArray<T>::zeros({
+        auto cols = std::vector<T>(
             batches*
             out_h*out_w*
             kernel_h*kernel_w*
             channels
-        });
-        if(cols_channels_first) {
-            cols = cols->reshape({
-                batches,
-                out_h,out_w,
-                channels,
-                kernel_h,kernel_w
-            });
-        } else {
-            cols = cols->reshape({
-                batches,
-                out_h,out_w,
-                kernel_h,kernel_w,
-                channels
-            });
-        }
+        );
+        Utils::zeros<T>(
+            batches*
+            out_h*out_w*
+            kernel_h*kernel_w*
+            channels,
+            cols.data()
+        );
+        //if(cols_channels_first) {
+        //    cols = cols->reshape({
+        //        batches,
+        //        out_h,out_w,
+        //        channels,
+        //        kernel_h,kernel_w
+        //    });
+        //} else {
+        //    cols = cols->reshape({
+        //        batches,
+        //        out_h,out_w,
+        //        kernel_h,kernel_w,
+        //        channels
+        //    });
+        //}
 
-        auto truesBuffer = cols->buffer();
+        //auto truesBuffer = cols->buffer();
         for(int32_t batch_id=0;batch_id<batches;batch_id++) {
             for(int32_t channel_id=0;channel_id<channels;channel_id++) {
                 for(int32_t im_y=0;im_y<out_h;im_y++) {
@@ -176,7 +196,8 @@ protected:
                                                 *kernel_h+kernel_y)*kernel_w+kernel_x)*channels+channel_id);
                                 }
                                 if(input_y>=0 && input_y<im_h && input_x>=0 && input_x<im_w) {
-                                    truesBuffer->at(cols_id) = (T)input_id;
+                                    //truesBuffer->at(cols_id) = (T)input_id;
+                                    cols[cols_id] = (T)input_id;
                                 }
                             }
                         }
@@ -187,7 +208,7 @@ protected:
         return cols;
     }
 
-    ndarray_t<T> trueImages(
+    std::vector<T> trueImages(
         int32_t batches,
         int32_t im_h,
         int32_t im_w,
@@ -201,7 +222,7 @@ protected:
         int32_t dilation_h,
         int32_t dilation_w,
         int32_t cols_channels_first,
-        ndarray_t<T> trueTrueCols
+        std::vector<T>& trueTrueCols
         )
     {
         int32_t out_h = ((im_h-(kernel_h-1)*dilation_h-1)/stride_h)+1;
@@ -218,29 +239,35 @@ protected:
             padding_w = 0;
         }
 
-        auto imagesTrues = NDArray<T>::zeros({
+        auto imagesTrues = std::vector<T>(
             batches*
             im_h*im_w*
             channels
-        });
-        if(channels_first) {
-            imagesTrues = imagesTrues->reshape({
-                batches,
-                channels,
-                im_h,
-                im_w
-            });
-        } else {
-            imagesTrues = imagesTrues->reshape({
-                batches,
-                im_h,
-                im_w,
-                channels
-            });
-        }
+        );
+        Utils::zeros<T>(
+            batches*
+            im_h*im_w*
+            channels,
+            imagesTrues.data()
+        );
+        //if(channels_first) {
+        //    imagesTrues = imagesTrues->reshape({
+        //        batches,
+        //        channels,
+        //        im_h,
+        //        im_w
+        //    });
+        //} else {
+        //    imagesTrues = imagesTrues->reshape({
+        //        batches,
+        //        im_h,
+        //        im_w,
+        //        channels
+        //    });
+        //}
 
-        auto truesBuffer = trueTrueCols->buffer();
-        auto imageBuffer = imagesTrues->buffer();
+        //auto truesBuffer = trueTrueCols->buffer();
+        //auto imageBuffer = imagesTrues->buffer();
         for(int32_t batch_id=0;batch_id<batches;batch_id++) {
             for(int32_t channel_id=0;channel_id<channels;channel_id++) {
                 for(int32_t im_y=0;im_y<out_h;im_y++) {
@@ -264,8 +291,9 @@ protected:
                                                 *kernel_h+kernel_y)*kernel_w+kernel_x)*channels+channel_id);
                                 }
                                 if(input_y>=0 && input_y<im_h && input_x>=0 && input_x<im_w) {
-                                    T value = imageBuffer->at(input_id);
-                                    imageBuffer->at(input_id) = value + truesBuffer->at(cols_id);
+                                    //T value = imageBuffer->at(input_id);
+                                    //imageBuffer->at(input_id) = value + truesBuffer->at(cols_id);
+                                    imagesTrues[input_id] += trueTrueCols[cols_id];
                                 }
                             }
                         }
@@ -309,13 +337,13 @@ protected:
     {
         int32_t rc;
 
-        ndarray_t<T> images = inputImages(
+        std::vector<T> images = inputImages(
             batches,
             im_h,im_w,
             channels,
             channels_first
         );
-        ndarray_t<T> cols = outputCols(
+        std::vector<T> cols = outputCols(
             batches,
             im_h,
             im_w,
@@ -334,8 +362,8 @@ protected:
         rc = rindow_matlib_im2col2d(
             dtype,
             false, // reverse,
-            images->data(),
-            images->num_items(),
+            (T*)(images.data()),
+            (int32_t)(images.size()),
             batches,
 
             im_h,
@@ -352,12 +380,12 @@ protected:
 
             dilation_w,
             cols_channels_first,
-            cols->data(),
-            cols->num_items()
+            (T*)(cols.data()),
+            (int32_t)(cols.size())
         );
         ASSERT_EQ(0,rc);
 
-        ndarray_t<T> trues = trueCols(
+        auto trues = trueCols(
             batches,
             im_h,
             im_w,
@@ -374,23 +402,23 @@ protected:
         );
 
         auto equal = std::equal(
-            cols->buffer()->begin(),cols->buffer()->end(),
-            trues->buffer()->begin());
+            cols.begin(),cols.end(),
+            trues.begin());
         EXPECT_TRUE(equal);
 
-        ndarray_t<T> newImages = inputImages(
+        auto newImages = inputImages(
             batches,
             im_h,im_w,
             channels,
             channels_first
         );
-        std::fill(newImages->buffer()->begin(),newImages->buffer()->end(),(T)0);
+        std::fill(newImages.begin(),newImages.end(),(T)0);
 
         rc = rindow_matlib_im2col2d(
             dtype,
             true, // reverse,
-            newImages->data(),
-            newImages->num_items(),
+            (T*)(newImages.data()),
+            (int32_t)(newImages.size()),
             batches,
 
             im_h,
@@ -407,12 +435,12 @@ protected:
 
             dilation_w,
             cols_channels_first,
-            cols->data(),
-            cols->num_items()
+            (T*)(cols.data()),
+            (int32_t)(cols.size())
         );
         ASSERT_EQ(0,rc);
 
-        ndarray_t<T> truesImg = trueImages(
+        auto truesImg = trueImages(
             batches,
             im_h,
             im_w,
@@ -430,8 +458,8 @@ protected:
         );
 
         auto equal2 = std::equal(
-            newImages->buffer()->begin(),newImages->buffer()->end(),
-            truesImg->buffer()->begin());
+            newImages.begin(),newImages.end(),
+            truesImg.begin());
         EXPECT_TRUE(equal2);
     }
 };

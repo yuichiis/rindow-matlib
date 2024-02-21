@@ -25,8 +25,22 @@ std::unique_ptr<T[]> Utils::zeros(std::initializer_list<int> sizes) {
 }
 
 template <typename T>
-std::unique_ptr<T[]> Utils::ones(std::initializer_list<int> sizes) {
-    return fill(sizes, (T)1);
+void Utils::zeros(int32_t size, T *x) {
+    for(int32_t i=0;i<size;++i) {
+        x[i] = 0;
+    }
+}
+template <typename T>
+void Utils::ones(int32_t size, T *x) {
+    for(int32_t i=0;i<size;++i) {
+        x[i] = 1;
+    }
+}
+template <typename T>
+void Utils::range(int32_t size, T *x) {
+    for(int32_t i=0;i<size;++i) {
+        x[i] = (T)i;
+    }
 }
 
 template <typename T>
@@ -41,15 +55,21 @@ std::unique_ptr<T[]> Utils::array(std::initializer_list<T> values) {
 }
 template std::unique_ptr<float[]> Utils::fill<float>(std::initializer_list<int> sizes, float value);
 template std::unique_ptr<float[]> Utils::zeros<float>(std::initializer_list<int> sizes);
-template std::unique_ptr<float[]> Utils::ones<float>(std::initializer_list<int> sizes);
+template void Utils::zeros<float>(int32_t size, float *x);
+template void Utils::ones<float>(int32_t size, float *x);
+template void Utils::range<float>(int32_t size, float *x);
 template std::unique_ptr<float[]> Utils::array<float>(std::initializer_list<float> values);
 template std::unique_ptr<double[]> Utils::fill<double>(std::initializer_list<int> sizes, double value);
 template std::unique_ptr<double[]> Utils::zeros<double>(std::initializer_list<int> sizes);
-template std::unique_ptr<double[]> Utils::ones<double>(std::initializer_list<int> sizes);
+template void Utils::zeros<double>(int32_t size, double *x);
+template void Utils::ones<double>(int32_t size, double *x);
+template void Utils::range<double>(int32_t size, double *x);
 template std::unique_ptr<double[]> Utils::array<double>(std::initializer_list<double> values);
 template std::unique_ptr<int32_t[]> Utils::fill<int32_t>(std::initializer_list<int> sizes, int32_t value);
 template std::unique_ptr<int32_t[]> Utils::zeros<int32_t>(std::initializer_list<int> sizes);
-template std::unique_ptr<int32_t[]> Utils::ones<int32_t>(std::initializer_list<int> sizes);
+template void Utils::zeros<int32_t>(int32_t size, int32_t *x);
+template void Utils::ones<int32_t>(int32_t size, int32_t *x);
+template void Utils::range<int32_t>(int32_t size, int32_t *x);
 template std::unique_ptr<int32_t[]> Utils::array<int32_t>(std::initializer_list<int32_t> values);
 
 template <typename T>

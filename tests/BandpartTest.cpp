@@ -37,23 +37,25 @@ TYPED_TEST(BandpartTest, Array3DUpper) {
     const int32_t K = 5;
     const int32_t lower = 0;
     const int32_t upper = -1;
-    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
-    TypeParam R1[M*N*K] = {
-        1,1,1,1,1,
-        0,1,1,1,1,
-        0,0,1,1,1,
-        0,0,0,1,1,
-        0,0,0,0,1,
+    TypeParam A[M][N][K];
+    Utils::ones(M*N*K,(TypeParam*)A);
 
-        1,1,1,1,1,
-        0,1,1,1,1,
-        0,0,1,1,1,
-        0,0,0,1,1,
-        0,0,0,0,1,
+    this->test_matlib_bandpart(M,N,K,(TypeParam*)A,lower,upper);
+    TypeParam R1[M][N][K] = {
+        {{1,1,1,1,1},
+         {0,1,1,1,1},
+         {0,0,1,1,1},
+         {0,0,0,1,1},
+         {0,0,0,0,1}},
+
+        {{1,1,1,1,1},
+         {0,1,1,1,1},
+         {0,0,1,1,1},
+         {0,0,0,1,1},
+         {0,0,0,0,1}}
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
+    EXPECT_THAT(R1, ContainerEq(A));
 }
 
 TYPED_TEST(BandpartTest, Array2DLower) {
@@ -62,17 +64,19 @@ TYPED_TEST(BandpartTest, Array2DLower) {
     const int32_t K = 5;
     const int32_t lower = -1;
     const int32_t upper = 0;
-    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
-    TypeParam R1[M*N*K] = {
-        1,0,0,0,0,
-        1,1,0,0,0,
-        1,1,1,0,0,
-        1,1,1,1,0,
-        1,1,1,1,1,
+    TypeParam A[M][N][K];
+    Utils::ones(M*N*K,(TypeParam*)A);
+
+    this->test_matlib_bandpart(M,N,K,(TypeParam*)A,lower,upper);
+    TypeParam R1[M][N][K] = {
+        {{1,0,0,0,0},
+         {1,1,0,0,0},
+         {1,1,1,0,0},
+         {1,1,1,1,0},
+         {1,1,1,1,1}},
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
+    EXPECT_THAT(R1, ContainerEq(A));
 }
 
 TYPED_TEST(BandpartTest, Array2DIdentity) {
@@ -81,17 +85,19 @@ TYPED_TEST(BandpartTest, Array2DIdentity) {
     const int32_t K = 5;
     const int32_t lower = 0;
     const int32_t upper = 0;
-    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
-    TypeParam R1[M*N*K] = {
-        1,0,0,0,0,
-        0,1,0,0,0,
-        0,0,1,0,0,
-        0,0,0,1,0,
-        0,0,0,0,1,
+    TypeParam A[M][N][K];
+    Utils::ones(M*N*K,(TypeParam*)A);
+
+    this->test_matlib_bandpart(M,N,K,(TypeParam*)A,lower,upper);
+    TypeParam R1[M][N][K] = {
+        {{1,0,0,0,0},
+         {0,1,0,0,0},
+         {0,0,1,0,0},
+         {0,0,0,1,0},
+         {0,0,0,0,1}},
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
+    EXPECT_THAT(R1, ContainerEq(A));
 }
 
 TYPED_TEST(BandpartTest, Array2DUpper1) {
@@ -100,17 +106,19 @@ TYPED_TEST(BandpartTest, Array2DUpper1) {
     const int32_t K = 5;
     const int32_t lower = 0;
     const int32_t upper = 1;
-    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
-    TypeParam R1[M*N*K] = {
-        1,1,0,0,0,
-        0,1,1,0,0,
-        0,0,1,1,0,
-        0,0,0,1,1,
-        0,0,0,0,1,
+    TypeParam A[M][N][K];
+    Utils::ones(M*N*K,(TypeParam*)A);
+
+    this->test_matlib_bandpart(M,N,K,(TypeParam*)A,lower,upper);
+    TypeParam R1[M][N][K] = {
+        {{1,1,0,0,0},
+         {0,1,1,0,0},
+         {0,0,1,1,0},
+         {0,0,0,1,1},
+         {0,0,0,0,1}},
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
+    EXPECT_THAT(R1, ContainerEq(A));
 }
 
 TYPED_TEST(BandpartTest, Array2DLower1) {
@@ -119,17 +127,18 @@ TYPED_TEST(BandpartTest, Array2DLower1) {
     const int32_t K = 5;
     const int32_t lower = 1;
     const int32_t upper = 0;
-    auto a = NDArray<TypeParam>::ones({M,N,K});
 
-    this->test_matlib_bandpart(M,N,K,a->data(),lower,upper);
-    TypeParam R1[M*N*K] = {
-        1,0,0,0,0,
-        1,1,0,0,0,
-        0,1,1,0,0,
-        0,0,1,1,0,
-        0,0,0,1,1,
+    TypeParam A[M][N][K];
+    Utils::ones(M*N*K,(TypeParam*)A);
+
+    this->test_matlib_bandpart(M,N,K,(TypeParam*)A,lower,upper);
+    TypeParam R1[M][N][K] = {
+        {{1,0,0,0,0},
+         {1,1,0,0,0},
+         {0,1,1,0,0},
+         {0,0,1,1,0},
+         {0,0,0,1,1}},
     };
-    EXPECT_TRUE(Utils::isclose(M*N*K, R1, a->data()));
+    EXPECT_THAT(R1, ContainerEq(A));
 }
-
 }
