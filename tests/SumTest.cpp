@@ -75,7 +75,7 @@ TYPED_TEST(SumTest, normal) {
     TypeParam X[N] = {1,2,-3,-4,5,-6};
     //TypeParam inf = std::numeric_limits<TypeParam>::infinity();
 
-    int32_t dtype = test_get_dtype(X[0]);
+    int32_t dtype = this->test_get_dtype(X[0]);
     if(dtype==rindow_matlib_dtype_int32) {
         int64_t sum = (int64_t)this->test_matlib_sum(N, X, incX, (int64_t)0);
         EXPECT_EQ((1+2-3-4+5-6), sum);
