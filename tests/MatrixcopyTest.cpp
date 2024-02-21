@@ -2,12 +2,9 @@
 #include <gmock/gmock.h>
 
 #include "rindow/matlib.h"
-#include "rindow/ndarray.h"
 #include <stdbool.h>
 
 using testing::ContainerEq;
-using rindow::math::NDArray;
-using rindow::math::ndarray_t;
 
 namespace {
 

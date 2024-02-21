@@ -1,5 +1,5 @@
 install(
-    FILES rindow/matlib.h rindow/ndarray.h
+    FILES rindow/matlib.h
     DESTINATION include/rindow
     COMPONENT ${PROJECT_NAME}
 )

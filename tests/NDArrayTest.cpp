@@ -2,7 +2,7 @@
 #include <gmock/gmock.h>
 
 #include "rindow/matlib.h"
-#include "rindow/ndarray.h"
+#include "ndarray.h"
 #include <stdbool.h>
 
 using testing::ContainerEq;

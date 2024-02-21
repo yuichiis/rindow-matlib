@@ -71,6 +71,12 @@ template void Utils::zeros<int32_t>(int32_t size, int32_t *x);
 template void Utils::ones<int32_t>(int32_t size, int32_t *x);
 template void Utils::range<int32_t>(int32_t size, int32_t *x);
 template std::unique_ptr<int32_t[]> Utils::array<int32_t>(std::initializer_list<int32_t> values);
+template std::unique_ptr<uint8_t[]> Utils::fill<uint8_t>(std::initializer_list<int> sizes, uint8_t value);
+template std::unique_ptr<uint8_t[]> Utils::zeros<uint8_t>(std::initializer_list<int> sizes);
+template void Utils::zeros<uint8_t>(int32_t size, uint8_t *x);
+template void Utils::ones<uint8_t>(int32_t size, uint8_t *x);
+template void Utils::range<uint8_t>(int32_t size, uint8_t *x);
+template std::unique_ptr<uint8_t[]> Utils::array<uint8_t>(std::initializer_list<uint8_t> values);
 
 template <typename T>
 bool Utils::isclose(int32_t size, T *trues, T *x) {
