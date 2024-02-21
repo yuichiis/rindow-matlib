@@ -11,8 +11,8 @@ find_package(Threads REQUIRED)
 
 set(RINDOW_MATLIB_VERSION ${PROJECT_VERSION})
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/rindow_matlib_config.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/rindow_matlib_config.h"
 )
 
 file(GLOB_RECURSE srcfiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./*.c)

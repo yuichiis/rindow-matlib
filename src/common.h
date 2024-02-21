@@ -1,7 +1,7 @@
 #ifndef RINDOW_MATLIB_COMMON_H_
 #define RINDOW_MATLIB_COMMON_H_
 
-#include "config.h"
+#include "rindow_matlib_config.h"
 
 #include <stdint.h>
 
