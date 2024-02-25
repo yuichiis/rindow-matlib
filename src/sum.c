@@ -37,7 +37,7 @@ static void *d_sum_kernel(void *varg)
 */
 //#endif
 
-float rindow_matlib_s_sum(int32_t n,float *x, int32_t incX, float tsum)
+float rindow_matlib_s_sum(int32_t n,float *x, int32_t incX)
 {
     float sum = 0;
 //#ifdef _OPENMP
@@ -46,7 +46,7 @@ float rindow_matlib_s_sum(int32_t n,float *x, int32_t incX, float tsum)
     for(i=0; i<n; i++) {
         sum += x[i*incX];
     }
-    return tsum+sum;
+    return sum;
 //#else
 /*
     int32_t num_thread = rindow_matlib_common_get_nprocs();
@@ -78,7 +78,7 @@ float rindow_matlib_s_sum(int32_t n,float *x, int32_t incX, float tsum)
 //#endif
 }
 
-double rindow_matlib_d_sum(int32_t n,double *x, int32_t incX, double tsum)
+double rindow_matlib_d_sum(int32_t n,double *x, int32_t incX)
 {
     double sum = 0;
 //#ifdef _OPENMP
@@ -87,7 +87,7 @@ double rindow_matlib_d_sum(int32_t n,double *x, int32_t incX, double tsum)
     for(i=0; i<n; i++) {
         sum += x[i*incX];
     }
-    return tsum+sum;
+    return sum;
 //#else
 
 /*
@@ -127,7 +127,7 @@ double rindow_matlib_d_sum(int32_t n,double *x, int32_t incX, double tsum)
         sum += pDataX[i*incX];\
     }
 
-int64_t rindow_matlib_i_sum(int32_t dtype, int32_t n,void *x, int32_t incX, int64_t tsum)
+int64_t rindow_matlib_i_sum(int32_t dtype, int32_t n,void *x, int32_t incX)
 {
     int32_t i;
     int64_t sum=0;
@@ -191,5 +191,5 @@ int64_t rindow_matlib_i_sum(int32_t dtype, int32_t n,void *x, int32_t incX, int6
             break;
         }
     }
-    return tsum+sum;
+    return sum;
 }

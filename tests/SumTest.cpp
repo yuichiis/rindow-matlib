@@ -13,36 +13,32 @@ class SumTest : public ::testing::Test {
 protected:
     virtual float test_matlib_sum(
         int32_t n,
-        float *x, int32_t incX,
-        float tsum)
+        float *x, int32_t incX)
     {
-        return rindow_matlib_s_sum(n,x,incX,tsum);
+        return rindow_matlib_s_sum(n,x,incX);
     }
 
     virtual double test_matlib_sum(
         int32_t n,
-        double *x, int32_t incX,
-        double tsum)
+        double *x, int32_t incX)
     {
-        return rindow_matlib_d_sum(n,x,incX,tsum);
+        return rindow_matlib_d_sum(n,x,incX);
     }
 
     virtual int64_t test_matlib_sum(
         int32_t n,
-        int32_t *x, int32_t incX,
-        int64_t tsum)
+        int32_t *x, int32_t incX)
     {
         int32_t dtype = rindow_matlib_dtype_int32;
-        return rindow_matlib_i_sum(dtype,n,x,incX,tsum);
+        return rindow_matlib_i_sum(dtype,n,x,incX);
     }
 
     virtual int64_t test_matlib_sum(
         int32_t n,
-        bool *x, int32_t incX,
-        int64_t tsum)
+        bool *x, int32_t incX)
     {
         int32_t dtype = rindow_matlib_dtype_bool;
-        return rindow_matlib_i_sum(dtype,n,x,incX,tsum);
+        return rindow_matlib_i_sum(dtype,n,x,incX);
     }
 
     virtual int32_t test_get_dtype(
@@ -77,16 +73,16 @@ TYPED_TEST(SumTest, normal) {
 
     int32_t dtype = this->test_get_dtype(X[0]);
     if(dtype==rindow_matlib_dtype_int32) {
-        int64_t sum = (int64_t)this->test_matlib_sum(N, X, incX, (int64_t)0);
+        int64_t sum = (int64_t)this->test_matlib_sum(N, X, incX);
         EXPECT_EQ((1+2-3-4+5-6), sum);
     } else {
-        TypeParam sum = (TypeParam)this->test_matlib_sum(N, X, incX, (TypeParam)0);
+        TypeParam sum = (TypeParam)this->test_matlib_sum(N, X, incX);
         EXPECT_EQ((1+2-3-4+5-6), sum);
     }
 
     // bool
     bool boolX[N] = {true,false,true,false,true,false};
-    int64_t sumbool = this->test_matlib_sum(N, boolX, incX, (int64_t)0);
+    int64_t sumbool = this->test_matlib_sum(N, boolX, incX);
     EXPECT_EQ(3, sumbool);
 }
 }
