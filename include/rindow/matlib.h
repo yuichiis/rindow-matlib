@@ -18,10 +18,10 @@ enum rindow_matlib_dtype {
     rindow_matlib_dtype_float16   = 11,
     rindow_matlib_dtype_float32   = 12,
     rindow_matlib_dtype_float64   = 13,
-    rindow_matlib_dtype_complex8  = 14,
-    rindow_matlib_dtype_complex16 = 15,
-    rindow_matlib_dtype_complex32 = 16,
-    rindow_matlib_dtype_complex64 = 17
+    rindow_matlib_dtype_complex16 = 14,
+    rindow_matlib_dtype_complex32 = 15,
+    rindow_matlib_dtype_complex64 = 16,
+    rindow_matlib_dtype_complex128 = 17
 };
  
 
@@ -79,15 +79,20 @@ static inline int32_t rindow_matlib_common_dtype_to_valuesize(int32_t dtype)
         case rindow_matlib_dtype_int16:
         case rindow_matlib_dtype_uint16:
         case rindow_matlib_dtype_float16:
+        case rindow_matlib_dtype_complex16:
             return 2;
         case rindow_matlib_dtype_int32:
         case rindow_matlib_dtype_uint32:
         case rindow_matlib_dtype_float32:
+        case rindow_matlib_dtype_complex32:
             return 4;
         case rindow_matlib_dtype_int64:
         case rindow_matlib_dtype_uint64:
         case rindow_matlib_dtype_float64:
+        case rindow_matlib_dtype_complex64:
             return 8;
+        case rindow_matlib_dtype_complex128:
+            return 16;
     }
     return 0;
 }
@@ -115,6 +120,18 @@ static inline int32_t rindow_matlib_common_dtype_is_float(int32_t dtype)
         case rindow_matlib_dtype_float16:
         case rindow_matlib_dtype_float32:
         case rindow_matlib_dtype_float64:
+            return 1;
+    }
+    return 0;
+}
+
+static inline int32_t rindow_matlib_common_dtype_is_complex(int32_t dtype)
+{
+    switch (dtype) {
+        case rindow_matlib_dtype_complex16:
+        case rindow_matlib_dtype_complex32:
+        case rindow_matlib_dtype_complex64:
+        case rindow_matlib_dtype_complex128:
             return 1;
     }
     return 0;

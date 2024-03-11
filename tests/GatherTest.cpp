@@ -261,6 +261,39 @@ TYPED_TEST(GatherTest, ScatterAddExNormal1Dby1D) {
     EXPECT_THAT(R1, ContainerEq(B));
 }
 
+TYPED_TEST(GatherTest, ScatterAddExNormal2Dby1D) {
+    const int32_t reverse = true; 
+    const int32_t addMode = true;
+    const int32_t shapeX = 2;
+    const int32_t shapeA0 = shapeX;
+    const int32_t shapeA1 = 3;
+    const int32_t shapeB0 = 4;
+    const int32_t shapeB1 = shapeA1;
+    const int32_t dtype = rindow_matlib_dtype_int32;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t numClass;
+    int32_t outputSize;
+
+    int32_t X[shapeX] = {1,1};
+    TypeParam A[shapeA0][shapeA1] = {{1,1,1},{1,1,1}};
+    TypeParam B[shapeB0][shapeB1] = {{1,1,1},{1,1,1},{1,1,1},{1,1,1}};
+    this->calcGatherShapes({shapeX},{shapeB0,shapeB1},&m,&n,&k,&numClass,&outputSize);
+    
+    ASSERT_EQ(1,      m);
+    ASSERT_EQ(shapeX, n);
+    ASSERT_EQ(shapeB1, k);
+    ASSERT_EQ(shapeB0, numClass);
+    ASSERT_EQ(shapeA0*shapeA1, outputSize);
+
+    int32_t rc = this->test_matlib_gather(reverse,addMode,n,k,numClass,dtype,X,(TypeParam*)B,(TypeParam*)A);
+    ASSERT_EQ(0,rc);
+
+    TypeParam R1[shapeB0][shapeB1] = {{1,1,1},{3,3,3},{1,1,1},{1,1,1}};
+    EXPECT_THAT(R1, ContainerEq(B));
+}
+
 TYPED_TEST(GatherTest, testScatterExNormal2Dby2D) {
     const int32_t reverse = true;
     const int32_t addMode = false;
