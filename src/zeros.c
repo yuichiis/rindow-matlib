@@ -37,16 +37,16 @@ void rindow_matlib_i_zeros(int32_t dtype, int32_t n,void *x, int32_t incX)
         return;
     }
     if(incX==1) {
-        int32_t parallel = rindow_matlib_common_get_parallel();
-        int32_t fillsize = (valueSize*n)/parallel;
+        int32_t num_threads = rindow_matlib_common_get_num_threads();
+        int32_t fillsize = n/num_threads;
         int32_t i;
         #pragma omp parallel for
-        for(i=0;i<parallel;i++) {
-            memset(&((char *)x)[i*fillsize],0,fillsize);
+        for(i=0;i<num_threads;i++) {
+            memset(&(((char *)x)[i*fillsize*valueSize]),0,fillsize*valueSize);
         }
-        int32_t adiv = (valueSize*n)%parallel;
+        int32_t adiv = n%num_threads;
         if(adiv!=0) {
-            memset(&((char *)x)[parallel*fillsize],0,adiv);
+            memset(&(((char *)x)[num_threads*fillsize*valueSize]),0,adiv*valueSize);
         }
     } else {
         int32_t i;
