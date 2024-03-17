@@ -13,6 +13,11 @@ Rindow Matlib includes many matrix operations functions used in machine learning
 
 Please see the documents about rindow mathematics on [Rindow Mathematics](https://rindow.github.io/mathematics/openblas/mathlibrary.html) web pages.
 
+Requirements
+============
+- Windows 10 or later, Linux(Ubuntu 20.04 or later)
+
+
 How to setup pre-build binaries
 ===============================
 
@@ -63,7 +68,7 @@ Download source code from release and unzip
 
 - https://github.com/rindow/rindow-matlib/releases
 
-### Build and Install
+### Build and Install on Windows
 
 Build with Visual Studio.
 
@@ -92,7 +97,7 @@ Download source code from release and extract
 
 - https://github.com/rindow/rindow-matlib/releases
 
-### Build and Install
+### Build and Install on Ubuntu
 
 Build with cmake.
 
