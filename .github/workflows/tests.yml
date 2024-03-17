@@ -17,8 +17,8 @@ jobs:
         uses: "actions/checkout@v4"
 
       - name: Build
-        run: cmake -S . -B build ; cmake --build build --config Release
+        run: cmake -S . -B build && cmake --build build --config Release
 
       - name: GoogleTest Tests
-        run: cd build; && ctest
+        run: cd build && ctest
 
