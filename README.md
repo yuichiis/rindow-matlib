@@ -42,25 +42,30 @@ Please install using the apt command.
 $ sudo apt install ./rindow-matlib_X.X.X_amd64.deb
 ```
 
-Currently, rindow-matlib uses OpenMP, which may cause conflicts if you are using OpenBLAS. In this case, change OpenBLAS to the OpenMP version.
+### Troubleshooting for Linux
+Since rindow-matlib currently uses OpenMP, choose the OpenMP version for OpenBLAS as well.
 
 Using the pthread version of OpenBLAS can cause conflicts and become unstable and slow.
 This issue does not occur on Windows.
 
+If you have already installed the pthread version of OpenBLAS,
 ```shell
-$ sudo apt install libopenblas0-openmp
+$ sudo apt install libopenblas0-openmp liblapacke
 $ sudo apt remove libopenblas0-pthread
 ```
 
-If you cannot delete the pthread version of OpenBLAS, you can switch to it using the update-alternatives command.
+But if you can't remove it, you can switch to it using the update-alternatives command.
 
 ```shell
 $ sudo update-alternatives --config libopenblas.so.0-x86_64-linux-gnu
 $ sudo update-alternatives --config liblapack.so.3-x86_64-linux-gnu
 ```
 
-
 If you really want to use the pthread version of OpenBLAS, please switch to the serial version of rindow-matlib.
+
+There are no operational mode conflicts with OpenBLAS on Windows.
+
+But, If you really want to use the pthread version of OpenBLAS, please switch to the serial version of rindow-matlib.
 
 ```shell
 $ sudo update-alternatives --config librindowmatlib.so
@@ -74,6 +79,8 @@ There are 2 choices for the alternative librindowmatlib.so (providing /usr/lib/l
 
 Press <enter> to keep the current choice[*], or type selection number: 2
 ```
+Choose the "rindowmatlib-serial".
+
 
 How to build from source code on Windows
 ========================================
@@ -125,25 +132,11 @@ $ cmake --build build --config Release
 $ (cd build; ctest -C Release)
 $ (cd build; cpack -C Release)
 ```
+
 Install with apt commnand.
 
 ```shell
 $ sudo apt install ./packages/rindow-matlib_X.X.X_amd64.deb
-```
-
-If you use this library under the PHP, you must set it to "serial" mode.
-
-```shell
-$ sudo update-alternatives --config librindowmatlib.so
-There are 2 choices for the alternative librindowmatlib.so (providing /usr/lib/librindowmatlib.so).
-
-  Selection    Path                                             Priority   Status
-------------------------------------------------------------
-* 0            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        auto mode
-  1            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        manual mode
-  2            /usr/lib/rindowmatlib-serial/librindowmatlib.so   90        manual mode
-
-Press <enter> to keep the current choice[*], or type selection number: 2
 ```
 
 How to use
