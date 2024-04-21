@@ -15,7 +15,7 @@ Please see the documents about rindow mathematics on [Rindow Mathematics](https:
 
 Requirements
 ============
-- Windows 10 or later, Linux(Ubuntu 20.04 or later)
+- Windows 10 or later, Linux(Ubuntu 20.04 or Debian 12 or later)
 
 
 How to setup pre-build binaries
@@ -32,7 +32,7 @@ Unzip the file for Windows and copy rindowmatlib.dll to the directory set in PAT
 C> PATH %PATH%;C:\path\to\bin
 ```
 
-### How to setup for Ubuntu
+### How to setup for Linux
 Download the pre-build binary file.
 
 - https://github.com/rindow/rindow-matlib/releases
