@@ -15,7 +15,7 @@ Please see the documents about rindow mathematics on [Rindow Mathematics](https:
 
 Requirements
 ============
-- Windows 10 or later, Linux(Ubuntu 20.04 or later)
+- Windows 10 or later, Linux(Ubuntu 20.04 or Debian 12 or later)
 
 
 How to setup pre-build binaries
@@ -32,18 +32,40 @@ Unzip the file for Windows and copy rindowmatlib.dll to the directory set in PAT
 C> PATH %PATH%;C:\path\to\bin
 ```
 
-### How to setup for Ubuntu
+### How to setup for Linux
 Download the pre-build binary file.
 
 - https://github.com/rindow/rindow-matlib/releases
 
 Please install using the apt command. 
-
 ```shell
 $ sudo apt install ./rindow-matlib_X.X.X_amd64.deb
 ```
 
-If you use this library under the PHP, you must set it to "serial" mode.
+### Troubleshooting for Linux
+Since rindow-matlib currently uses OpenMP, choose the OpenMP version for OpenBLAS as well.
+
+Using the pthread version of OpenBLAS can cause conflicts and become unstable and slow.
+This issue does not occur on Windows.
+
+If you have already installed the pthread version of OpenBLAS,
+```shell
+$ sudo apt install libopenblas0-openmp liblapacke
+$ sudo apt remove libopenblas0-pthread
+```
+
+But if you can't remove it, you can switch to it using the update-alternatives command.
+
+```shell
+$ sudo update-alternatives --config libopenblas.so.0-x86_64-linux-gnu
+$ sudo update-alternatives --config liblapack.so.3-x86_64-linux-gnu
+```
+
+If you really want to use the pthread version of OpenBLAS, please switch to the serial version of rindow-matlib.
+
+There are no operational mode conflicts with OpenBLAS on Windows.
+
+But, If you really want to use the pthread version of OpenBLAS, please switch to the serial version of rindow-matlib.
 
 ```shell
 $ sudo update-alternatives --config librindowmatlib.so
@@ -57,6 +79,8 @@ There are 2 choices for the alternative librindowmatlib.so (providing /usr/lib/l
 
 Press <enter> to keep the current choice[*], or type selection number: 2
 ```
+Choose the "rindowmatlib-serial".
+
 
 How to build from source code on Windows
 ========================================
@@ -108,25 +132,11 @@ $ cmake --build build --config Release
 $ (cd build; ctest -C Release)
 $ (cd build; cpack -C Release)
 ```
+
 Install with apt commnand.
 
 ```shell
 $ sudo apt install ./packages/rindow-matlib_X.X.X_amd64.deb
-```
-
-If you use this library under the PHP, you must set it to "serial" mode.
-
-```shell
-$ sudo update-alternatives --config librindowmatlib.so
-There are 2 choices for the alternative librindowmatlib.so (providing /usr/lib/librindowmatlib.so).
-
-  Selection    Path                                             Priority   Status
-------------------------------------------------------------
-* 0            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        auto mode
-  1            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        manual mode
-  2            /usr/lib/rindowmatlib-serial/librindowmatlib.so   90        manual mode
-
-Press <enter> to keep the current choice[*], or type selection number: 2
 ```
 
 How to use
