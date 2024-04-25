@@ -111,7 +111,7 @@ Unzip the package file from packages directory.
 C> PATH %PATH%;C:\path\to\bin
 ```
 
-How to build from source code on Ubuntu
+How to build from source code on Linux
 =======================================
 You can also build and use from source code.
 
@@ -121,7 +121,7 @@ Download source code from release and extract
 
 - https://github.com/rindow/rindow-matlib/releases
 
-### Build and Install on Ubuntu
+### Build and Install on Linux
 
 Build with cmake.
 
@@ -213,6 +213,6 @@ int main(int ac, char **av)
 
 C> cl /EHsc -I.\path\to\include sample.cpp \path\to\lib\rindowmatlib.lib
 
-### build the sample program on Ubuntu.
+### build the sample program on Linux.
 
 $ g++ sample.cpp -lrindowmatlib -lm
