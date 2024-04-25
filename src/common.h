@@ -28,6 +28,7 @@
     #include <sys/sysinfo.h>  // Include sysinfo.h for system information (Linux)
     #include <pthread.h>      // Include pthread.h for POSIX threads
   #endif
+    #include <memory.h>
 #endif
 
 #ifndef _OPENMP
