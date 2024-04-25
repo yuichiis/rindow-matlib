@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.14)
 #set(CMAKE_CONFIGURATION_TYPES Debug Release)
 enable_testing()
 
-project(rindow-matlib VERSION 1.0.1 LANGUAGES CXX C)
+project(rindow-matlib VERSION 1.0.0 LANGUAGES CXX C)
 #set(PROJECT_VERSION_MAJOR 1)
 #set(PROJECT_VERSION_MINOR 0)
-#set(PROJECT_VERSION_PATCH 1)
+#set(PROJECT_VERSION_PATCH 0)
 
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
@@ -19,7 +19,7 @@ add_subdirectory(./src)
 add_subdirectory(./include)
 add_subdirectory(./tests)
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
     add_subdirectory(./debian)
 endif()
 
