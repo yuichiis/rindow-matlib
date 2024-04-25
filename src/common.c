@@ -560,9 +560,7 @@ int32_t rindow_matlib_common_rand()
     int32_t number;
     number = (((((int32_t)rand())<<17)|(((int32_t)rand())<<2)) ^ (int32_t)rand());
     return (int32_t)(number & 0x7fffffff);
-    ERROR !!
 #else
-    ERROR !!
     // VS2019
     unsigned int number;
     if(rand_s( &number )) {
