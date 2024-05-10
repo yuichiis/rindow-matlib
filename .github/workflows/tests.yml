@@ -7,10 +7,12 @@ on:
 
 jobs:
   build_and_tests:
-    runs-on: [ ubuntu-latest macos-latest ]
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: true
+      matrix:
+        os: [ ubuntu-latest , macos-latest ]
   
     steps:
       - name: Checkout codes
