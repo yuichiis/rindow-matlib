@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ macos-latest ]
+        os: [ ubuntu-latest ]
   
     steps:
       - name: Checkout codes
@@ -24,6 +24,12 @@ jobs:
           brew install libomp
 
       - name: Build
+        if: ${{ matrix.os == 'ubuntu-latest' ||  matrix.os == 'windows-latest' }}
+        run: |
+          cmake -S . -B build && cmake --build build --config Release
+
+      - name: Build (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
         run: |
           export OpenMP_ROOT=$(brew --prefix)/opt/libomp
           cmake -S . -B build && cmake --build build --config Release
