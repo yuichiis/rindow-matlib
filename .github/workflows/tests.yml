@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies (macOS)
         if: ${{ matrix.os == 'macos-latest' }}
-        run: brew install openmp
+        run: brew install libomp
 
       - name: Build
         run: cmake -S . -B build && cmake --build build --config Release
