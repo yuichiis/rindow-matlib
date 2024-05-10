@@ -8,7 +8,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 if(APPLE)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/opt/local/share/cmake")
-#    set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for macOS" FORCE)
 endif()
 
 find_package(Threads REQUIRED)
