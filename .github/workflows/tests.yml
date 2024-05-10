@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ windows-latest ]
   
     steps:
       - name: Checkout codes
@@ -35,5 +35,6 @@ jobs:
           cmake -S . -B build && cmake --build build --config Release
 
       - name: GoogleTest Tests
-        run: cd build && ctest
-
+        run: |
+          cd build
+          ctest -C Release
