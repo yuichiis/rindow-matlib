@@ -48,7 +48,8 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' }}
         run: |
           export OpenMP_ROOT=$(brew --prefix)/opt/libomp
-          cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES="arm64" && cmake --build build --config Release
+          echo $OpenMP_ROOT
+          cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES="x86_64" && cmake --build build --config Release
 
       - name: GoogleTest Tests
         run: |
