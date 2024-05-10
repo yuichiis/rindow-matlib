@@ -48,7 +48,7 @@ jobs:
         if: ${{ startsWith(matrix.os, 'macos-') }}
         run: |
           export OpenMP_ROOT=$(brew --prefix)/opt/libomp
-          cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES="x86_64" && cmake --build build --config Release
+          cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES="arm64" && cmake --build build --config Release
 
       - name: GoogleTest Tests
         run: |
