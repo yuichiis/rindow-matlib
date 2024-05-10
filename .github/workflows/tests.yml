@@ -18,6 +18,10 @@ jobs:
       - name: Checkout codes
         uses: "actions/checkout@v4"
 
+      - name: Install dependencies (macOS)
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: brew install openmp
+
       - name: Build
         run: cmake -S . -B build && cmake --build build --config Release
 
