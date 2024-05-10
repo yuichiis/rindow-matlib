@@ -19,13 +19,13 @@ jobs:
         include:
           - name: Windows
             os: windows-latest
-            artifact_name: win64.zip
+            artifact_name: win64
           - name: Linux
             os: ubuntu-latest
-            artifact_name: linux.zip
+            artifact_name: linux
           - name: macOS
             os: macos-latest
-            artifact_name: macos.zip
+            artifact_name: macos
   
     steps:
       - name: Checkout codes
@@ -78,4 +78,4 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          *.zip
+          *
