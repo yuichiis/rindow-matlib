@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 #include (CMakePrintSystemInformation)
 #set(CMAKE_CONFIGURATION_TYPES Debug Release)
+#if(APPLE)
+#  set(CMAKE_OSX_ARCHITECTURES "x86_64;arm64" CACHE STRING "Build architectures for macOS" FORCE)
+#endif()
 enable_testing()
 
 project(rindow-matlib VERSION 1.1.0 LANGUAGES CXX C)
@@ -11,7 +14,9 @@ project(rindow-matlib VERSION 1.1.0 LANGUAGES CXX C)
 # GoogleTest requires at least C++14
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+if(APPLE)
+  set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${CMAKE_SYSTEM_VERSION}-${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+endif()
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(Packing)
 
