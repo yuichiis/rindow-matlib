@@ -27,7 +27,7 @@ jobs:
             os: ubuntu-latest
             artifact_name: linux
           - name: macOS
-            os: macos-latest
+            os: macos-13
             artifact_name: macos
   
     steps:
@@ -49,7 +49,7 @@ jobs:
         run: |
           export OpenMP_ROOT=$(brew --prefix)/opt/libomp
           echo $OpenMP_ROOT
-          cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES="x86_64" && cmake --build build --config Release
+          cmake -S . -B build && cmake --build build --config Release
 
       - name: GoogleTest Tests
         run: |
