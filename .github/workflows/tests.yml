@@ -40,7 +40,7 @@ jobs:
           brew install libomp
 
       - name: Build
-        if: ${{ matrix.os == 'ubuntu-latest' ||  matrix.os == 'windows-latest' }}
+        if: ${{ startsWith(matrix.os, 'ubuntu-') ||  startsWith(matrix.os, 'windows-') }}
         run: |
           cmake -S . -B build && cmake --build build --config Release
 
@@ -48,8 +48,7 @@ jobs:
         if: ${{ startsWith(matrix.os, 'macos-') }}
         run: |
           export OpenMP_ROOT=$(brew --prefix)/opt/libomp
-          echo $OpenMP_ROOT
-          cmake -S . -B build && cmake --build build --config Release
+          cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES="x86_64" && cmake --build build --config Release
 
       - name: GoogleTest Tests
         run: |
