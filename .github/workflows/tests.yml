@@ -64,6 +64,7 @@ jobs:
           cpack -C Release
 
       - name: Archive production artifacts
+        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
           name: package-${{ matrix.artifact_name }}
