@@ -51,6 +51,11 @@ if (MSVC)
         ARCHIVE DESTINATION lib
         COMPONENT ${PROJECT_NAME}
     )
+elseif(APPLE)
+    install(
+        TARGETS rindowmatlib
+        COMPONENT ${PROJECT_NAME}
+    )
 elseif(UNIX)
     install(
         TARGETS rindowmatlib
