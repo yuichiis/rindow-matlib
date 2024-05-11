@@ -104,12 +104,6 @@ $ sudo cp -r usr/include /usr/local/
 $ sudo cp -r usr/lib /usr/local/
 ```
 
-Depending on whether you are using OpenMP or not, you need to set the symbolic link.
-
-```shell
-$ sudo ln -s /usr/local/lib/rindowmatlib-openmp/librindowmatlib.dylib /usr/local/lib/librindowmatlib.dylib
-```
-
 How to build from source code on Windows
 ========================================
 You can also build and use from source code.
