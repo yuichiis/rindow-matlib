@@ -271,6 +271,6 @@ $ g++ sample.cpp -lrindowmatlib -lm
 ### Build the sample program on MacOS.
 
 ```shell
-$ g++ sample.cpp -lrindowmatlib -lm
+$ c++ sample.cpp -lrindowmatlib -lm
 ```
 
