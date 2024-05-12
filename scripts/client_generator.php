@@ -200,8 +200,7 @@ class OpenBLASClientGenerator
 
     private function headersTemplate(string $type) : string
     {
-        $header  = "#include <stdio.h>\n";
-        $header .= "#include <Windows.h>\n";
+        $header = "#include <Windows.h>\n";
         switch ($type) {
             case 'cblas':
                 $header .= "#include <cblas.h>\n";
@@ -248,6 +247,7 @@ class OpenBLASClientGenerator
         $libname = $this->libname($type);
         // typedef 
         $code  = $this->headersTemplate($type);
+        $code .= "static char msg_function_not_found[]  = \"{$funcname} not found\\n\";\n";
         $code .= "typedef {$return} (CALLBACK* PFN{$funcname})( /* {$funcname} */";
         $isNext = false;
         foreach($declare['args'] as $arg) {
@@ -285,7 +285,8 @@ class OpenBLASClientGenerator
         $code .= "    if(_g_{$funcname}==NULL) {\n";
         $code .= "        _g_{$funcname} = rindow_load_{$libname}_func(\"$funcname\"); \n";
         $code .= "        if(_g_{$funcname}==NULL) {\n";
-        $code .= "            printf(\"{$funcname} not found.\\n\");\n";
+        $code .= "            HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);\n";
+        $code .= "            WriteConsole(hStdOut, msg_function_not_found, sizeof(msg_function_not_found), NULL, NULL);\n";
         if($return=='void') {
             $code .= "            return;\n";
         } else {
@@ -323,12 +324,14 @@ class OpenBLASClientGenerator
         $code  = $this->headersTemplate($type);
         $code .= "\n";
         $code .= "static HMODULE _h_{$libname} = NULL;\n";
+        $code .= "static char msg_load_error[]  = \"Load error: {$libname}\\n\";\n";
         $code .= "void* rindow_load_{$libname}_func(char *funcname)\n";
         $code .= "{\n";
         $code .= "    if(_h_{$libname}==NULL) {\n";
         $code .= "        _h_{$libname} = LoadLibraryA( \"{$libname}.dll\" );\n";
         $code .= "        if(_h_{$libname}==NULL) {\n";
-        $code .= "            printf(\"Load error: {$libname}\\n\");\n";
+        $code .= "            HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);\n";
+        $code .= "            WriteConsole(hStdOut, msg_load_error, sizeof(msg_load_error), NULL, NULL);\n";
         $code .= "            return NULL;\n";
         $code .= "        }\n";
         $code .= "    }\n";
