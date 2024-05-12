@@ -21,7 +21,12 @@ file(GLOB_RECURSE testfiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./*.cpp)
 
 add_executable(test_main ${testfiles})
 target_link_libraries(test_main GTest::gtest_main)
-target_link_libraries(test_main rindowmatlib)
+if(MSVC)
+  target_link_libraries(test_main rindowmatlib.vclib)
+  target_compile_options(test_main PRIVATE -DRINDOW_MATLIB_INCLUDING_SOURCE)
+else()
+  target_link_libraries(test_main rindowmatlib)
+endif()
 target_include_directories(test_main PUBLIC ${gmock_SOURCE_DIR}/include)
 
 include(GoogleTest)
