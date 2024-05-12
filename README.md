@@ -102,6 +102,7 @@ Next, copy the include and lib directories to /usr/local.
 ```shell
 $ sudo cp -r usr/include /usr/local/
 $ sudo cp -r usr/lib /usr/local/
+$ brew install libomp
 ```
 
 How to build from source code on Windows
@@ -178,6 +179,7 @@ Download source code from release and extract
 Install openmp library with brew before build with cmake.
 
 ```shell
+$ brew install libomp
 $ cd \path\to\here
 $ cmake -S . -B build
 $ cmake --build build --config Release
@@ -271,6 +273,6 @@ $ g++ sample.cpp -lrindowmatlib -lm
 ### Build the sample program on MacOS.
 
 ```shell
-$ g++ sample.cpp -lrindowmatlib -lm
+$ c++ sample.cpp -lrindowmatlib -lm
 ```
 

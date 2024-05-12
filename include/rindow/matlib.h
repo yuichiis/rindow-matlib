@@ -30,12 +30,15 @@ enum rindow_matlib_dtype {
     #if defined(RINDOW_COMPILING_DLL)
       #define RINDOW_FUNC
       #define RINDOW_FUNC_DECL extern __declspec(dllexport)
+    #elif defined(RINDOW_MATLIB_IMPORT)
+      #define RINDOW_FUNC
+      #define RINDOW_FUNC_DECL extern __declspec(dllimport)
     #elif defined(RINDOW_MATLIB_INCLUDING_SOURCE)
       #define RINDOW_FUNC
       #define RINDOW_FUNC_DECL
     #else
       #define RINDOW_FUNC
-      #define RINDOW_FUNC_DECL extern __declspec(dllimport)
+      #define RINDOW_FUNC_DECL extern
     #endif
   #endif
 #else // _MSC_VER
