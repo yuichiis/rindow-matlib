@@ -68,9 +68,9 @@ int rindow_matlib_common_thread_create(
 );
 int rindow_matlib_common_thread_join(
 #ifdef _MSC_VER
-    int64_t *thread_id,
+    int64_t thread_id,
 #else
-    pthread_t *thread_id,
+    pthread_t thread_id,
 #endif
     void **retval
 );

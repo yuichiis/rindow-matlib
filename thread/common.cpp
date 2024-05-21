@@ -53,14 +53,14 @@ int rindow_matlib_common_thread_create(
     void *arg
     )
 {
-        pthread_create( thread_id, (const pthread_attr_t*)attr, start_routine, arg);
+    return pthread_create( thread_id, (const pthread_attr_t*)attr, start_routine, arg);
 }
 
 int rindow_matlib_common_thread_join(
 #ifdef _MSC_VER
-    int64_t *thread_id,
+    int64_t thread_id,
 #else
-    pthread_t *thread_id,
+    pthread_t thread_id,
 #endif
     void **retval
     )

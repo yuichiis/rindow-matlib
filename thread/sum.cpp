@@ -47,7 +47,7 @@ T matlib<T>::sum(int32_t n,T *x, int32_t incX)
         int tid = rindow_matlib_common_thread_create( &(th_arg[i].tid), NULL, &sum_kernel, &th_arg[i]);
     }
     for(i=0;i<num_thread;i++) {
-        int tid = rindow_matlib_common_thread_join(&th_arg[i].tid,NULL);
+        int tid = rindow_matlib_common_thread_join(th_arg[i].tid,NULL);
         sum += th_arg[i].sum;
     }
     free(th_arg);
