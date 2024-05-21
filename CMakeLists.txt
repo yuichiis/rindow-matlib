@@ -31,6 +31,10 @@ if(MSVC)
   add_subdirectory(./vclib)
 endif()
 
+add_subdirectory(./thread)
+add_subdirectory(./threadtest)
+
+
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "CPACK_PACKAGING_INSTALL_PREFIX: ${CPACK_PACKAGING_INSTALL_PREFIX}")
 message(STATUS "CPACK_COMPONENTS_ALL: ${CPACK_COMPONENTS_ALL}")

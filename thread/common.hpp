@@ -13,72 +13,64 @@
 #else
 #include <sys/sysinfo.h> // For Linux and other Unix-like systems
 #endif
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 
 #include <stdlib.h>
-#ifndef _OPENMP
-  #ifdef _MSC_VER
+#ifdef _MSC_VER
     #include <sysinfoapi.h>  // Include Windows-specific header for system information
-  #elif defined(__APPLE__)
+#elif defined(__APPLE__)
     #include <sys/sysctl.h>  // Include sysctl.h for system information
     #include <pthread.h>     // Include pthread.h for POSIX threads
-  #else
+#else
     #include <sys/sysinfo.h>  // Include sysinfo.h for system information (Linux)
     #include <pthread.h>      // Include pthread.h for POSIX threads
-  #endif
-    #include <memory.h>
 #endif
+#include <memory.h>
 
-#ifndef _OPENMP
-
-typedef struct _arg_s_sum_kernel {
-  #ifdef _MSC_VER
-    int64_t tid;
-  #else
-    pthread_t tid;
-  #endif
-    float sum;
-    int32_t n;
-    float *x;
-    int32_t incX;
-} arg_s_sum_kernel_t;
-typedef struct _arg_d_sum_kernel {
-  #ifdef _MSC_VER
-    int64_t tid;
-  #else
-    pthread_t tid;
-  #endif
-    double sum;
-    int32_t n;
-    double *x;
-    int32_t incX;
-} arg_d_sum_kernel_t;
-
-#endif // ifndef _OPENMP
-
-#ifdef __cplusplus
 namespace rindow {
 
 template <typename T>
 class matlib
 {
 public:
-    static void topK(int32_t m,int32_t n,const T *input,int32_t k,int32_t sorted,T *values,int32_t *indices);
+    typedef struct _arg_sum_kernel {
+        #ifdef _MSC_VER
+            int64_t tid;
+        #else
+            pthread_t tid;
+        #endif
+            T sum;
+            int32_t n;
+            T *x;
+            int32_t incX;
+    } arg_sum_kernel_t;
+
+    static T sum(int32_t n,T *x, int32_t incX);
 };
 }
-#endif
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef _OPENMP
-void *s_sum_kernel(void *varg);
-void *d_sum_kernel(void *varg);
-#endif // _OPENMP
+int rindow_matlib_common_thread_create(
+#ifdef _MSC_VER
+    int64_t *thread_id,
+#else
+    pthread_t *thread_id,
+#endif
+    void *attr,
+    void *(*start_routine) (void *),
+    void *arg
+);
+int rindow_matlib_common_thread_join(
+#ifdef _MSC_VER
+    int64_t *thread_id,
+#else
+    pthread_t *thread_id,
+#endif
+    void **retval
+);
 
 int32_t rindow_matlib_common_copy_ex(int32_t dtype,int32_t n,void* source,int32_t incSource,void* dest,int32_t incDest);
 int32_t rindow_matlib_common_add_ex(int32_t dtype,int32_t n,void* source,int32_t incSource,void* dest,int32_t incDest);

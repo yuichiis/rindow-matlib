@@ -150,19 +150,6 @@ static inline int32_t rindow_matlib_common_dtype_is_bool(int32_t dtype)
 }
 
 #ifdef __cplusplus
-namespace rindow {
-
-template <typename T>
-class matlib
-{
-public:
-    static void topK(int32_t m,int32_t n,const T *input,int32_t k,int32_t sorted,T *values,int32_t *indices);
-};
-}
-#endif
-
-
-#ifdef __cplusplus
 extern "C" {
 #endif
 
