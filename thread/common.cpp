@@ -53,7 +53,7 @@ int rindow_matlib_common_thread_create(
     void *arg
     )
 {
-        pthread_create( thread_id, attr, start_routine, arg);
+        pthread_create( thread_id, (const pthread_attr_t*)attr, start_routine, arg);
 }
 
 int rindow_matlib_common_thread_join(

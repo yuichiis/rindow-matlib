@@ -4,6 +4,9 @@
 #include "rindow_matlib_config.h"
 
 #include <stdint.h>
+#ifdef HAVE_PTHREAD
+#include <pthread.h>
+#endif
 
 #ifdef _MSC_VER
 #include <windows.h> // For Windows
