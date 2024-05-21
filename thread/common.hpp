@@ -35,7 +35,7 @@ template <typename T>
 class matlib
 {
 public:
-    typedef struct _arg_sum_kernel {
+    using arg_sum_kernel_t = struct _arg_sum_kernel {
         #ifdef _MSC_VER
             int64_t tid;
         #else
@@ -45,7 +45,7 @@ public:
             int32_t n;
             T *x;
             int32_t incX;
-    } arg_sum_kernel_t;
+    };
 
     static T sum(int32_t n,T *x, int32_t incX);
 };
