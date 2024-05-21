@@ -7,7 +7,7 @@ namespace rindow {
 template <typename T>
 static void *sum_kernel(void *varg)
 {
-    matlib<T>::arg_sum_kernel_t *arg=varg;
+    arg_sum_kernel_t<T> *arg=varg;
     int32_t i;
     T sum=0;
     int32_t n = arg->n;
