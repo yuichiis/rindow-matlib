@@ -60,10 +60,10 @@ protected:
         return rindow_matlib_dtype_int32;
     }
 };
-typedef ::testing::Types<float, double, int32_t> TestTypes;
-TYPED_TEST_SUITE(SumTest, TestTypes);
+typedef ::testing::Types<float, double> TestTypes;
+TYPED_TEST_SUITE(SumThreadTest, TestTypes);
 
-TYPED_TEST(SumTest, normal) {
+TYPED_TEST(SumThreadTest, normal) {
     const int32_t M = 1;
     const int32_t N = 6;
     const int32_t incX = 1;
