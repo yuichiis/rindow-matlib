@@ -32,9 +32,6 @@
 namespace rindow {
 
 template <typename T>
-using arg_sum_kernel_t = matlib<T>::arg_sum_kernel_t;
-
-template <typename T>
 class matlib
 {
 public:
@@ -52,6 +49,9 @@ public:
 
     static T sum(int32_t n,T *x, int32_t incX);
 };
+
+template <typename T>
+using arg_sum_k_t = matlib<T>::arg_sum_kernel_t;
 
 }
 

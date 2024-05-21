@@ -7,7 +7,7 @@ namespace rindow {
 template <typename T>
 static void *sum_kernel(void *varg)
 {
-    arg_sum_kernel_t<T> *arg=varg;
+    arg_sum_k_t<T> *arg=varg;
     int32_t i;
     T sum=0;
     int32_t n = arg->n;
@@ -32,8 +32,8 @@ T matlib<T>::sum(int32_t n,T *x, int32_t incX)
     //printf("#num_thread=%d\n",num_thread);
     //printf("#cell_size=%d\n",cell_size);
     //printf("#remainder=%d\n",remainder);
-    matlib<T>::arg_sum_kernel_t *th_arg=
-        (matlib<T>::arg_sum_kernel_t *)calloc(num_thread,sizeof(matlib<T>::arg_sum_kernel_t));
+    matlib<T>::arg_sum_k_t *th_arg=
+        (matlib<T>::arg_sum_k_t *)calloc(num_thread,sizeof(matlib<T>::arg_sum_k_t));
     int32_t i;
     for(i=0;i<num_thread;i++) {
         if(i==num_thread-1) {
