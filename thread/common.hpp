@@ -29,33 +29,6 @@
 #endif
 #include <memory.h>
 
-namespace rindow {
-
-template <typename T>
-class matlib
-{
-public:
-    using arg_sum_kernel_t = struct _arg_sum_kernel {
-        #ifdef _MSC_VER
-            int64_t tid;
-        #else
-            pthread_t tid;
-        #endif
-            T sum;
-            int32_t n;
-            T *x;
-            int32_t incX;
-    };
-
-    static T sum(int32_t n,T *x, int32_t incX);
-};
-
-template <typename T>
-using arg_sum_k_t = matlib<T>::arg_sum_kernel_t;
-
-}
-
-
 
 #ifdef __cplusplus
 extern "C" {
