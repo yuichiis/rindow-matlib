@@ -25,21 +25,21 @@ protected:
         return rindow_matlib_d_sum(n,x,incX);
     }
 
-    virtual int64_t test_matlib_sum(
-        int32_t n,
-        int32_t *x, int32_t incX)
-    {
-        int32_t dtype = rindow_matlib_dtype_int32;
-        return rindow_matlib_i_sum(dtype,n,x,incX);
-    }
+    //virtual int64_t test_matlib_sum(
+    //    int32_t n,
+    //    int32_t *x, int32_t incX)
+    //{
+    //    int32_t dtype = rindow_matlib_dtype_int32;
+    //    return rindow_matlib_i_sum(dtype,n,x,incX);
+    //}
 
-    virtual int64_t test_matlib_sum(
-        int32_t n,
-        bool *x, int32_t incX)
-    {
-        int32_t dtype = rindow_matlib_dtype_bool;
-        return rindow_matlib_i_sum(dtype,n,x,incX);
-    }
+    //virtual int64_t test_matlib_sum(
+    //    int32_t n,
+    //    bool *x, int32_t incX)
+    //{
+    //    int32_t dtype = rindow_matlib_dtype_bool;
+    //    return rindow_matlib_i_sum(dtype,n,x,incX);
+    //}
 
     virtual int32_t test_get_dtype(
         float value
@@ -53,12 +53,12 @@ protected:
     {
         return rindow_matlib_dtype_float64;
     }
-    virtual int32_t test_get_dtype(
-        int32_t value
-    )
-    {
-        return rindow_matlib_dtype_int32;
-    }
+    //virtual int32_t test_get_dtype(
+    //    int32_t value
+    //)
+    //{
+    //    return rindow_matlib_dtype_int32;
+    //}
 };
 typedef ::testing::Types<float, double> TestTypes;
 TYPED_TEST_SUITE(SumThreadTest, TestTypes);
