@@ -49,10 +49,12 @@ public:
 
     static T sum(int32_t n,T *x, int32_t incX);
 };
-}
 
 template <typename T>
 using arg_sum_kernel_t = matlib<T>::arg_sum_kernel_t;
+
+}
+
 
 
 #ifdef __cplusplus
