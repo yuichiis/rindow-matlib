@@ -34,7 +34,8 @@ int32_t rindow_matlib_common_get_num_threads(void)
 
 char* rindow_matlib_common_get_version(void)
 {
-    return RINDOW_MATLIB_VERSION;
+    static char version[] = RINDOW_MATLIB_VERSION;
+    return version;
 }
 
 int32_t rindow_matlib_common_get_parallel(void)
