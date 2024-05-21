@@ -1,6 +1,7 @@
 #include "rindow/matlib.h"
 #include <math.h>
 #include "common.hpp"
+#include <stdio.h>
 
 namespace {
 
@@ -43,9 +44,9 @@ public:
         int32_t num_thread = rindow_matlib_common_get_nprocs();
         int32_t cell_size = n/num_thread;
         int32_t remainder = n-cell_size*num_thread;
-        //printf("#num_thread=%d\n",num_thread);
-        //printf("#cell_size=%d\n",cell_size);
-        //printf("#remainder=%d\n",remainder);
+        printf("#num_thread=%d\n",num_thread);
+        printf("#cell_size=%d\n",cell_size);
+        printf("#remainder=%d\n",remainder);
         arg_sum_kernel_t *th_arg=
             (arg_sum_kernel_t *)calloc(num_thread,sizeof(arg_sum_kernel_t));
         int32_t i;
