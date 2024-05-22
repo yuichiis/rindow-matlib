@@ -1,14 +1,15 @@
 #include <math.h>
 #include <stdint.h>
 #ifdef _MSC_VER
-#define _CRT_RAND_S
-#include <stdlib.h>
+    #define _CRT_RAND_S
+    #include <stdlib.h>
+#else
+    #ifdef HAVE_PTHREAD
+    #include <pthread.h>
+    #endif
 #endif
 #include "rindow/matlib.h"
 #include "common.hpp"
-#ifdef HAVE_PTHREAD
-#include <pthread.h>
-#endif
 
 extern "C" {
 
@@ -29,7 +30,17 @@ int32_t rindow_matlib_common_get_nprocs(void)
 
 int32_t rindow_matlib_common_get_num_threads(void)
 {
+#ifdef _MSC_VER
+    static int nums = 0;
+    if (nums == 0) {
+        SYSTEM_INFO sysinfo;
+        GetSystemInfo(&sysinfo);
+        nums = sysinfo.dwNumberOfProcessors;
+    }
+    return nums;
+#else // _MSC_VER
     return get_nprocs();
+#endif // _MSC_VER
 }
 
 char* rindow_matlib_common_get_version(void)
@@ -45,7 +56,7 @@ int32_t rindow_matlib_common_get_parallel(void)
 
 int rindow_matlib_common_thread_create(
 #ifdef _MSC_VER
-    int64_t *thread_id,
+    HANDLE *thread_handle,
 #else
     pthread_t *thread_id,
 #endif
@@ -54,20 +65,66 @@ int rindow_matlib_common_thread_create(
     void *arg
     )
 {
+#ifdef _MSC_VER
+    // Initialize thread attribute
+    DWORD dwThreadId;
+    LPVOID lpThreadParam = arg;
+    HANDLE hThread = CreateThread(
+        NULL,                   // thread attribute: cannot inherit handle.
+        0,                      // stack size: New threads use the default size of the executable.
+        (LPTHREAD_START_ROUTINE) start_routine, // thread routine
+        lpThreadParam,           // thread params
+        0,                      // creation flag: Thread runs immediately after creation
+        &dwThreadId             // thread Id
+    );
+  
+    // Processing when thread creation fails
+    if (hThread == NULL) {
+      return -1;
+    }
+  
+    // Store thread ID
+    *thread_handle = hThread;
+  
+    return 0;
+#else
     return pthread_create( thread_id, (const pthread_attr_t*)attr, start_routine, arg);
+#endif
 }
 
 int rindow_matlib_common_thread_join(
 #ifdef _MSC_VER
-    int64_t thread_id,
+    HANDLE thread_handle,
 #else
     pthread_t thread_id,
 #endif
     void **retval
     )
 {
+#ifdef _MSC_VER
+    // Waiting for thread
+    DWORD dwWaitResult = WaitForSingleObject(
+        (HANDLE) thread_handle, // thread handle
+        INFINITE             // Wait time (infinite)
+    );
+
+    // Check thread exit status
+    if (dwWaitResult != WAIT_OBJECT_0) {
+        return -1; // error handling
+    }
+    if (retval != NULL) {
+      *retval = NULL; // Do not set return value of thread function
+    }
+
+    // Close thread handle
+    CloseHandle(thread_handle);
+
+    return 0;
+#else
     return pthread_join(thread_id,retval);
+#endif
 }
+
 
 //int32_t rindow_matlib_common_info(void)
 //{

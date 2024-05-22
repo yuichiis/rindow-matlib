@@ -7,6 +7,15 @@
 #ifdef HAVE_PTHREAD
 #include <pthread.h>
 #endif
+#include <vector>
+#include <queue>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <functional>
+#include <future>
+#include <stdexcept>
+#include <type_traits>
 
 #ifdef _MSC_VER
 #include <windows.h> // For Windows
@@ -29,6 +38,53 @@
 #endif
 #include <memory.h>
 
+namespace rindow {
+namespace matlib {
+
+
+class ThreadPool {
+public:
+    ThreadPool(size_t);
+    template<class F, class... Args>
+    auto enqueue(F&& f, Args&&... args) 
+        -> std::future<typename std::invoke_result<F, Args...>::type>;
+    ~ThreadPool();
+
+private:
+    std::vector<std::thread> workers;
+    std::queue<std::function<void()>> tasks;
+
+    std::mutex queue_mutex;
+    std::condition_variable condition;
+    bool stop;
+};
+
+template<class F, class... Args>
+auto ThreadPool::enqueue(F&& f, Args&&... args) 
+    -> std::future<typename std::invoke_result<F, Args...>::type>
+{
+    using return_type = typename std::invoke_result<F, Args...>::type;
+
+    auto task = std::make_shared<std::packaged_task<return_type()> >(
+        std::bind(std::forward<F>(f), std::forward<Args>(args)...)
+    );
+
+    std::future<return_type> res = task->get_future();
+    {
+        std::unique_lock<std::mutex> lock(queue_mutex);
+
+        if(stop)
+            throw std::runtime_error("enqueue on stopped ThreadPool");
+
+        tasks.emplace([task](){ (*task)(); });
+    }
+    condition.notify_one();
+    return res;
+}
+
+
+}
+}
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +92,7 @@ extern "C" {
 
 int rindow_matlib_common_thread_create(
 #ifdef _MSC_VER
-    int64_t *thread_id,
+    HANDLE *thread_id,
 #else
     pthread_t *thread_id,
 #endif
@@ -46,7 +102,7 @@ int rindow_matlib_common_thread_create(
 );
 int rindow_matlib_common_thread_join(
 #ifdef _MSC_VER
-    int64_t thread_id,
+    HANDLE thread_id,
 #else
     pthread_t thread_id,
 #endif

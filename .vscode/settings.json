@@ -80,7 +80,11 @@
         "xtree": "cpp",
         "xutility": "cpp",
         "complex": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "coroutine": "cpp",
+        "resumable": "cpp",
+        "future": "cpp",
+        "queue": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
