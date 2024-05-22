@@ -39,9 +39,11 @@ public:
             return 0;
         }
 
+        ThreadPool& pool = ThreadPool::getInstance(0);
+        int32_t max_threads = (int32_t)pool.getMaxThreads();
+
         T sum = 0;
-        int32_t nprocs = rindow_matlib_common_get_nprocs();
-        int32_t num_thread = std::min(n, nprocs);
+        int32_t num_thread = std::min(n, max_threads);
         int32_t cell_size = n / num_thread;
         int32_t remainder = n - cell_size * num_thread;
 
@@ -51,8 +53,6 @@ public:
 
         std::vector<arg_sum_kernel_t> args(num_thread);
         std::vector<std::future<T>> results;
-
-        ThreadPool pool(num_thread);
 
         for(int32_t i = 0; i < num_thread; i++) {
             if(i == num_thread - 1) {

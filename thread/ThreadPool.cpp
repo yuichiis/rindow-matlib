@@ -1,11 +1,11 @@
-#include "common.hpp"
+#include "ThreadPool.hpp"
 
 namespace rindow {
 namespace matlib {
 
-
 ThreadPool::ThreadPool(size_t threads) : stop(false) {
-    for(size_t i = 0; i < threads; ++i)
+    maxThreads = threads;
+    for(size_t i = 0; i < threads; ++i) {
         workers.emplace_back(
             [this] {
                 for(;;) {
@@ -23,6 +23,7 @@ ThreadPool::ThreadPool(size_t threads) : stop(false) {
                 }
             }
         );
+    }
 }
 
 ThreadPool::~ThreadPool() {
@@ -31,10 +32,19 @@ ThreadPool::~ThreadPool() {
         stop = true;
     }
     condition.notify_all();
-    for(std::thread &worker: workers)
+    for(std::thread &worker: workers) {
         worker.join();
+    }
 }
 
+size_t ThreadPool::getMaxThreads() {
+    return maxThreads;
+}
+
+ThreadPool& ThreadPool::getInstance(size_t numThreads) {
+    static ThreadPool instance(numThreads > 0 ? numThreads : std::thread::hardware_concurrency());
+    return instance;
+}
 
 }
 }

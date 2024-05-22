@@ -11,6 +11,56 @@
 #include "rindow/matlib.h"
 #include "common.hpp"
 
+namespace rindow {
+namespace matlib {
+
+#ifdef _MSC_VER
+// thread pool instance
+static ThreadPool* threadPoolInstance = nullptr;
+
+// DLL entry point
+BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
+    UNREFERENCED_PARAMETER(hinstDLL);
+    UNREFERENCED_PARAMETER(lpvReserved);
+    size_t threads = rindow_matlib_common_get_nprocs();
+
+    switch (fdwReason) {
+        case DLL_PROCESS_ATTACH:
+            // Create thread pool during library initialization
+            ThreadPool::getInstance(threads);
+            break;
+
+        case DLL_PROCESS_DETACH:
+            // Destroy thread pool when library exits
+            break;
+
+        default:
+            break;
+    }
+
+    return TRUE;
+}
+
+#else
+// thread pool instance
+static ThreadPool* threadPoolInstance = nullptr;
+
+// Constructor: called when the library is initialized
+void init_thread_pool() __attribute__((constructor));
+void init_thread_pool() {
+    size_t threads = rindow_matlib_common_get_nprocs();
+    ThreadPool::getInstance(threads);
+}
+
+// Destructor: called when the library exits
+void destroy_thread_pool() __attribute__((destructor));
+void destroy_thread_pool() {
+    delete threadPoolInstance;
+}
+#endif
+}
+}
+
 extern "C" {
 
 int32_t rindow_matlib_common_get_nprocs(void)
