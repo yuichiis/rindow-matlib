@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/thread)
 
 file(GLOB_RECURSE testfilesthread RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./*.cpp)
 
@@ -23,4 +23,5 @@ add_test(
   NAME thread_test
   COMMAND test_thread
   CONFIGURATIONS Release
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/thread
 )

@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/thread)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/thread)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/thread)
 if(APPLE)
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "/opt/local/share/cmake")
 endif()
@@ -21,6 +21,7 @@ configure_file(
 file(GLOB_RECURSE srcfiles.thread RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ./*.c ./*.cpp)
 
 add_library(rindowmatlib.thread SHARED ${srcfiles.thread})
+set_target_properties(rindowmatlib.thread PROPERTIES OUTPUT_NAME rindowmatlib)
 target_compile_options(rindowmatlib.thread PRIVATE -DRINDOW_COMPILING_DLL)
 if (MSVC)
     target_compile_options(rindowmatlib.thread PRIVATE /openmp:experimental)
@@ -47,7 +48,7 @@ if (MSVC)
     )
     install(
         TARGETS rindowmatlib.thread
-        ARCHIVE DESTINATION lib/thread/import
+        ARCHIVE DESTINATION lib/import/thread
         COMPONENT ${PROJECT_NAME}
     )
 elseif(APPLE)
