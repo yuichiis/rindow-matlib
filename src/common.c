@@ -12,6 +12,7 @@
 //#include <pthread.h>
 //#endif
 #include <stdio.h>
+#include <string.h>
 
 void rindow_matlib_common_console(const char *format, ...)
 {

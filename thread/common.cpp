@@ -10,6 +10,7 @@
     #endif
 #endif
 #include <stdarg.h>
+#include <string.h>
 #include "rindow/matlib.h"
 #include "common.hpp"
 
