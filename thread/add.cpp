@@ -1,5 +1,3 @@
-#define NOMINMAX
-
 #include "rindow/matlib.h"
 #include "common.hpp"
 
@@ -9,13 +7,13 @@ using rindow::matlib::ParallelResults;
 namespace {
 
 template <typename T>
-class AddClass
+class Add
 {
 public:
-    static void add_kernel(
+    static void kernel(
         int32_t begin,
         int32_t end,
-        bool para_n,
+        bool para_m,
         int32_t trans,
         int32_t m,
         int32_t n,
@@ -27,7 +25,7 @@ public:
     )
     {
         int32_t begin_i,end_i,begin_j,end_j;
-        if(!para_n) {
+        if(para_m) {
             begin_i=begin;
             end_i=end;
             begin_j=0;
@@ -53,23 +51,23 @@ public:
         }
     }
 
-    static void add(int32_t trans,int32_t m,int32_t n,T alpha, T *x, int32_t incX, T *a, int32_t ldA)
+    static void execute(int32_t trans,int32_t m,int32_t n,T alpha, T *x, int32_t incX, T *a, int32_t ldA)
     {
         if(m <= 0 || n <= 0) {
             return;
         }
         int32_t parallel;
-        bool para_n;
+        bool para_m;
         if(m>n) {
             parallel = m;
-            para_n = false;
+            para_m = true;
         } else {
             parallel = n;
-            para_n = true;
+            para_m = false;
         }
 
         ParallelResults<void> results;
-        ParallelOperation::execute(parallel,results,add_kernel,para_n,trans,m,n,alpha,x,incX,a,ldA);
+        ParallelOperation::enqueue(parallel,results,kernel,para_m,trans,m,n,alpha,x,incX,a,ldA);
 
         for(auto && result: results) {
             result.get();
@@ -83,14 +81,14 @@ extern "C" {
 void rindow_matlib_s_add(int32_t trans,int32_t m,int32_t n, float alpha, float *x, int32_t incX, float *a, int32_t ldA)
 {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    AddClass<float>::add(trans, m, n, alpha, x, incX, a, ldA);
+    Add<float>::execute(trans, m, n, alpha, x, incX, a, ldA);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 
 void rindow_matlib_d_add(int32_t trans,int32_t m,int32_t n, double alpha, double *x, int32_t incX, double *a, int32_t ldA)
 {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    AddClass<double>::add(trans, m, n, alpha, x, incX, a, ldA);
+    Add<double>::execute(trans, m, n, alpha, x, incX, a, ldA);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 }

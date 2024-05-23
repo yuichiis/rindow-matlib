@@ -14,7 +14,7 @@ using ParallelResults = std::vector<std::future<T>>;
 class ParallelOperation {
 public:
     template<typename R,typename F, typename... Args>
-    static void execute(
+    static void enqueue(
         int32_t size,
         R& results,
         F&& kernel, Args&&... args
@@ -22,8 +22,12 @@ public:
     {
         ThreadPool& pool = ThreadPool::getInstance();
         int32_t max_threads = (int32_t)pool.getMaxThreads();
-
-        int32_t num_thread = std::min(size, max_threads);
+        int32_t num_thread;
+        if(size < max_threads) {
+            num_thread = size;
+        } else {
+            num_thread = max_threads;
+        }
         int32_t cell_size = size / num_thread;
         int32_t remainder = size - cell_size * num_thread;
 
