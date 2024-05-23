@@ -1,10 +1,10 @@
 #include "ThreadPool.hpp"
+#include <stdio.h>
 
 namespace rindow {
 namespace matlib {
 
 ThreadPool::ThreadPool(size_t threads) : stop(false) {
-    maxThreads = threads;
     for(size_t i = 0; i < threads; ++i) {
         workers.emplace_back(
             [this] {
@@ -38,11 +38,11 @@ ThreadPool::~ThreadPool() {
 }
 
 size_t ThreadPool::getMaxThreads() {
-    return maxThreads;
+    return workers.size();
 }
 
-ThreadPool& ThreadPool::getInstance(size_t numThreads) {
-    static ThreadPool instance(numThreads > 0 ? numThreads : std::thread::hardware_concurrency());
+ThreadPool& ThreadPool::getInstance() {
+    static ThreadPool instance(std::thread::hardware_concurrency());
     return instance;
 }
 

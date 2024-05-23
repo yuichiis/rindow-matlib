@@ -8,7 +8,7 @@ using testing::ContainerEq;
 namespace {
 
 template <typename T>
-class AddThreadTest : public ::testing::Test {
+class AddTest : public ::testing::Test {
 protected:
     virtual void test_matlib_add(
         int32_t trans, int32_t m, int32_t n,
@@ -24,9 +24,9 @@ protected:
     }
 };
 typedef ::testing::Types<float, double> TestTypes;
-TYPED_TEST_SUITE(AddThreadTest, TestTypes);
+TYPED_TEST_SUITE(AddTest, TestTypes);
 
-TYPED_TEST(AddThreadTest, once) {
+TYPED_TEST(AddTest, once) {
     const int32_t trans = RINDOW_MATLIB_NO_TRANS;
     const int32_t M = 1;
     const int32_t N = 6;
@@ -53,7 +53,7 @@ TYPED_TEST(AddThreadTest, once) {
     EXPECT_THAT(R2, ContainerEq(A));
 }
 
-TYPED_TEST(AddThreadTest, broadcastAndScale) {
+TYPED_TEST(AddTest, broadcastAndScale) {
     const int32_t trans = RINDOW_MATLIB_NO_TRANS;
     const int32_t M = 3;
     const int32_t N = 2;
@@ -80,7 +80,7 @@ TYPED_TEST(AddThreadTest, broadcastAndScale) {
     EXPECT_THAT(R2, ContainerEq(A));
 }
 
-TYPED_TEST(AddThreadTest, trans) {
+TYPED_TEST(AddTest, trans) {
     const int32_t trans = RINDOW_MATLIB_TRANS;
     const int32_t M = 3;
     const int32_t N = 2;

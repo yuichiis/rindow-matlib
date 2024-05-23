@@ -13,8 +13,10 @@
 #elif defined(__APPLE__)
 #include <sys/sysctl.h> // For macOS
 #include <mach/mach.h> // For macOS
+#include <unistd.h>
 #else
 #include <sys/sysinfo.h> // For Linux and other Unix-like systems
+#include <unistd.h>
 #endif
 
 #include <stdlib.h>
@@ -28,7 +30,20 @@
     #include <pthread.h>      // Include pthread.h for POSIX threads
 #endif
 #include <memory.h>
+#include <exception>
+
 #include "ThreadPool.hpp"
+#include "ParallelOperation.hpp"
+
+#define RINDOW_BEGIN_CLEAR_EXCEPTION \
+    try { 
+#define RINDOW_END_CLEAR_EXCEPTION \
+    } catch(std::exception &e) { \
+        const char *msg = e.what(); \
+        rindow_matlib_common_console("matlib error: %s\n",msg); \
+    } catch (...) { \
+        rindow_matlib_common_console("matlib error: unknown error\n"); \
+    }
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,6 +68,7 @@ int rindow_matlib_common_thread_join(
     void **retval
 );
 
+void rindow_matlib_common_console(char *format, ...);
 int32_t rindow_matlib_common_copy_ex(int32_t dtype,int32_t n,void* source,int32_t incSource,void* dest,int32_t incDest);
 int32_t rindow_matlib_common_add_ex(int32_t dtype,int32_t n,void* source,int32_t incSource,void* dest,int32_t incDest);
 

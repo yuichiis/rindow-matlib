@@ -1,5 +1,6 @@
 #include <math.h>
 #include <stdint.h>
+#include <stdio.h>
 #ifdef _MSC_VER
     #define _CRT_RAND_S
     #include <stdlib.h>
@@ -8,60 +9,28 @@
     #include <pthread.h>
     #endif
 #endif
+#include <stdarg.h>
 #include "rindow/matlib.h"
 #include "common.hpp"
 
-namespace rindow {
-namespace matlib {
+extern "C" {
+
+void rindow_matlib_common_console(char *format, ...)
+{
+    char buffer[512];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, sizeof(buffer), format, args);
+    va_end(args);
+    size_t len = strnlen(buffer,sizeof(buffer));
 
 #ifdef _MSC_VER
-// thread pool instance
-static ThreadPool* threadPoolInstance = nullptr;
-
-// DLL entry point
-BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
-    UNREFERENCED_PARAMETER(hinstDLL);
-    UNREFERENCED_PARAMETER(lpvReserved);
-    size_t threads = rindow_matlib_common_get_nprocs();
-
-    switch (fdwReason) {
-        case DLL_PROCESS_ATTACH:
-            // Create thread pool during library initialization
-            ThreadPool::getInstance(threads);
-            break;
-
-        case DLL_PROCESS_DETACH:
-            // Destroy thread pool when library exits
-            break;
-
-        default:
-            break;
-    }
-
-    return TRUE;
-}
-
+    HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    WriteConsole(hStdOut, buffer, (DWORD)len, NULL, NULL);
 #else
-// thread pool instance
-static ThreadPool* threadPoolInstance = nullptr;
-
-// Constructor: called when the library is initialized
-void init_thread_pool() __attribute__((constructor));
-void init_thread_pool() {
-    size_t threads = rindow_matlib_common_get_nprocs();
-    ThreadPool::getInstance(threads);
-}
-
-// Destructor: called when the library exits
-void destroy_thread_pool() __attribute__((destructor));
-void destroy_thread_pool() {
-    delete threadPoolInstance;
-}
+    write(STDOUT_FILENO, buffer, len);
 #endif
 }
-}
-
-extern "C" {
 
 int32_t rindow_matlib_common_get_nprocs(void)
 {
@@ -80,17 +49,7 @@ int32_t rindow_matlib_common_get_nprocs(void)
 
 int32_t rindow_matlib_common_get_num_threads(void)
 {
-#ifdef _MSC_VER
-    static int nums = 0;
-    if (nums == 0) {
-        SYSTEM_INFO sysinfo;
-        GetSystemInfo(&sysinfo);
-        nums = sysinfo.dwNumberOfProcessors;
-    }
-    return nums;
-#else // _MSC_VER
-    return get_nprocs();
-#endif // _MSC_VER
+    return std::thread::hardware_concurrency();
 }
 
 char* rindow_matlib_common_get_version(void)
@@ -103,7 +62,7 @@ int32_t rindow_matlib_common_get_parallel(void)
 {
     return RINDOW_MATLIB_THREAD;
 }
-
+/*
 int rindow_matlib_common_thread_create(
 #ifdef _MSC_VER
     HANDLE *thread_handle,
@@ -174,7 +133,7 @@ int rindow_matlib_common_thread_join(
     return pthread_join(thread_id,retval);
 #endif
 }
-
+*/
 
 //int32_t rindow_matlib_common_info(void)
 //{

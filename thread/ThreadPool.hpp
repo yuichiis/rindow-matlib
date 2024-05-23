@@ -19,9 +19,9 @@ class ThreadPool {
 public:
     ThreadPool(size_t threads);
     ~ThreadPool();
-    static ThreadPool& getInstance(size_t numThreads);
+    static ThreadPool& getInstance();
     size_t getMaxThreads();
-    template<class F, class... Args>
+    template<typename F, typename... Args>
     auto enqueue(F&& f, Args&&... args) 
         -> std::future<typename std::invoke_result<F, Args...>::type>;
 
@@ -31,7 +31,6 @@ private:
     ThreadPool(ThreadPool&&) = delete;
     ThreadPool& operator=(ThreadPool&&) = delete;
 
-    size_t maxThreads;
     std::vector<std::thread> workers;
     std::queue<std::function<void()>> tasks;
 
@@ -40,7 +39,7 @@ private:
     bool stop;
 };
 
-template<class F, class... Args>
+template<typename F, typename... Args>
 auto ThreadPool::enqueue(F&& f, Args&&... args) 
     -> std::future<typename std::invoke_result<F, Args...>::type>
 {

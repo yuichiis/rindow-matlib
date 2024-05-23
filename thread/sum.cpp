@@ -1,34 +1,45 @@
 #define NOMINMAX
 
 #include "rindow/matlib.h"
-#include <math.h>
 #include "common.hpp"
-#include <stdio.h>
-#include <vector>
-#include <algorithm>
 
-using rindow::matlib::ThreadPool;
+using rindow::matlib::ParallelOperation;
+using rindow::matlib::ParallelResults;
 
 namespace {
 
 template <typename T>
-class sumClass
+class SumClass
 {
 public:
-    using arg_sum_kernel_t = struct _arg_sum_kernel {
-        T sum;
-        int32_t n;
-        T *x;
-        int32_t incX;
-    };
-
-    static T sum_kernel(arg_sum_kernel_t arg)
+    static T sum_kernel(
+        int32_t begin,
+        int32_t end,
+        int32_t n,
+        T *x,
+        int32_t incX
+    )
     {
         T sum = 0;
-        T* x = arg.x;
-        int32_t incX = arg.incX;
-        for(int32_t i = 0; i < arg.n; i++) {
+        for(int32_t i = begin; i < end; i++) {
             sum += x[i * incX];
+        }
+        return sum;
+    }
+
+    static T sum_bool_kernel(
+        int32_t begin,
+        int32_t end,
+        int32_t n,
+        T *x,
+        int32_t incX
+    )
+    {
+        T sum = 0;
+        for(int32_t i = begin; i < end; i++) {
+            if(x[i * incX]!=0) {
+                sum += 1;
+            }
         }
         return sum;
     }
@@ -39,39 +50,34 @@ public:
             return 0;
         }
 
-        ThreadPool& pool = ThreadPool::getInstance(0);
-        int32_t max_threads = (int32_t)pool.getMaxThreads();
+        T total = 0;
 
-        T sum = 0;
-        int32_t num_thread = std::min(n, max_threads);
-        int32_t cell_size = n / num_thread;
-        int32_t remainder = n - cell_size * num_thread;
-
-        printf("#num_thread=%d\n", num_thread);
-        printf("#cell_size=%d\n", cell_size);
-        printf("#remainder=%d\n", remainder);
-
-        std::vector<arg_sum_kernel_t> args(num_thread);
-        std::vector<std::future<T>> results;
-
-        for(int32_t i = 0; i < num_thread; i++) {
-            if(i == num_thread - 1) {
-                args[i].n = cell_size + remainder;
-            } else {
-                args[i].n = cell_size;
-            }
-            args[i].x = &x[i * cell_size * incX];
-            args[i].incX = incX;
-            args[i].sum = 0.0;
-
-            results.emplace_back(pool.enqueue(sum_kernel, args[i]));
-        }
+        ParallelResults<T> results;
+        ParallelOperation::execute(n,results,sum_kernel,n,x,incX);
 
         for(auto && result: results) {
-            sum += result.get();
+            total += result.get();
         }
 
-        return sum;
+        return total;
+    }
+
+    static T sum_bool(int32_t n, T *x, int32_t incX)
+    {
+        if(n <= 0) {
+            return 0;
+        }
+
+        T total = 0;
+
+        ParallelResults<T> results;
+        ParallelOperation::execute(n,results,sum_bool_kernel,n,x,incX);
+
+        for(auto && result: results) {
+            total += result.get();
+        }
+
+        return total;
     }
 };
 
@@ -80,12 +86,66 @@ public:
 extern "C" {
 float rindow_matlib_s_sum(int32_t n, float *x, int32_t incX)
 {
-    return sumClass<float>::sum(n, x, incX);
+    float ret;
+    RINDOW_BEGIN_CLEAR_EXCEPTION;
+    ret = SumClass<float>::sum(n, x, incX);
+    RINDOW_END_CLEAR_EXCEPTION;
+    return ret;
 }
 
 double rindow_matlib_d_sum(int32_t n, double *x, int32_t incX)
 {
-    return sumClass<double>::sum(n, x, incX);
+    double ret;
+    RINDOW_BEGIN_CLEAR_EXCEPTION;
+    ret = SumClass<double>::sum(n, x, incX);
+    RINDOW_END_CLEAR_EXCEPTION;
+    return ret;
+}
+
+int64_t rindow_matlib_i_sum(int32_t dtype, int32_t n,void *x, int32_t incX)
+{
+    int64_t ret=0;
+    RINDOW_BEGIN_CLEAR_EXCEPTION;
+    switch(dtype) {
+        case rindow_matlib_dtype_int8: {
+            ret =(int64_t)SumClass<int8_t>::sum(n, (int8_t*)x, incX);
+            break;
+        }
+        case rindow_matlib_dtype_uint8: {
+            ret =(int64_t)SumClass<uint8_t>::sum(n, (uint8_t*)x, incX);
+            break;
+        }
+        case rindow_matlib_dtype_int16: {
+            ret =(int64_t)SumClass<int16_t>::sum(n, (int16_t*)x, incX);
+            break;
+        }
+        case rindow_matlib_dtype_uint16: {
+            ret =(int64_t)SumClass<uint16_t>::sum(n, (uint16_t*)x, incX);
+            break;
+        }
+        case rindow_matlib_dtype_int32: {
+            ret =(int64_t)SumClass<int32_t>::sum(n, (int32_t*)x, incX);
+            break;
+        }
+        case rindow_matlib_dtype_uint32: {
+            ret =(int64_t)SumClass<uint32_t>::sum(n, (uint32_t*)x, incX);
+            break;
+        }
+        case rindow_matlib_dtype_int64: {
+            ret =(int64_t)SumClass<int64_t>::sum(n, (int64_t*)x, incX);
+            break;
+        }
+        case rindow_matlib_dtype_uint64: {
+            ret =(int64_t)SumClass<uint64_t>::sum(n, (uint64_t*)x, incX);
+            break;
+        }
+        case rindow_matlib_dtype_bool: {
+            ret =(int64_t)SumClass<uint8_t>::sum(n, (uint8_t *)x, incX);
+            break;
+        }
+    }
+    RINDOW_END_CLEAR_EXCEPTION;
+    return ret;
 }
 
 }

@@ -31,44 +31,15 @@
     #include <memory.h>
 #endif
 
-#ifndef _OPENMP
-
-typedef struct _arg_s_sum_kernel {
-  #ifdef _MSC_VER
-    int64_t tid;
-  #else
-    pthread_t tid;
-  #endif
-    float sum;
-    int32_t n;
-    float *x;
-    int32_t incX;
-} arg_s_sum_kernel_t;
-typedef struct _arg_d_sum_kernel {
-  #ifdef _MSC_VER
-    int64_t tid;
-  #else
-    pthread_t tid;
-  #endif
-    double sum;
-    int32_t n;
-    double *x;
-    int32_t incX;
-} arg_d_sum_kernel_t;
-
-#endif // ifndef _OPENMP
-
-#ifdef __cplusplus
-namespace rindow {
-
-template <typename T>
-class matlib
-{
-public:
-    static void topK(int32_t m,int32_t n,const T *input,int32_t k,int32_t sorted,T *values,int32_t *indices);
-};
-}
-#endif
+#define RINDOW_BEGIN_CLEAR_EXCEPTION \
+    try { 
+#define RINDOW_END_CLEAR_EXCEPTION \
+    } catch(std::exception &e) { \
+        const char *msg = e.what(); \
+        rindow_matlib_common_console("matlib error: %s\n",msg); \
+    } catch (...) { \
+        rindow_matlib_common_console("matlib error: unknown error\n"); \
+    }
 
 
 #ifdef __cplusplus
@@ -80,6 +51,7 @@ void *s_sum_kernel(void *varg);
 void *d_sum_kernel(void *varg);
 #endif // _OPENMP
 
+void rindow_matlib_common_console(char *format, ...);
 int32_t rindow_matlib_common_copy_ex(int32_t dtype,int32_t n,void* source,int32_t incSource,void* dest,int32_t incDest);
 int32_t rindow_matlib_common_add_ex(int32_t dtype,int32_t n,void* source,int32_t incSource,void* dest,int32_t incDest);
 
