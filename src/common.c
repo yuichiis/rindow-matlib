@@ -13,7 +13,7 @@
 //#endif
 #include <stdio.h>
 
-void rindow_matlib_common_console(char *format, ...)
+void rindow_matlib_common_console(const char *format, ...)
 {
     char buffer[512];
     va_list args;
