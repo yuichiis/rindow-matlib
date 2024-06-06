@@ -70,12 +70,7 @@ public:
             return;
         }
 
-        ParallelResults<void> results;
-        ParallelOperation::enqueue(n,results,bool_kernel,n,x,incX,y,incY);
-
-        for(auto && result: results) {
-            result.get();
-        }
+        ParallelOperation::execute(n,bool_kernel,n,x,incX,y,incY);
     }
 };
 

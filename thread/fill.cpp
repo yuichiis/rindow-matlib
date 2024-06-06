@@ -35,12 +35,7 @@ public:
             return;
         }
 
-        ParallelResults<void> results;
-        ParallelOperation::enqueue(n,results,kernel,dtype,n,value,x,incX);
-
-        for(auto && result: results) {
-            result.get();
-        }
+        ParallelOperation::execute(n,kernel,dtype,n,value,x,incX);
     }
 };
 

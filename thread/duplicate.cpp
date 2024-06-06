@@ -65,12 +65,7 @@ public:
             para_m = false;
         }
 
-        ParallelResults<void> results;
-        ParallelOperation::enqueue(parallel,results,kernel,para_m,trans,m,n,x,incX,a,ldA);
-
-        for(auto && result: results) {
-            result.get();
-        }
+        ParallelOperation::execute(parallel,kernel,para_m,trans,m,n,x,incX,a,ldA);
     }
 };
 

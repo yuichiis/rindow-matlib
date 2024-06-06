@@ -92,14 +92,7 @@ public:
             errcode = kernel(begin,end,reverse,addMode,n,k,numClass,dtype,x,a,b);
         } else {
             int32_t parallel = n;
-            ParallelResults<int32_t> results;
-            ParallelOperation::enqueue(parallel,results,kernel,reverse,addMode,n,k,numClass,dtype,x,a,b);
-            for(auto && result: results) {
-                int32_t code = result.get();
-                if(code!=0) {
-                    errcode = code;
-                }
-            }
+            errcode = ParallelOperation::reduceNotZero<int32_t>(parallel,kernel,reverse,addMode,n,k,numClass,dtype,x,a,b);
         }
 
         return errcode;

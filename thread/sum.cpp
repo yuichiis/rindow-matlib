@@ -48,16 +48,7 @@ public:
             return 0;
         }
 
-        T total = 0;
-
-        ParallelResults<T> results;
-        ParallelOperation::enqueue(n,results,kernel,n,x,incX);
-
-        for(auto && result: results) {
-            total += result.get();
-        }
-
-        return total;
+        return ParallelOperation::reduceSum<T>(n,kernel,n,x,incX);
     }
 
     static T execute_bool(int32_t n, T *x, int32_t incX)
@@ -68,14 +59,7 @@ public:
 
         T total = 0;
 
-        ParallelResults<T> results;
-        ParallelOperation::enqueue(n,results,bool_kernel,n,x,incX);
-
-        for(auto && result: results) {
-            total += result.get();
-        }
-
-        return total;
+        return ParallelOperation::reduceSum<T>(n,kernel,n,x,incX);
     }
 };
 

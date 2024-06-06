@@ -61,12 +61,7 @@ public:
             para_batch = false;
         }
 
-        ParallelResults<void> results;
-        ParallelOperation::enqueue(parallel,results,kernel,para_batch,m,n,k,a,lower,upper);
-
-        for(auto && result: results) {
-            result.get();
-        }
+        ParallelOperation::execute(parallel,kernel,para_batch,m,n,k,a,lower,upper);
     }
 };
 }

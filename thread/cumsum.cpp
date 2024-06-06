@@ -63,12 +63,7 @@ public:
             return;
         }
 
-        ParallelResults<void> results;
-        ParallelOperation::enqueue(m,results,kernel,m,n,x,incX,exclusive,reverse,y,incY);
-
-        for(auto && result: results) {
-            result.get();
-        }
+        ParallelOperation::execute(m,kernel,m,n,x,incX,exclusive,reverse,y,incY);
     }
 };
 

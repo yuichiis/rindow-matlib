@@ -30,12 +30,7 @@ public:
             return;
         }
 
-        ParallelResults<void> results;
-        ParallelOperation::enqueue(n,results,kernel,n,x,incX);
-
-        for(auto && result: results) {
-            result.get();
-        }
+        ParallelOperation::execute(n,kernel,n,x,incX);
     }
 };
 
