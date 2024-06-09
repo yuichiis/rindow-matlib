@@ -2,7 +2,6 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -11,8 +10,7 @@ class Fill
 {
 public:
     static void kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t dtype,
         int32_t n,
         T *value,
@@ -24,7 +22,7 @@ public:
         char *vx = (char*)x;
         size_t step = incX*value_size;
 
-        for(int32_t i=begin;i<end;i++) {
+        for(int32_t i=cell.begin; i<cell.end; i++) {
             memcpy(&(vx[i*step]),value,value_size);
         }
     }

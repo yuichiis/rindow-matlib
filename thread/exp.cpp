@@ -3,7 +3,6 @@
 #include <cmath>
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -12,14 +11,13 @@ class Exp
 {
 public:
     static void kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t n,
         T *x,
         int32_t incX
     )
     {
-        for(int32_t i = begin; i < end; i++) {
+        for(int32_t i = cell.begin; i < cell.end; i++) {
             x[i * incX] = std::exp(x[i * incX]);
         }
     }

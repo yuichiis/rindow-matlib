@@ -2,7 +2,6 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -11,8 +10,7 @@ class Gatherb
 {
 public:
     static int32_t kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t reverse,
         int32_t addMode,
         int32_t m,
@@ -25,7 +23,7 @@ public:
     )
     {
         int32_t errcode = 0;
-        for(int32_t i=begin; i<end; i++) {
+        for(int32_t i=cell.begin; i<cell.end; i++) {
             int32_t selector = x[i];
             if(selector<0||selector>=numClass) {
                 errcode = RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;

@@ -2,7 +2,6 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -11,8 +10,7 @@ class Duplicate
 {
 public:
     static void kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         bool para_m,
         int32_t trans,int32_t m,int32_t n,
         T *x, int32_t incX,
@@ -21,15 +19,15 @@ public:
     {
         int32_t begin_i,end_i,begin_j,end_j;
         if(para_m) {
-            begin_i=begin;
-            end_i=end;
+            begin_i=cell.begin;
+            end_i=cell.end;
             begin_j=0;
             end_j=n;
         } else {
             begin_i=0;
             end_i=m;
-            begin_j=begin;
-            end_j=end;
+            begin_j=cell.begin;
+            end_j=cell.end;
         }
         if(trans==RINDOW_MATLIB_NO_TRANS) {
             for(int32_t i=begin_i; i<end_i; i++) {

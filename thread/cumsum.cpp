@@ -2,7 +2,6 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -11,8 +10,7 @@ class Cumsum
 {
 public:
     static void kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t m,
         int32_t n,
         T *x, int32_t incX,
@@ -24,16 +22,16 @@ public:
         int32_t idxX,idxY;
 
         if(reverse) {
-            idxX = begin*n*incX;
-            idxY = end*n*incY - incY;
+            idxX = cell.begin*n*incX;
+            idxY = cell.end*n*incY - incY;
             incY = -incY;
         } else {
-            idxX = begin*n*incX;
-            idxY = begin*n*incY;
+            idxX = cell.begin*n*incX;
+            idxY = cell.begin*n*incY;
         }
 
         if(exclusive) {
-            for(int32_t i=begin;i<end;i++) {
+            for(int32_t i=cell.begin;i<cell.end;i++) {
                 T value = 0.0;
                 for(int32_t j=0;j<n;j++,idxX+=incX,idxY+=incY) {
                     y[idxY] = value;
@@ -41,7 +39,7 @@ public:
                 }
             }
         } else {
-            for(int32_t i=begin;i<end;i++) {
+            for(int32_t i=cell.begin;i<cell.end;i++) {
                 T value = 0.0;
                 for(int32_t j=0;j<n;j++,idxX+=incX,idxY+=incY) {
                     value += x[idxX];

@@ -2,7 +2,6 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -11,8 +10,7 @@ class BandPart
 {
 public:
     static void kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         bool para_batch,
         int32_t m, int32_t n, int32_t k,
         T *a,
@@ -21,15 +19,15 @@ public:
     {
         int32_t begin_batch,end_batch,begin_i,end_i;
         if(para_batch) {
-            begin_batch=begin;
-            end_batch=end;
+            begin_batch=cell.begin;
+            end_batch=cell.end;
             begin_i=0;
             end_i=n;
         } else {
             begin_batch=0;
             end_batch=m;
-            begin_i=begin;
-            end_i=end;
+            begin_i=cell.begin;
+            end_i=cell.end;
         }
 
         for(int32_t batch=begin_batch;batch<end_batch;batch++) {

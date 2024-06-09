@@ -2,7 +2,6 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -11,30 +10,28 @@ class Sum
 {
 public:
     static T kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t n,
         T *x,
         int32_t incX
     )
     {
         T sum = 0;
-        for(int32_t i = begin; i < end; i++) {
+        for(int32_t i = cell.begin; i < cell.end; i++) {
             sum += x[i * incX];
         }
         return sum;
     }
 
     static T bool_kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t n,
         T *x,
         int32_t incX
     )
     {
         T sum = 0;
-        for(int32_t i = begin; i < end; i++) {
+        for(int32_t i = cell.begin; i < cell.end; i++) {
             if(x[i * incX]!=0) {
                 sum += 1;
             }

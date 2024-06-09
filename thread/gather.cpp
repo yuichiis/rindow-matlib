@@ -2,7 +2,6 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -11,8 +10,7 @@ class Gather
 {
 public:
     static int32_t kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t reverse,
         int32_t addMode,
         int32_t n,
@@ -25,7 +23,7 @@ public:
     )
     {
         int32_t errcode = 0;
-        for(int32_t i=begin; i<end; i++) {
+        for(int32_t i=cell.begin; i<cell.end; i++) {
             int64_t selector = 0;
             rindow_matlib_common_get_integer(dtype, x, 1, i, &selector);
             if(selector<0||selector>=numClass) {
@@ -87,12 +85,16 @@ public:
     
         if(reverse&&addMode) {
             // serial addition
-            int32_t begin=0;
-            int32_t end=n;
-            errcode = kernel(begin,end,reverse,addMode,n,k,numClass,dtype,x,a,b);
+            ParallelOperation::cellInfo cell;
+            cell.begin=0;
+            cell.end=n;
+            errcode = kernel(cell,reverse,addMode,n,k,numClass,dtype,x,a,b);
         } else {
             int32_t parallel = n;
-            errcode = ParallelOperation::reduceNotZero<int32_t>(parallel,kernel,reverse,addMode,n,k,numClass,dtype,x,a,b);
+            errcode = ParallelOperation::reduceNotZero<int32_t>(
+                parallel,kernel,
+                reverse,addMode,n,k,numClass,dtype,x,a,b
+            );
         }
 
         return errcode;

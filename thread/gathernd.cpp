@@ -2,17 +2,16 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
 template <typename T>
 class Gathernd
 {
-public:
-    static int32_t kernel(
-        int32_t begin,
-        int32_t end,
+private:
+    static int32_t kernel_sub(
+        int32_t i,
+        int32_t j,
         int32_t reverse,
         int32_t addMode,
         int32_t m,
@@ -26,48 +25,96 @@ public:
     )
     {
         int32_t errcode = 0;
-        for(int32_t i=begin; i<end; i++) {
-            for(int32_t j=0; j<n; j++) {
-                int32_t offset=0;
-                int32_t multiplier=1;
-                bool outofindex=false;
-                for(int32_t h=indexDepth-1;h>=0;--h) {
-                    int32_t selector = x[i*n*indexDepth + j*indexDepth + h];
-                    if(selector<0||selector>=paramShape[h]) {
-                        errcode = RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
-                        outofindex=true;
-                        break;
+        int32_t offset=0;
+        int32_t multiplier=1;
+        for(int32_t h=indexDepth-1;h>=0;--h) {
+            int32_t selector = x[i*n*indexDepth + j*indexDepth + h];
+            if(selector<0||selector>=paramShape[h]) {
+                errcode = RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
+                break;
+            }
+            offset += selector*multiplier;
+            multiplier *= paramShape[h];
+        }
+        if(errcode!=0) {
+            return errcode;
+        }
+        int32_t selector = x[i];
+        T *from = &a[i*multiplier*k + offset*k];
+        T *to = &b[i*n*k + j*k];
+        if(reverse) {
+            T *tmp;
+            tmp = from;
+            from = to;
+            to = tmp;
+        }
+        if(k==1) {
+            if(addMode) {
+                *to += *from;
+            } else {
+                *to = *from;
+            }
+        } else {
+            if(addMode) {
+                for(int32_t idx=0; idx<k; idx++) {
+                    to[idx] += from[idx];
+                }
+            } else {
+                for(int32_t idx=0; idx<k; idx++) {
+                    to[idx] = from[idx];
+                }
+            }
+        }
+        return errcode;
+    }
+
+    static int32_t kernel(
+        ParallelOperation::cellInfo cell,
+        bool para_m,
+        int32_t reverse,
+        int32_t addMode,
+        int32_t m,
+        int32_t n,
+        int32_t k,
+        int32_t indexDepth,
+        int32_t *paramShape,
+        T *a,
+        int32_t *x,
+        T *b
+    )
+    {
+        int32_t errcode = 0;
+        if(para_m) {
+            for(int32_t i=cell.begin; i<cell.end; i++) {
+                for(int32_t j=0; j<n; j++) {
+                    int32_t ec = kernel_sub(
+                        i,j,
+                        reverse,addMode,
+                        m,n,k,
+                        indexDepth,paramShape,
+                        a,
+                        x,
+                        b
+                    );
+                    if(ec!=0) {
+                        errcode = ec;
                     }
-                    offset += selector*multiplier;
-                    multiplier *= paramShape[h];
                 }
-                if(outofindex) {
-                    continue;
-                }
-                int32_t selector = x[i];
-                T *from = &a[i*multiplier*k + offset*k];
-                T *to = &b[i*n*k + j*k];
-                if(reverse) {
-                    T *tmp;
-                    tmp = from;
-                    from = to;
-                    to = tmp;
-                }
-                if(k==1) {
-                    if(addMode) {
-                        *to += *from;
-                    } else {
-                        *to = *from;
-                    }
-                } else {
-                    if(addMode) {
-                        for(int32_t idx=0; idx<k; idx++) {
-                            to[idx] += from[idx];
-                        }
-                    } else {
-                        for(int32_t idx=0; idx<k; idx++) {
-                            to[idx] = from[idx];
-                        }
+            }
+        } else {
+            for(int32_t i=0; i<m; i++) {
+                for(int32_t j=cell.begin; j<cell.end; j++) {
+                    int32_t ec = kernel_sub(
+                        i,j,
+                        reverse,addMode,
+                        m,n,k,
+                        indexDepth,paramShape,
+                        a,
+                        x,
+                        b
+                    );
+                    if(ec!=0) {
+                        errcode = ec;
                     }
                 }
             }
@@ -75,6 +122,117 @@ public:
         return errcode;
     }
 
+    static int32_t scatterAddKernel(
+        ParallelOperation::cellInfo cell,
+        int32_t blockSize,      // blockSize = m*paramSize*k
+        T *a_buf,
+        int32_t reverse,
+        int32_t addMode,
+        int32_t m,
+        int32_t n,
+        int32_t k,
+        int32_t indexDepth,
+        int32_t *paramShape,
+        T *a,
+        int32_t *x,
+        T *b
+    )
+    {
+        int32_t errcode = 0;
+        int32_t i=0;
+        for(int32_t j=cell.begin; j<cell.end; j++) {
+            if(cell.id==0) {
+                int32_t ec = kernel_sub(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b);
+                if(ec) {
+                    errcode = ec;
+                }
+            } else {
+                //  a_sub: (m, (paramShape), k)
+                T *a_sub = &a_buf[(cell.id-1)*blockSize];
+                int32_t ec = kernel_sub(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,a_sub,x,b);
+                if(ec) {
+                    errcode = ec;
+                }
+            }
+        }
+        return errcode;
+    }
+
+    static void sumKernel(
+        ParallelOperation::cellInfo cell,
+        int32_t num_threads,
+        int32_t blockSize,      // blockSize = m*paramSize*k
+        T *a,
+        T *a_buf
+    )
+    {
+        for(int32_t pos=cell.begin; pos<cell.end; pos++) {
+            for(int32_t thread_id=1; thread_id<num_threads; thread_id++) {
+                // (num_threads-1)*[m,p0,p1,k]
+                a[pos] += a_buf[blockSize*(thread_id-1)+pos];
+            }
+        }
+    }
+
+    static int32_t scatterAdd(
+        int32_t reverse,
+        int32_t addMode,
+        int32_t m,
+        int32_t n,
+        int32_t k,
+        int32_t indexDepth,
+        int32_t *paramShape,
+        T *a,
+        int32_t *x,
+        T *b
+    )
+    {
+        // m is 1 here.
+        if(m!=1) {
+            return RINDOW_MATLIB_E_INVALID_SHAPE_OR_PARAM;
+        }
+        int32_t value_width = sizeof(T);
+        int32_t errcode = 0;
+        int32_t paramSize = 1;
+        for(int32_t h=0; h<indexDepth; ++h) {
+            if(paramShape[h]<=0) {
+                return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
+            }
+            paramSize *= paramShape[h];
+        }
+        // n*[m,p0,p1,k]
+        int32_t blockSize = m*paramSize*k;
+        int32_t num_threads = (int32_t)ParallelOperation::getMaxThreads();
+        if(n<num_threads) {
+            num_threads = n;
+        }
+        std::vector<T> a_buf((num_threads-1)*blockSize, 0);
+        //T *a_buf = (T*)calloc((num_threads-1)*blockSize,value_width);
+        //if(a_buf==NULL) {
+        //    return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
+        //}
+
+        errcode = ParallelOperation::reduceNotZero<int32_t>(
+            n,scatterAddKernel,
+            blockSize,a_buf.data(),
+            reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b
+        );
+        if(errcode) {
+            //free(a_buf);
+            return errcode;
+        }
+        ParallelOperation::execute(blockSize,sumKernel,num_threads,blockSize,a,a_buf.data());
+        //free(a_buf);
+        return errcode;
+    }
+
+public:
+    /**
+     * A: (m, (paramShape), k)
+     * X: (m, n, index_depth)
+     * B: (m, n, k)
+     * B(m, n, k) := A(m,(X(m,n)),k)
+     */
     static int32_t execute(
         int32_t reverse,
         int32_t addMode,
@@ -91,9 +249,24 @@ public:
         if(m <= 0 || n <= 0 || k <= 0) {
             return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
         }
-        int32_t value_width = sizeof(float);
-    
-        return ParallelOperation::reduceNotZero<int32_t>(m,kernel,reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b);
+        if(reverse&&addMode&&m==1) {
+            return scatterAdd(reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b);
+        } else {
+            int32_t parallel;
+            bool para_m;
+            if(m>1) {
+                parallel = m;
+                para_m = true;
+            } else {
+                parallel = n;
+                para_m = false;
+            }
+            return ParallelOperation::reduceNotZero<int32_t>(
+                parallel,kernel,
+                para_m,
+                reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b
+            );
+        }
     }
 };
 

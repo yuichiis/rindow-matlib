@@ -15,6 +15,19 @@ using ParallelResults = std::vector<std::future<T>>;
 
 class ParallelOperation {
 public:
+    typedef struct {
+        int32_t id;
+        int32_t size;
+        int32_t begin;
+        int32_t end;
+    } cellInfo;
+
+    static size_t getMaxThreads()
+    {
+        ThreadPool& pool = ThreadPool::getInstance();
+        return pool.getMaxThreads();
+    }
+
     template<typename R,typename F, typename... Args>
     static void enqueue(
         int32_t size,
@@ -34,15 +47,16 @@ public:
         int32_t remainder = size - cell_size * num_thread;
 
         for(int32_t i = 0; i < num_thread; i++) {
-            int32_t begin;
-            int32_t end;
-            begin = i * cell_size;
+            cellInfo cell_info;
+            cell_info.id = i;
+            cell_info.size = cell_size;
+            cell_info.begin = i * cell_size;
             if(i == num_thread - 1) {
-                end = (i+1) * cell_size + remainder;
+                cell_info.end = (i+1) * cell_size + remainder;
             } else {
-                end = (i+1) * cell_size;
+                cell_info.end = (i+1) * cell_size;
             }
-            results.emplace_back(pool.enqueue(kernel, begin, end, args...));
+            results.emplace_back(pool.enqueue(kernel, cell_info, args...));
         }
     }
 

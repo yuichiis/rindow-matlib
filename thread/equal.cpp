@@ -2,7 +2,6 @@
 #include "common.hpp"
 
 using rindow::matlib::ParallelOperation;
-using rindow::matlib::ParallelResults;
 
 namespace {
 
@@ -11,8 +10,7 @@ class Equal
 {
 public:
     static void kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t n,
         T *x,
         int32_t incX,
@@ -20,7 +18,7 @@ public:
         int32_t incY
     )
     {
-        for(int32_t i = begin; i < end; i++) {
+        for(int32_t i = cell.begin; i < cell.end; i++) {
             if(x[i * incX]==y[i * incY]) {
                 y[i * incY] = 1;
             } else {
@@ -30,8 +28,7 @@ public:
     }
 
     static void bool_kernel(
-        int32_t begin,
-        int32_t end,
+        ParallelOperation::cellInfo cell,
         int32_t n,
         T *x,
         int32_t incX,
@@ -39,7 +36,7 @@ public:
         int32_t incY
     )
     {
-        for(int32_t i = begin; i < end; i++) {
+        for(int32_t i = cell.begin; i < cell.end; i++) {
             if((x[i*incX] && y[i*incY]) ||      // 1 == 1
                 (!x[i*incX] && !y[i*incY])   // 0 == 0
             ) {
@@ -56,12 +53,7 @@ public:
             return;
         }
 
-        ParallelResults<void> results;
-        ParallelOperation::enqueue(n,results,kernel,n,x,incX,y,incY);
-
-        for(auto && result: results) {
-            result.get();
-        }
+        ParallelOperation::execute(n,kernel,n,x,incX,y,incY);
     }
 
     static void execute_bool(int32_t n, T *x, int32_t incX, T *y, int32_t incY)

@@ -1045,4 +1045,67 @@ TYPED_TEST(GatherndTest, ScatterndNormal3Dby3Dby2DindcesAxis1) {
     };
     EXPECT_THAT(R1, ContainerEq(B));
 }
+TYPED_TEST(GatherndTest, ScatterndAddNormal2Dby2Dby2DindicesAxis0) {
+    // axis = 0
+    // 2D indices
+    // A:   2D [n,k]
+    // X:   2D [n,depth]
+    // res: 3D [p0,p1,k]
+    const int32_t reverse = true; 
+    const int32_t addMode = true;
+    const int32_t shapeA0 = 4;
+    const int32_t shapeA1 = 2;
+    const int32_t shapeX0 = 4;
+    const int32_t shapeX1 = 2;
+    const int32_t batchDims = 0;
+    const int32_t shapeB0 = 5;
+    const int32_t shapeB1 = 6;
+    const int32_t shapeB2 = 2;
+    const int32_t indexDepth0 = 2;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t indexDepth;
+    int32_t paramShape[indexDepth0];
+    int32_t RParamShape[indexDepth0] = {5,6};
+    int32_t outputSize;
+    int32_t rc;
+
+    TypeParam A[shapeA0][shapeA1] = {
+        {1,10},
+        {2,3},
+        {30,31},
+        {1,10}
+    };
+    int32_t X[shapeX0][shapeX1] = {
+        {4,5},
+        {0,1},
+        {2,3},
+        {4,5}
+    };
+    TypeParam B[shapeB0][shapeB1][shapeB2];
+    Utils::fill<TypeParam>(shapeB0*shapeB1*shapeB2, (TypeParam*)B, 0);
+
+    rc = this->calcScatterndShapes({shapeX0,shapeX1},{shapeA0,shapeA1},{shapeB0,shapeB1,shapeB2},batchDims,&m,&n,&k,&indexDepth,paramShape,&outputSize);
+    ASSERT_EQ(0,rc);
+    
+    ASSERT_EQ(1,            m);
+    ASSERT_EQ(shapeX0,      n);
+    ASSERT_EQ(shapeA1,      k);
+    ASSERT_EQ(indexDepth0, indexDepth);
+    EXPECT_THAT(RParamShape, ContainerEq(paramShape));
+    ASSERT_EQ(shapeB0*shapeB1*shapeB2,     outputSize);
+
+    rc = this->test_matlib_gathernd(reverse,addMode,m,n,k,indexDepth,paramShape,(TypeParam*)B,(int32_t*)X,(TypeParam*)A);
+    ASSERT_EQ(0,rc);
+
+    TypeParam R1[shapeB0][shapeB1][shapeB2] = {
+        {{0,0},{2,3},{0,0},{0,0},  {0,0},{0,0}},
+        {{0,0},{0,0},{0,0},{0,0},  {0,0},{0,0}},
+        {{0,0},{0,0},{0,0},{30,31},{0,0},{0,0}},
+        {{0,0},{0,0},{0,0},{0,0},  {0,0},{0,0}},
+        {{0,0},{0,0},{0,0},{0,0},  {0,0},{2,20}}
+    };
+    EXPECT_THAT(R1, ContainerEq(B));
+}
 }
