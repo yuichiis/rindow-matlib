@@ -21,6 +21,7 @@ private:
         int32_t k,
         int32_t indexDepth,
         int32_t paramShape[],
+        int32_t paramSize,
         T a[],
         int32_t x[],
         T b[]
@@ -28,20 +29,19 @@ private:
     {
         int32_t errcode = 0;
         int32_t offset=0;
-        int32_t multiplier=1;
-        for(int32_t h=indexDepth-1;h>=0;--h) {
+        for(int32_t h=0; h<indexDepth; ++h) {
+            offset *= paramShape[h];
             int32_t selector = x[i*n*indexDepth + j*indexDepth + h];
             if(selector<0||selector>=paramShape[h]) {
                 errcode = RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
                 break;
             }
-            offset += selector*multiplier;
-            multiplier *= paramShape[h];
+            offset += selector;
         }
         if(errcode) {
             return errcode;
         }
-        T *from = &a[i*multiplier*k + offset*k];
+        T *from = &a[i*paramSize*k + offset*k];
         T *to = &b[i*n*k + j*k];
         if(reverse) {
             T *tmp;
@@ -90,75 +90,91 @@ public:
         if(m<=0||n<=0) {
             return 0;
         }
-        int32_t num_threads = rindow_matlib_common_get_num_threads();
+        int32_t paramSize = 1;
+        for(int32_t h=0; h<indexDepth; ++h) {
+            if(paramShape[h]<=0) {
+                return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
+            }
+            paramSize *= paramShape[h];
+        }
+        int32_t parallel_n = rindow_matlib_common_get_num_threads();
+        if(n<parallel_n) {
+            parallel_n = n;
+        }
+        bool para_m = false;
+        bool scatteradd_mode = false;
+        if(reverse&&addMode) {
+            if(m>=parallel_n) {
+                para_m = true;
+                scatteradd_mode = false;
+            } else {
+                para_m = false;
+                scatteradd_mode = true;
+            }
+        } else {
+            if(m>=n) {
+                para_m = true;
+                scatteradd_mode = false;
+            } else {
+                para_m = false;
+                scatteradd_mode = false;
+            }
+        }
 
-        if(m>=n || (reverse&&addMode&&m>1) || num_threads==1) { // parallel for batchs
-            int32_t i;
-            #pragma omp parallel for
-            for(i=0;i<m;i++) {
-                for(int32_t j=0; j<n; j++) {
-                    int32_t ec = kernel(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b);
-                    if(ec) {
-                        errcode = ec;
+        if(!scatteradd_mode) {
+            if(para_m) { // parallel for batchs
+                int32_t i;
+                #pragma omp parallel for
+                for(i=0;i<m;i++) {
+                    for(int32_t j=0; j<n; j++) {
+                        int32_t ec = kernel(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,paramSize,a,x,b);
+                        if(ec) {
+                            errcode = ec;
+                        }
                     }
                 }
-            }
-        } else if(!(reverse&&addMode)) { // parallel for broadcast on n
-            int32_t j;
-            #pragma omp parallel for
-            for(j=0; j<n; j++) {
-                for(int32_t i=0;i<m;i++) {
-                    int32_t ec = kernel(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b);
-                    if(ec) {
-                        errcode = ec;
+            } else { // parallel for broadcast on n
+                int32_t j;
+                #pragma omp parallel for
+                for(j=0; j<n; j++) {
+                    for(int32_t i=0;i<m;i++) {
+                        int32_t ec = kernel(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,paramSize,a,x,b);
+                        if(ec) {
+                            errcode = ec;
+                        }
                     }
                 }
             }
         } else { // broadcast on reverse and addmode
-            // m is 1 here.
-            if(m!=1) {
-                return RINDOW_MATLIB_E_INVALID_SHAPE_OR_PARAM;
-            }
-            if(n<num_threads) {
-                num_threads = n;
-            }
-            int32_t cell_size = n / num_threads;
-            int32_t remainder = n - cell_size * num_threads;
-            int32_t paramSize = 1;
-            for(int32_t h=0; h<indexDepth; ++h) {
-                if(paramShape[h]<=0) {
-                    return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
-                }
-                paramSize *= paramShape[h];
-            }
+            int32_t cell_size = n / parallel_n;
+            int32_t remainder = n - cell_size * parallel_n;
             // n*[m,p0,p1,k]
-            T *a_buf = (T*)calloc((num_threads-1)*m*paramSize*k,value_width);
+            T *a_buf = (T*)calloc((parallel_n-1)*m*paramSize*k,value_width);
             if(a_buf==NULL) {
                 return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
             }
 
             int32_t thread_id;
             #pragma omp parallel for
-            for(thread_id=0; thread_id<num_threads; thread_id++) {
+            for(thread_id=0; thread_id<parallel_n; thread_id++) {
                 int32_t begin;
                 int32_t end;
                 begin = thread_id * cell_size;
-                if(thread_id == num_threads - 1) {
+                if(thread_id == parallel_n - 1) {
                     end = (thread_id+1) * cell_size + remainder;
                 } else {
                     end = (thread_id+1) * cell_size;
                 }
 
-                int32_t i=0;
-                for(int32_t j=begin; j<end; j++) {
-                    if(thread_id==0) {
-                        int32_t ec = kernel(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b);
-                        if(ec) {
-                            errcode = ec;
+                for(int32_t i=0; i<m; i++) {
+                    for(int32_t j=begin; j<end; j++) {
+                        T *a_sub;
+                        if(thread_id==0) {
+                            a_sub = a;
+                        } else {
+                            a_sub = &a_buf[(thread_id-1)*m*paramSize*k];
                         }
-                    } else {
-                        T *a_sub = &a_buf[(thread_id-1)*m*paramSize*k];
-                        int32_t ec = kernel(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,a_sub,x,b);
+                        int32_t ec = kernel(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,paramSize,a_sub,x,b);
                         if(ec) {
                             errcode = ec;
                         }
@@ -169,7 +185,7 @@ public:
             int32_t pos=0;
             #pragma omp parallel for
             for(pos=0;pos<m*paramSize*k;pos++) {
-                for(int32_t thread_id=1; thread_id<num_threads; thread_id++) {
+                for(int32_t thread_id=1; thread_id<parallel_n; thread_id++) {
                     // n*[m,p0,p1,k]
                     a[pos] += a_buf[m*paramSize*k*(thread_id-1)+pos];
                 }

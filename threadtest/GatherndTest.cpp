@@ -1046,6 +1046,7 @@ TYPED_TEST(GatherndTest, ScatterndNormal3Dby3Dby2DindcesAxis1) {
     EXPECT_THAT(R1, ContainerEq(B));
 }
 TYPED_TEST(GatherndTest, ScatterndAddNormal2Dby2Dby2DindicesAxis0) {
+    // m = 1
     // axis = 0
     // 2D indices
     // A:   2D [n,k]
@@ -1105,6 +1106,77 @@ TYPED_TEST(GatherndTest, ScatterndAddNormal2Dby2Dby2DindicesAxis0) {
         {{0,0},{0,0},{0,0},{30,31},{0,0},{0,0}},
         {{0,0},{0,0},{0,0},{0,0},  {0,0},{0,0}},
         {{0,0},{0,0},{0,0},{0,0},  {0,0},{2,20}}
+    };
+    EXPECT_THAT(R1, ContainerEq(B));
+}
+TYPED_TEST(GatherndTest, ScatterndAddNormal3Dby3DAxis1) {
+    // m<n
+    // axis = 1
+    // 1D indices
+    // A:   3D [m,n,k]
+    // X:   3D [m,n,depth]
+    // res: 3D [m,p0,k]
+    const int32_t reverse = true; 
+    const int32_t addMode = true;
+    const int32_t shapeA0 = 2;
+    const int32_t shapeA1 = 4;
+    const int32_t shapeA2 = 2;
+    const int32_t shapeX0 = 2;
+    const int32_t shapeX1 = 4;
+    const int32_t shapeX2 = 1;
+    const int32_t batchDims = 1;
+    const int32_t shapeB0 = 2;
+    const int32_t shapeB1 = 5;
+    const int32_t shapeB2 = 2;
+    const int32_t indexDepth0 = 1;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t indexDepth;
+    int32_t paramShape[indexDepth0];
+    int32_t RParamShape[indexDepth0] = {5};
+    int32_t outputSize;
+    int32_t rc;
+
+    TypeParam A[shapeA0][shapeA1][shapeA2] = {
+        {{ 0,  1},
+         { 0,  1},
+         {12, 13},
+         {12, 13}},
+        {{24, 25},
+         {24, 25},
+         {30, 31},
+         {30, 31}}
+    };
+    int32_t X[shapeX0][shapeX1][shapeX2] = {
+        {{0},
+         {0},
+         {1},
+         {1}},
+        {{2},
+         {2},
+         {0},
+         {0}}
+    };
+    TypeParam B[shapeB0][shapeB1][shapeB2];
+    Utils::fill<TypeParam>(shapeB0*shapeB1*shapeB2, (TypeParam*)B, 0);
+
+    rc = this->calcScatterndShapes({shapeX0,shapeX1,shapeX2},{shapeA0,shapeA1,shapeA2},{shapeB0,shapeB1,shapeB2},batchDims,&m,&n,&k,&indexDepth,paramShape,&outputSize);
+    ASSERT_EQ(0,rc);
+    
+    ASSERT_EQ(shapeX0,      m);
+    ASSERT_EQ(shapeX1,      n);
+    ASSERT_EQ(shapeA2,      k);
+    ASSERT_EQ(indexDepth0, indexDepth);
+    EXPECT_THAT(RParamShape, ContainerEq(paramShape));
+    ASSERT_EQ(shapeB0*shapeB1*shapeB2,     outputSize);
+
+    rc = this->test_matlib_gathernd(reverse,addMode,m,n,k,indexDepth,paramShape,(TypeParam*)B,(int32_t*)X,(TypeParam*)A);
+    ASSERT_EQ(0,rc);
+
+    TypeParam R1[shapeB0][shapeB1][shapeB2] = {
+        {{0,2},{24,26},{0,0},{0,0},{0,0}},
+        {{60,62},{0,0},{48,50},{0,0},{0,0}},
     };
     EXPECT_THAT(R1, ContainerEq(B));
 }

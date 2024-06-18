@@ -19,6 +19,7 @@ private:
         int32_t k,
         int32_t indexDepth,
         int32_t *paramShape,
+        int32_t paramSize,
         T *a,
         int32_t *x,
         T *b
@@ -26,21 +27,20 @@ private:
     {
         int32_t errcode = 0;
         int32_t offset=0;
-        int32_t multiplier=1;
-        for(int32_t h=indexDepth-1;h>=0;--h) {
+        for(int32_t h=0;h<indexDepth;++h) {
+            offset *= paramShape[h];
             int32_t selector = x[i*n*indexDepth + j*indexDepth + h];
             if(selector<0||selector>=paramShape[h]) {
                 errcode = RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
                 break;
             }
-            offset += selector*multiplier;
-            multiplier *= paramShape[h];
+            offset += selector;
         }
         if(errcode!=0) {
             return errcode;
         }
         int32_t selector = x[i];
-        T *from = &a[i*multiplier*k + offset*k];
+        T *from = &a[i*paramSize*k + offset*k];
         T *to = &b[i*n*k + j*k];
         if(reverse) {
             T *tmp;
@@ -78,6 +78,7 @@ private:
         int32_t k,
         int32_t indexDepth,
         int32_t *paramShape,
+        int32_t paramSize,
         T *a,
         int32_t *x,
         T *b
@@ -91,7 +92,7 @@ private:
                         i,j,
                         reverse,addMode,
                         m,n,k,
-                        indexDepth,paramShape,
+                        indexDepth,paramShape,paramSize,
                         a,
                         x,
                         b
@@ -108,7 +109,7 @@ private:
                         i,j,
                         reverse,addMode,
                         m,n,k,
-                        indexDepth,paramShape,
+                        indexDepth,paramShape,paramSize,
                         a,
                         x,
                         b
@@ -133,23 +134,23 @@ private:
         int32_t k,
         int32_t indexDepth,
         int32_t *paramShape,
+        int32_t paramSize,
         T *a,
         int32_t *x,
         T *b
     )
     {
         int32_t errcode = 0;
-        int32_t i=0;
-        for(int32_t j=cell.begin; j<cell.end; j++) {
-            if(cell.id==0) {
-                int32_t ec = kernel_sub(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b);
-                if(ec) {
-                    errcode = ec;
+        for(int32_t i=0; i<m; i++) {
+            for(int32_t j=cell.begin; j<cell.end; j++) {
+                T *a_sub;
+                if(cell.id==0) {
+                    a_sub = a;
+                } else {
+                    //  a_sub: (m, (paramShape), k)
+                    a_sub = &a_buf[(cell.id-1)*blockSize];
                 }
-            } else {
-                //  a_sub: (m, (paramShape), k)
-                T *a_sub = &a_buf[(cell.id-1)*blockSize];
-                int32_t ec = kernel_sub(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,a_sub,x,b);
+                int32_t ec = kernel_sub(i,j,reverse,addMode,m,n,k,indexDepth,paramShape,paramSize,a_sub,x,b);
                 if(ec) {
                     errcode = ec;
                 }
@@ -160,21 +161,22 @@ private:
 
     static void sumKernel(
         ParallelOperation::cellInfo cell,
-        int32_t num_threads,
+        int32_t parallel_n,
         int32_t blockSize,      // blockSize = m*paramSize*k
         T *a,
         T *a_buf
     )
     {
         for(int32_t pos=cell.begin; pos<cell.end; pos++) {
-            for(int32_t thread_id=1; thread_id<num_threads; thread_id++) {
-                // (num_threads-1)*[m,p0,p1,k]
+            for(int32_t thread_id=1; thread_id<parallel_n; thread_id++) {
+                // (parallel_n-1)*[m,p0,p1,k]
                 a[pos] += a_buf[blockSize*(thread_id-1)+pos];
             }
         }
     }
 
     static int32_t scatterAdd(
+        int32_t parallel_n,
         int32_t reverse,
         int32_t addMode,
         int32_t m,
@@ -182,47 +184,27 @@ private:
         int32_t k,
         int32_t indexDepth,
         int32_t *paramShape,
+        int32_t paramSize,
         T *a,
         int32_t *x,
         T *b
     )
     {
-        // m is 1 here.
-        if(m!=1) {
-            return RINDOW_MATLIB_E_INVALID_SHAPE_OR_PARAM;
-        }
         int32_t value_width = sizeof(T);
         int32_t errcode = 0;
-        int32_t paramSize = 1;
-        for(int32_t h=0; h<indexDepth; ++h) {
-            if(paramShape[h]<=0) {
-                return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
-            }
-            paramSize *= paramShape[h];
-        }
         // n*[m,p0,p1,k]
         int32_t blockSize = m*paramSize*k;
-        int32_t num_threads = (int32_t)ParallelOperation::getMaxThreads();
-        if(n<num_threads) {
-            num_threads = n;
-        }
-        std::vector<T> a_buf((num_threads-1)*blockSize, 0);
-        //T *a_buf = (T*)calloc((num_threads-1)*blockSize,value_width);
-        //if(a_buf==NULL) {
-        //    return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
-        //}
+        std::vector<T> a_buf((parallel_n-1)*blockSize, 0);
 
         errcode = ParallelOperation::reduceNotZero<int32_t>(
             n,scatterAddKernel,
             blockSize,a_buf.data(),
-            reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b
+            reverse,addMode,m,n,k,indexDepth,paramShape,paramSize,a,x,b
         );
         if(errcode) {
-            //free(a_buf);
             return errcode;
         }
-        ParallelOperation::execute(blockSize,sumKernel,num_threads,blockSize,a,a_buf.data());
-        //free(a_buf);
+        ParallelOperation::execute(blockSize,sumKernel,parallel_n,blockSize,a,a_buf.data());
         return errcode;
     }
 
@@ -249,22 +231,50 @@ public:
         if(m <= 0 || n <= 0 || k <= 0) {
             return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
         }
-        if(reverse&&addMode&&m==1) {
-            return scatterAdd(reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b);
+        int32_t paramSize = 1;
+        for(int32_t h=0; h<indexDepth; ++h) {
+            if(paramShape[h]<=0) {
+                return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
+            }
+            paramSize *= paramShape[h];
+        }
+        int32_t parallel_n = (int32_t)ParallelOperation::getMaxThreads();
+        if(n<parallel_n) {
+            parallel_n = n;
+        }
+        bool para_m = false;
+        bool scatteradd_mode = false;
+        if(reverse&&addMode) {
+            if(m>=parallel_n) {
+                para_m = true;
+                scatteradd_mode = false;
+            } else {
+                para_m = false;
+                scatteradd_mode = true;
+            }
+        } else {
+            if(m>=n) {
+                para_m = true;
+                scatteradd_mode = false;
+            } else {
+                para_m = false;
+                scatteradd_mode = false;
+            }
+        }
+
+        if(scatteradd_mode) {
+            return scatterAdd(parallel_n,reverse,addMode,m,n,k,indexDepth,paramShape,paramSize,a,x,b);
         } else {
             int32_t parallel;
-            bool para_m;
-            if(m>1) {
+            if(para_m) {
                 parallel = m;
-                para_m = true;
             } else {
                 parallel = n;
-                para_m = false;
             }
             return ParallelOperation::reduceNotZero<int32_t>(
                 parallel,kernel,
                 para_m,
-                reverse,addMode,m,n,k,indexDepth,paramShape,a,x,b
+                reverse,addMode,m,n,k,indexDepth,paramShape,paramSize,a,x,b
             );
         }
     }
