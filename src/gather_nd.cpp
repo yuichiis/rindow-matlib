@@ -8,6 +8,10 @@
 namespace {
 
 template <typename T>
+/*
+ * This function is unofficial.
+ * It may be removed or changed without notice.
+*/
 class Gathernd
 {
 private:

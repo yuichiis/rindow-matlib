@@ -265,12 +265,17 @@ RINDOW_FUNC_DECL int32_t rindow_matlib_i_gather(int32_t reverse,int32_t addMode,
 RINDOW_FUNC_DECL int32_t rindow_matlib_s_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,float *a,float *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_d_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,double *a,double *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_i_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,int32_t data_dtype,void *a,void *b);
-RINDOW_FUNC_DECL int32_t rindow_matlib_s_gatherb(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t numClass,float *a,int32_t *x,float *b);
-RINDOW_FUNC_DECL int32_t rindow_matlib_d_gatherb(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t numClass,double *a,int32_t *x,double *b);
-RINDOW_FUNC_DECL int32_t rindow_matlib_i_gatherb(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t numClass,int32_t dtype,void *a,int32_t *x,void *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_s_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,float *a,int32_t *x,float *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_d_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,double *a,int32_t *x,double *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_i_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,int32_t dtype,void *a,int32_t *x,void *b);
+
+// ********************************************************
+// This function is unofficial.
+// It may be removed or changed without notice.
 RINDOW_FUNC_DECL int32_t rindow_matlib_s_gathernd(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t indexDepth,int32_t *paramShape,float *a,int32_t *x,float *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_d_gathernd(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t indexDepth,int32_t *paramShape,double *a,int32_t *x,double *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_i_gathernd(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t indexDepth,int32_t *paramShape,int32_t dtype,void *a,int32_t *x,void *b);
+// ********************************************************
 
 RINDOW_FUNC_DECL void rindow_matlib_s_slice(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t size,float *a, int32_t incA,float *y, int32_t incY,int32_t startAxis0,int32_t sizeAxis0,int32_t startAxis1,int32_t sizeAxis1,int32_t startAxis2,int32_t sizeAxis2);
 RINDOW_FUNC_DECL void rindow_matlib_d_slice(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t size,double *a, int32_t incA,double *y, int32_t incY,int32_t startAxis0,int32_t sizeAxis0,int32_t startAxis1,int32_t sizeAxis1,int32_t startAxis2,int32_t sizeAxis2);

@@ -1,7 +1,11 @@
 #include "rindow/matlib.h"
-#include "common.hpp"
-
-using rindow::matlib::ParallelOperation;
+#include "common.h"
+#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+#include <exception>
+#include <stdio.h>
+#include <iostream>
 
 namespace {
 
@@ -9,7 +13,7 @@ template <typename T>
 class Gatherb
 {
 private:
-    static int32_t kernel_sub(
+    static int32_t kernel(
         int32_t batch_id,
         int32_t i,
         int32_t j,
@@ -22,9 +26,9 @@ private:
         int32_t k,
         int32_t len,
         int32_t numClass,
-        T *a,
-        int32_t *x,
-        T *b
+        T a[],
+        int32_t x[],
+        T b[]
         )
     {
         int32_t selector = x[(batch_id*n+j)*k+h];
@@ -61,144 +65,6 @@ private:
         return 0;
     }
 
-    static int32_t kernel(
-        ParallelOperation::cellInfo cell,
-        bool para_m,
-        int32_t reverse,
-        int32_t addMode,
-        int32_t batches,
-        int32_t m,
-        int32_t n,
-        int32_t k,
-        int32_t len,
-        int32_t numClass,
-        T *a,
-        int32_t *x,
-        T *b
-    )
-    {
-        int32_t errcode = 0;
-        if(para_m) { // parallel for batchs
-            for(int32_t id=cell.begin; id<cell.end; id++) {
-                int32_t batch_id = id/m;
-                int32_t i = id%m;
-                for(int32_t j=0; j<n; j++) {
-                    for(int32_t h=0; h<k; h++) {
-                        int32_t ec = kernel_sub(batch_id,i,j,h,reverse,addMode,batches,m,n,k,len,numClass,a,x,b);
-                        if(ec) {
-                            errcode = ec;
-                        }
-                    }
-                }
-            }
-        } else { // parallel for broadcast on n
-            for(int32_t j=cell.begin; j<cell.end; j++) {
-                for(int32_t h=0; h<k; h++) {
-                    for(int32_t batch_id=0; batch_id<batches; batch_id++) {
-                        for(int32_t i=0;i<m;i++) {
-                            int32_t ec = kernel_sub(batch_id,i,j,h,reverse,addMode,batches,m,n,k,len,numClass,a,x,b);
-                            if(ec) {
-                                errcode = ec;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return errcode;
-    }
-
-    static int32_t scatterAddKernel(
-        ParallelOperation::cellInfo cell,
-        int32_t blockSize,
-        T *a_buf,
-        int32_t reverse,
-        int32_t addMode,
-        int32_t batches,
-        int32_t m,
-        int32_t n,
-        int32_t k,
-        int32_t len,
-        int32_t numClass,
-        T *a,
-        int32_t *x,
-        T *b
-    )
-    {
-        int32_t errcode = 0;
-        for(int32_t batch_id=0; batch_id<batches; batch_id++) {
-            for(int32_t i=0; i<m; i++) {
-                for(int32_t j=cell.begin; j<cell.end; j++) {
-                    for(int32_t h=0; h<k; h++) {
-                        T *a_sub;
-                        if(cell.id==0) {
-                            a_sub = a;
-                        } else {
-                            a_sub = &a_buf[(cell.id-1)*blockSize];
-                        }
-                        int32_t ec = kernel_sub(batch_id,i,j,h,reverse,addMode,batches,m,n,k,len,numClass,a_sub,x,b);
-                        if(ec) {
-                            errcode = ec;
-                        }
-                    }
-                }
-            }
-        }
-
-        return errcode;
-    }
-
-    static void sumKernel(
-        ParallelOperation::cellInfo cell,
-        int32_t parallel_n,
-        int32_t blockSize,
-        T *a,
-        T *a_buf
-    )
-    {
-        for(int32_t pos=cell.begin; pos<cell.end; pos++) {
-            for(int32_t thread_id=1; thread_id<parallel_n; thread_id++) {
-                // n*[batches,m,numClass,k,len]
-                a[pos] += a_buf[(thread_id-1)*blockSize+pos];
-            }
-        }
-    }
-
-    static int32_t scatterAdd(
-        int32_t parallel_n,
-        int32_t reverse,
-        int32_t addMode,
-        int32_t batches,
-        int32_t m,
-        int32_t n,
-        int32_t k,
-        int32_t len,
-        int32_t numClass,
-        T *a,
-        int32_t *x,
-        T *b
-    )
-    {
-        int32_t value_width = sizeof(T);
-        int32_t errcode = 0;
-        int32_t size_m = batches*m;
-
-        // n*[m,p0,p1,k]
-        int32_t blockSize = size_m*numClass*k*len;
-        std::vector<T> a_buf((parallel_n-1)*blockSize, 0);
-
-        errcode = ParallelOperation::reduceNotZero<int32_t>(
-            parallel_n,scatterAddKernel,
-            blockSize,a_buf.data(),
-            reverse,addMode,batches,m,n,k,len,numClass,a,x,b
-        );
-        if(errcode) {
-            return errcode;
-        }
-        ParallelOperation::execute(blockSize,sumKernel,parallel_n,blockSize,a,a_buf.data());
-        return errcode;
-    }
-
 public:
     static int32_t execute(
         int32_t reverse,
@@ -209,9 +75,9 @@ public:
         int32_t k,              // inner
         int32_t len,            // details
         int32_t numClass,       // indexParams
-        T *a,                   // params
-        int32_t *x,             // indices
-        T *b                    // updates
+        T a[],                  // params
+        int32_t x[],            // indices
+        T b[]                   // updates
     )
     {
         int32_t value_width = sizeof(T);
@@ -220,11 +86,11 @@ public:
         if(batches<=0||m<=0||n<=0||len<=0||numClass<=0) {
             return RINDOW_MATLIB_E_PERM_OUT_OF_RANGE;
         }
-        int32_t parallel_n = (int32_t)ParallelOperation::getMaxThreads();
+        int32_t parallel_n = rindow_matlib_common_get_num_threads();
+        int32_t size_m = batches*m;
         if(n<parallel_n) {
             parallel_n = n;
         }
-        int32_t size_m = batches*m;
         bool para_m = false;
         bool scatteradd_mode = false;
         if(reverse&&addMode) {
@@ -246,19 +112,87 @@ public:
         }
 
         if(!scatteradd_mode) {
-            int32_t parallel;
-            if(para_m) {
-                parallel = size_m;
-            } else {
-                parallel = n;
+            if(para_m) { // parallel for batchs
+                int32_t id;
+                #pragma omp parallel for
+                for(id=0;id<size_m;id++) {
+                    int32_t batch_id = id/m;
+                    int32_t i = id%m;
+                    for(int32_t j=0; j<n; j++) {
+                        for(int32_t h=0; h<k; h++) {
+                            int32_t ec = kernel(batch_id,i,j,h,reverse,addMode,batches,m,n,k,len,numClass,a,x,b);
+                            if(ec) {
+                                errcode = ec;
+                            }
+                        }
+                    }
+                }
+            } else { // parallel for broadcast on n
+                int32_t j;
+                #pragma omp parallel for
+                for(j=0; j<n; j++) {
+                    for(int32_t h=0; h<k; h++) {
+                        for(int32_t batch_id=0;batch_id<batches;batch_id++) {
+                            for(int32_t i=0;i<m;i++) {
+                                int32_t ec = kernel(batch_id,i,j,h,reverse,addMode,batches,m,n,k,len,numClass,a,x,b);
+                                if(ec) {
+                                    errcode = ec;
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            return ParallelOperation::reduceNotZero<int32_t>(
-                parallel,kernel,
-                para_m,
-                reverse,addMode,batches,m,n,k,len,numClass,a,x,b
-            );
         } else { // broadcast on reverse and addmode
-            return scatterAdd(parallel_n,reverse,addMode,batches,m,n,k,len,numClass,a,x,b);
+            int32_t cell_size = n / parallel_n;
+            int32_t remainder = n - cell_size * parallel_n;
+            // n*[m,p0,p1,k]
+            T *a_buf = (T*)calloc((parallel_n-1)*size_m*numClass*k*len,value_width);
+            if(a_buf==NULL) {
+                return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
+            }
+
+            int32_t thread_id;
+            #pragma omp parallel for
+            for(thread_id=0; thread_id<parallel_n; thread_id++) {
+                int32_t begin;
+                int32_t end;
+                begin = thread_id * cell_size;
+                if(thread_id == parallel_n - 1) {
+                    end = (thread_id+1) * cell_size + remainder;
+                } else {
+                    end = (thread_id+1) * cell_size;
+                }
+
+                for(int32_t batch_id=0; batch_id<batches; batch_id++) {
+                    for(int32_t i=0; i<m; i++) {
+                        for(int32_t j=begin; j<end; j++) {
+                            for(int32_t h=0; h<k; h++) {
+                                T *a_sub;
+                                if(thread_id==0) {
+                                    a_sub = a;
+                                } else {
+                                    a_sub = &a_buf[(thread_id-1)*size_m*numClass*k*len];
+                                }
+                                int32_t ec = kernel(batch_id,i,j,h,reverse,addMode,batches,m,n,k,len,numClass,a_sub,x,b);
+                                if(ec) {
+                                    errcode = ec;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            int32_t pos=0;
+            #pragma omp parallel for
+            for(pos=0;pos<size_m*numClass*k*len;pos++) {
+                for(int32_t thread_id=1; thread_id<parallel_n; thread_id++) {
+                    // n*[batches,m,numClass,k,len]
+                    a[pos] += a_buf[(thread_id-1)*size_m*numClass*k*len+pos];
+                }
+            }
+            free(a_buf);
         }
 
         return errcode;
