@@ -8,7 +8,7 @@ namespace {
 template <typename T>
 class BandPart
 {
-public:
+private:
     static void kernel(
         ParallelOperation::cellInfo cell,
         bool para_batch,
@@ -40,6 +40,8 @@ public:
             }
         }
     }
+
+public:
     static void execute(
         int32_t m, int32_t n, int32_t k,
         T *a,

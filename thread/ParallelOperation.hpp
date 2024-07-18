@@ -4,6 +4,7 @@
 #include <vector>
 #include <exception>
 #include <stdexcept>
+#include <functional>
 #include "ThreadPool.hpp"
 
 namespace rindow {
@@ -83,20 +84,20 @@ public:
         }
     }
 
-    template<typename R,typename F, typename... Args>
-    static R reduceNotZero(
+    template<typename T,typename F, typename... Args>
+    static T reduceNotZero(
         int32_t size,
         F&& kernel, Args&&... args
     )
     {
-        R resultValue = 0;
+        T resultValue = 0;
     
-        ParallelResults<R> results;
+        ParallelResults<T> results;
         ParallelOperation::enqueue(size, results, kernel, args...);
         std::exception_ptr ep = nullptr;
         for(auto && result: results) {
             try {
-                R res = result.get();
+                T res = result.get();
                 if(resultValue!=0) {
                     resultValue = res;
                 }
@@ -113,20 +114,20 @@ public:
         return resultValue;
     }
 
-    template<typename R,typename F, typename... Args>
-    static R reduceSum(
+    template<typename T,typename F, typename... Args>
+    static T reduceSum(
         int32_t size,
         F&& kernel, Args&&... args
     )
     {
-        R resultValue = 0;
+        T resultValue = 0;
     
-        ParallelResults<R> results;
+        ParallelResults<T> results;
         ParallelOperation::enqueue(size, results, kernel, args...);
         std::exception_ptr ep = nullptr;
         for(auto && result: results) {
             try {
-                R res = result.get();
+                T res = result.get();
                 resultValue += res;
             } catch(...) {
                 if(ep!=nullptr) {
@@ -139,6 +140,34 @@ public:
         }
 
         return resultValue;
+    }
+
+    template<typename C,typename T,typename F, typename... Args>
+    static T reduce(
+        int32_t size,
+        C reduceFunc,
+        T initialValue,
+        F&& kernel, Args&&... args
+    )
+    {
+        ParallelResults<T> results;
+        ParallelOperation::enqueue(size, results, kernel, args...);
+        std::exception_ptr ep = nullptr;
+        for(auto && result: results) {
+            try {
+                T value = result.get();
+                initialValue = reduceFunc(initialValue,value);
+            } catch(...) {
+                if(ep!=nullptr) {
+                    ep = std::current_exception();
+                }
+            }
+        }
+        if(ep!=nullptr) {
+            std::rethrow_exception(ep);
+        }
+
+        return initialValue;
     }
 };
 

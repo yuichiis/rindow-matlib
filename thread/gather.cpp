@@ -8,7 +8,7 @@ namespace {
 template <typename T>
 class Gather
 {
-public:
+private:
     static int32_t kernel(
         ParallelOperation::cellInfo cell,
         int32_t reverse,
@@ -59,6 +59,7 @@ public:
         return errcode;
     }
 
+public:
     static int32_t execute(
         int32_t reverse,
         int32_t addMode,

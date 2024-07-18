@@ -8,7 +8,7 @@ namespace {
 template <typename T>
 class Equal
 {
-public:
+private:
     static void kernel(
         ParallelOperation::cellInfo cell,
         int32_t n,
@@ -47,6 +47,7 @@ public:
         }
     }
 
+public:
     static void execute(int32_t n, T *x, int32_t incX, T *y, int32_t incY)
     {
         if(n <= 0) {

@@ -6,7 +6,7 @@ using rindow::matlib::ParallelOperation;
 namespace {
 
 template <typename T>
-class Add
+class Matrixcopy
 {
 private:
     static void kernel(
@@ -16,10 +16,8 @@ private:
         int32_t m,
         int32_t n,
         T alpha,
-        T *x,
-        int32_t incX,
-        T *a,
-        int32_t ldA
+        T *a, int32_t ldA,
+        T *b, int32_t ldB
     )
     {
         int32_t begin_i,end_i,begin_j,end_j;
@@ -37,20 +35,27 @@ private:
         if(trans==RINDOW_MATLIB_NO_TRANS) {
             for(int32_t i=begin_i; i<end_i; i++) {
                 for(int32_t j=begin_j; j<end_j; j++) {
-                    a[i*ldA+j] += alpha*x[j*incX];
+                    b[i*ldB+j] = alpha * a[i*ldA+j];
                 }
             }
         } else {
             for(int32_t i=begin_i; i<end_i; i++) {
                 for(int32_t j=begin_j; j<end_j; j++) {
-                    a[i*ldA+j] += alpha*x[i*incX];
+                    b[j*ldB+i] = alpha * a[i*ldA+j];
                 }
             }
         }
     }
 
 public:
-    static void execute(int32_t trans,int32_t m,int32_t n,T alpha, T *x, int32_t incX, T *a, int32_t ldA)
+    static void execute(
+        int32_t trans,
+        int32_t m,
+        int32_t n,
+        T alpha,
+        T *a, int32_t ldA,
+        T *b, int32_t ldB
+    )
     {
         if(m <= 0 || n <= 0) {
             return;
@@ -65,24 +70,28 @@ public:
             para_m = false;
         }
 
-        ParallelOperation::execute(parallel,kernel,para_m,trans,m,n,alpha,x,incX,a,ldA);
+        ParallelOperation::execute(parallel,kernel,para_m,trans,m,n,alpha,a,ldA,b,ldB);
     }
 };
 
 }
 
 extern "C" {
-void rindow_matlib_s_add(int32_t trans,int32_t m,int32_t n, float alpha, float *x, int32_t incX, float *a, int32_t ldA)
+void rindow_matlib_s_matrixcopy(
+    int32_t trans, int32_t m, int32_t n, float alpha,
+    float *a, int32_t ldA, float *b, int32_t ldB)
 {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    Add<float>::execute(trans, m, n, alpha, x, incX, a, ldA);
+    Matrixcopy<float>::execute(trans, m, n, alpha, a, ldA, b, ldB);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 
-void rindow_matlib_d_add(int32_t trans,int32_t m,int32_t n, double alpha, double *x, int32_t incX, double *a, int32_t ldA)
+void rindow_matlib_d_matrixcopy(
+    int32_t trans, int32_t m, int32_t n, double alpha,
+    double *a, int32_t ldA, double *b, int32_t ldB)
 {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    Add<double>::execute(trans, m, n, alpha, x, incX, a, ldA);
+    Matrixcopy<double>::execute(trans, m, n, alpha, a, ldA, b, ldB);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 }

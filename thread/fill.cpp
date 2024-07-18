@@ -8,7 +8,7 @@ namespace {
 template <typename T>
 class Fill
 {
-public:
+private:
     static void kernel(
         ParallelOperation::cellInfo cell,
         int32_t dtype,
@@ -27,6 +27,7 @@ public:
         }
     }
 
+public:
     static void execute(int32_t dtype, int32_t n, T *value, T *x, int32_t incX)
     {
         if(n <= 0) {

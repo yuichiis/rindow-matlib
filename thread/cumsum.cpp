@@ -8,7 +8,7 @@ namespace {
 template <typename T>
 class Cumsum
 {
-public:
+private:
     static void kernel(
         ParallelOperation::cellInfo cell,
         int32_t m,
@@ -49,6 +49,7 @@ public:
         }
     }
 
+public:
     static void execute(
         int32_t m,
         int32_t n,

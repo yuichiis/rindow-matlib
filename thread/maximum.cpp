@@ -6,15 +6,15 @@ using rindow::matlib::ParallelOperation;
 namespace {
 
 template <typename T>
-class Duplicate
+class Maximum
 {
 private:
     static void kernel(
         ParallelOperation::cellInfo cell,
         bool para_m,
-        int32_t trans,int32_t m,int32_t n,
-        T *x, int32_t incX,
-        T *a, int32_t ldA
+        int32_t m, int32_t n,
+        T *a, int32_t ldA,
+        T *x, int32_t incX
     )
     {
         int32_t begin_i,end_i,begin_j,end_j;
@@ -29,16 +29,17 @@ private:
             begin_j=cell.begin;
             end_j=cell.end;
         }
-        if(trans==RINDOW_MATLIB_NO_TRANS) {
-            for(int32_t i=begin_i; i<end_i; i++) {
-                for(int32_t j=begin_j; j<end_j; j++) {
-                    a[i*ldA+j] = x[j*incX];
-                }
-            }
-        } else {
-            for(int32_t i=begin_i; i<end_i; i++) {
-                for(int32_t j=begin_j; j<end_j; j++) {
-                    a[i*ldA+j] = x[i*incX];
+        for(int32_t i=begin_i; i<end_i; i++) {
+            for(int32_t j=begin_j; j<end_j; j++) {
+                T value = x[j*incX];
+                if(isnan(value)) {
+                    a[i*ldA+j] = value;
+                } else {
+                    // *** CAUTION ***
+                    // if NaN then don't set alpha
+                    if(a[i*ldA+j] < value) {
+                        a[i*ldA+j] = value;
+                    }
                 }
             }
         }
@@ -46,9 +47,9 @@ private:
 
 public:
     static void execute(
-        int32_t trans,int32_t m,int32_t n,
-        T *x, int32_t incX,
-        T *a, int32_t ldA
+        int32_t m, int32_t n,
+        T *a, int32_t ldA,
+        T *x, int32_t incX
     )
     {
         if(m <= 0 || n <= 0) {
@@ -64,26 +65,34 @@ public:
             para_m = false;
         }
 
-        ParallelOperation::execute(parallel,kernel,para_m,trans,m,n,x,incX,a,ldA);
+        ParallelOperation::execute(parallel,kernel,para_m,m,n,a,ldA,x,incX);
     }
 };
 
 }
 
 extern "C" {
-void rindow_matlib_s_duplicate(
-    int32_t trans,int32_t m,int32_t n,float *x, int32_t incX,float *a, int32_t ldA)
+void rindow_matlib_s_maximum(
+    int32_t m,
+    int32_t n,
+    float *a, int32_t ldA,
+    float *x, int32_t incX
+    )
 {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    Duplicate<float>::execute(trans, m, n, x, incX, a, ldA);
+    Maximum<float>::execute(m, n, a, ldA, x, incX);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 
-void rindow_matlib_d_duplicate(
-    int32_t trans,int32_t m,int32_t n,double *x, int32_t incX,double *a, int32_t ldA)
+void rindow_matlib_d_maximum(
+    int32_t m,
+    int32_t n,
+    double *a, int32_t ldA,
+    double *x, int32_t incX
+    )
 {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    Duplicate<double>::execute(trans, m, n, x, incX, a, ldA);
+    Maximum<double>::execute(m, n, a, ldA, x, incX);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 }

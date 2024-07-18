@@ -7,7 +7,7 @@ using rindow::matlib::ParallelOperation;
 namespace {
 
 template <typename T>
-class Exp
+class Log
 {
 private:
     static void kernel(
@@ -18,7 +18,7 @@ private:
     )
     {
         for(int32_t i = cell.begin; i < cell.end; i++) {
-            x[i * incX] = std::exp(x[i * incX]);
+            x[i * incX] = std::log(x[i * incX]);
         }
     }
 
@@ -36,17 +36,17 @@ public:
 }
 
 extern "C" {
-void rindow_matlib_s_exp(int32_t n, float *x, int32_t incX)
+void rindow_matlib_s_log(int32_t n, float *x, int32_t incX)
 {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    Exp<float>::execute(n, x, incX);
+    Log<float>::execute(n, x, incX);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 
-void rindow_matlib_d_exp(int32_t n, double *x, int32_t incX)
+void rindow_matlib_d_log(int32_t n, double *x, int32_t incX)
 {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    Exp<double>::execute(n, x, incX);
+    Log<double>::execute(n, x, incX);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 
