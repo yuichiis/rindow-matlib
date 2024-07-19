@@ -4,6 +4,7 @@
 #include "rindow/matlib.h"
 #include "common.hpp"
 #include <limits>
+#include <cmath>
 
 using rindow::matlib::ParallelOperation;
 
@@ -33,7 +34,7 @@ private:
         T maxVal=x[0];
         int32_t maxIdx=0;
         for(int32_t i = cell.begin; i < cell.end; i++) {
-            if(maxVal<x[i*incX] || isnan(maxVal)) {
+            if(maxVal<x[i*incX] || std::isnan(maxVal)) {
                 maxVal = x[i*incX];
                 maxIdx = i;
             }
@@ -50,7 +51,7 @@ private:
         if(initialValue.index<0) {
             return value;
         }
-        if(initialValue.value<value.value || isnan(initialValue.value)) {
+        if(initialValue.value<value.value || std::isnan(initialValue.value)) {
             return value;
         } else {
             return initialValue;

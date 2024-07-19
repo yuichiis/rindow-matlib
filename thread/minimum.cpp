@@ -1,5 +1,6 @@
 #include "rindow/matlib.h"
 #include "common.hpp"
+#include <cmath>
 
 using rindow::matlib::ParallelOperation;
 
@@ -32,7 +33,7 @@ private:
         for(int32_t i=begin_i; i<end_i; i++) {
             for(int32_t j=begin_j; j<end_j; j++) {
                 T value = x[j*incX];
-                if(isnan(value)) {
+                if(std::isnan(value)) {
                     a[i*ldA+j] = value;
                 } else {
                     // *** CAUTION ***

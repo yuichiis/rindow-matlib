@@ -1,5 +1,6 @@
 #include "rindow/matlib.h"
 #include "common.hpp"
+#include <cmath>
 
 using rindow::matlib::ParallelOperation;
 
@@ -18,7 +19,7 @@ private:
     {
         if(incX==1) {
             for(int32_t i = cell.begin; i < cell.end; i++) {
-                if(isnan(x[i])) {
+                if(std::isnan(x[i])) {
                     x[i] = 1.0;
                 } else {
                     x[i] = 0.0;
@@ -26,7 +27,7 @@ private:
             }
         } else {
             for(int32_t i = cell.begin; i < cell.end; i++) {
-                if(isnan(x[i*incX])) {
+                if(std::isnan(x[i*incX])) {
                     x[i*incX] = 1.0;
                 } else {
                     x[i*incX] = 0.0;

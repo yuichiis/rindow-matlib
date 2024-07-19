@@ -144,7 +144,7 @@ int rindow_matlib_common_thread_join(
 //#endif
 //}
 
-
+/*
 #define RINDOW_MATLIB_COMMON_COPY_EX_TEMPLATE(data_type) { \
     data_type  *pDataX; \
     data_type  *pDataY; \
@@ -268,6 +268,7 @@ int32_t rindow_matlib_common_add_ex(
     }
     return 0;
 }
+*/
 
 
 void* rindow_matlib_common_get_address(

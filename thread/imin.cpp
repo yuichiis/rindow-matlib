@@ -4,6 +4,7 @@
 #include "rindow/matlib.h"
 #include "common.hpp"
 #include <limits>
+#include <cmath>
 
 using rindow::matlib::ParallelOperation;
 
@@ -33,7 +34,7 @@ private:
         T minVal=x[0];
         int32_t minIdx=0;
         for(int32_t i = cell.begin; i < cell.end; i++) {
-            if(minVal>x[i*incX] || isnan(minVal)) {
+            if(minVal>x[i*incX] || std::isnan(minVal)) {
                 minVal = x[i*incX];
                 minIdx = i;
             }
@@ -50,7 +51,7 @@ private:
         if(initialValue.index<0) {
             return value;
         }
-        if(initialValue.value>value.value || isnan(initialValue.value)) {
+        if(initialValue.value>value.value || std::isnan(initialValue.value)) {
             return value;
         } else {
             return initialValue;
