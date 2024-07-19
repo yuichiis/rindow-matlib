@@ -23,14 +23,22 @@ public:
         return sum;
     }
 
-    static T bool_kernel(
+    static T reduce(
+        T initialValue,
+        T value
+    )
+    {
+        return initialValue+value;
+    }
+
+    static int32_t kernel_bool(
         ParallelOperation::cellInfo cell,
         int32_t n,
         T *x,
         int32_t incX
     )
     {
-        T sum = 0;
+        int32_t sum = 0;
         for(int32_t i = cell.begin; i < cell.end; i++) {
             if(x[i * incX]!=0) {
                 sum += 1;
@@ -39,24 +47,32 @@ public:
         return sum;
     }
 
+    static int32_t reduce_bool(
+        int32_t initialValue,
+        T value
+    )
+    {
+        return initialValue+((value==0) ? 0 : 1);
+    }
+
     static T execute(int32_t n, T *x, int32_t incX)
     {
         if(n <= 0) {
             return 0;
         }
 
-        return ParallelOperation::reduceSum<T>(n,kernel,n,x,incX);
+        T initialValue = 0;
+        return ParallelOperation::reduce(n,reduce,initialValue,kernel,n,x,incX);
     }
 
-    static T execute_bool(int32_t n, T *x, int32_t incX)
+    static int32_t execute_bool(int32_t n, T *x, int32_t incX)
     {
         if(n <= 0) {
             return 0;
         }
 
-        T total = 0;
-
-        return ParallelOperation::reduceSum<T>(n,kernel,n,x,incX);
+        int32_t initialValue = 0;
+        return ParallelOperation::reduce(n,reduce_bool,initialValue,kernel_bool,n,x,incX);
     }
 };
 

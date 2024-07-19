@@ -92,7 +92,7 @@ public:
             errcode = kernel(cell,reverse,addMode,n,k,numClass,dtype,x,a,b);
         } else {
             int32_t parallel = n;
-            errcode = ParallelOperation::reduceNotZero<int32_t>(
+            errcode = ParallelOperation::executeAndGetCode<int32_t>(
                 parallel,kernel,
                 reverse,addMode,n,k,numClass,dtype,x,a,b
             );

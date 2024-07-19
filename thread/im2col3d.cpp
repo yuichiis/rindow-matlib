@@ -311,7 +311,7 @@ public:
         int32_t vfilter_h = filter_h*dilation_h;
         int32_t vfilter_w = filter_w*dilation_w;
 
-        int32_t errcode = ParallelOperation::reduceNotZero<int32_t>(
+        int32_t errcode = ParallelOperation::executeAndGetCode<int32_t>(
             batches,
             kernel,
             reverse,

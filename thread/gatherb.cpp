@@ -187,7 +187,7 @@ private:
         int32_t blockSize = size_m*numClass*k*len;
         std::vector<T> a_buf((parallel_n-1)*blockSize, 0);
 
-        errcode = ParallelOperation::reduceNotZero<int32_t>(
+        errcode = ParallelOperation::executeAndGetCode<int32_t>(
             parallel_n,scatterAddKernel,
             blockSize,a_buf.data(),
             reverse,addMode,batches,m,n,k,len,numClass,a,x,b
@@ -252,7 +252,7 @@ public:
             } else {
                 parallel = n;
             }
-            return ParallelOperation::reduceNotZero<int32_t>(
+            return ParallelOperation::executeAndGetCode<int32_t>(
                 parallel,kernel,
                 para_m,
                 reverse,addMode,batches,m,n,k,len,numClass,a,x,b

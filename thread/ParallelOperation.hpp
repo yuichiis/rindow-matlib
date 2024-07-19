@@ -85,7 +85,7 @@ public:
     }
 
     template<typename T,typename F, typename... Args>
-    static T reduceNotZero(
+    static T executeAndGetCode(
         int32_t size,
         F&& kernel, Args&&... args
     )
@@ -101,34 +101,6 @@ public:
                 if(resultValue!=0) {
                     resultValue = res;
                 }
-            } catch(...) {
-                if(ep!=nullptr) {
-                    ep = std::current_exception();
-                }
-            }
-        }
-        if(ep!=nullptr) {
-            std::rethrow_exception(ep);
-        }
-
-        return resultValue;
-    }
-
-    template<typename T,typename F, typename... Args>
-    static T reduceSum(
-        int32_t size,
-        F&& kernel, Args&&... args
-    )
-    {
-        T resultValue = 0;
-    
-        ParallelResults<T> results;
-        ParallelOperation::enqueue(size, results, kernel, args...);
-        std::exception_ptr ep = nullptr;
-        for(auto && result: results) {
-            try {
-                T res = result.get();
-                resultValue += res;
             } catch(...) {
                 if(ep!=nullptr) {
                     ep = std::current_exception();
