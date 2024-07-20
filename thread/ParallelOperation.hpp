@@ -84,20 +84,20 @@ public:
         }
     }
 
-    template<typename T,typename F, typename... Args>
-    static T executeAndGetCode(
+    template<typename ERRCODE,typename F, typename... Args>
+    static ERRCODE executeAndGetCode(
         int32_t size,
         F&& kernel, Args&&... args
     )
     {
-        T resultValue = 0;
+        ERRCODE resultValue = 0;
     
-        ParallelResults<T> results;
+        ParallelResults<ERRCODE> results;
         ParallelOperation::enqueue(size, results, kernel, args...);
         std::exception_ptr ep = nullptr;
         for(auto && result: results) {
             try {
-                T res = result.get();
+                ERRCODE res = result.get();
                 if(resultValue!=0) {
                     resultValue = res;
                 }
