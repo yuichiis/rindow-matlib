@@ -20,10 +20,6 @@ private:
         int32_t seed
     )
     {
-        if(seed==0) {
-            std::random_device seed_gen;
-            seed = seed_gen();
-        }
         std::default_random_engine engine(seed+cell.id);
         std::normal_distribution<T> dist(mean, scale);
 
@@ -44,7 +40,10 @@ public:
         if(n <= 0) {
             return;
         }
-
+        if(seed==0) {
+            std::random_device seed_gen;
+            seed = seed_gen();
+        }
         ParallelOperation::execute(n,kernel,n, x, incX, mean, scale, seed);
     }
 };
