@@ -1,7 +1,7 @@
 #include "rindow/matlib.h"
 #include "common.h"
 #include <stdlib.h>
-#include <malloc.h>
+#include <memory.h>
 #include <string.h>
 #include <exception>
 
