@@ -1,5 +1,6 @@
 #include "rindow/matlib.h"
 #include "common.hpp"
+#include <cmath>
 
 using rindow::matlib::ParallelOperation;
 
