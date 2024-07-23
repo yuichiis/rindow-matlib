@@ -35,17 +35,7 @@ void rindow_matlib_common_console(const char *format, ...)
 
 int32_t rindow_matlib_common_get_nprocs(void)
 {
-#ifdef _MSC_VER
-    static int nums = 0;
-    if (nums == 0) {
-        SYSTEM_INFO sysinfo;
-        GetSystemInfo(&sysinfo);
-        nums = sysinfo.dwNumberOfProcessors;
-    }
-    return nums;
-#else // _MSC_VER
-    return get_nprocs();
-#endif // _MSC_VER
+    return std::thread::hardware_concurrency();
 }
 
 int32_t rindow_matlib_common_get_num_threads(void)
