@@ -22,7 +22,6 @@ include(Packing)
 
 add_subdirectory(./src)
 add_subdirectory(./include)
-add_subdirectory(./tests)
 
 if(UNIX AND NOT APPLE)
     add_subdirectory(./debian)
@@ -30,6 +29,29 @@ endif()
 if(MSVC)
   add_subdirectory(./vclib)
 endif()
+
+add_subdirectory(./thread)
+
+## If you want to build the Release version, type the following command
+#set(CMAKE_CONFIGURATION_TYPES Debug Release)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
+# GoogleTest requires at least C++14
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+# For Windows: Prevent overriding the parent project's compiler/linker settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
+add_subdirectory(./threadtest)
+add_subdirectory(./tests)
+
 
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "CPACK_PACKAGING_INSTALL_PREFIX: ${CPACK_PACKAGING_INSTALL_PREFIX}")

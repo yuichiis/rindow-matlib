@@ -57,6 +57,7 @@ enum rindow_matlib_dtype {
 #define RINDOW_MATLIB_E_INVALID_SHAPE_OR_PARAM -107
 #define RINDOW_MATLIB_E_IMAGES_OUT_OF_RANGE   -108
 #define RINDOW_MATLIB_E_COLS_OUT_OF_RANGE     -109
+#define RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED -110
 
 #define RINDOW_MATLIB_NO_TRANS       111
 #define RINDOW_MATLIB_TRANS          112
@@ -148,19 +149,6 @@ static inline int32_t rindow_matlib_common_dtype_is_bool(int32_t dtype)
     }
     return 0;
 }
-
-#ifdef __cplusplus
-namespace rindow {
-
-template <typename T>
-class matlib
-{
-public:
-    static void topK(int32_t m,int32_t n,const T *input,int32_t k,int32_t sorted,T *values,int32_t *indices);
-};
-}
-#endif
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -263,6 +251,8 @@ RINDOW_FUNC_DECL void rindow_matlib_d_searchsorted(int32_t m, int32_t n, double 
     int32_t right, int32_t dtype, void *y, int32_t incY);
 RINDOW_FUNC_DECL void rindow_matlib_s_cumsum(int32_t n,float *x, int32_t incX,int32_t exclusive,int32_t reverse,float *y, int32_t incY);
 RINDOW_FUNC_DECL void rindow_matlib_d_cumsum(int32_t n,double *x, int32_t incX,int32_t exclusive,int32_t reverse,double *y, int32_t incY);
+RINDOW_FUNC_DECL void rindow_matlib_s_cumsumb(int32_t m,int32_t n,float *x, int32_t incX,int32_t exclusive,int32_t reverse,float *y, int32_t incY);
+RINDOW_FUNC_DECL void rindow_matlib_d_cumsumb(int32_t m,int32_t n,double *x, int32_t incX,int32_t exclusive,int32_t reverse,double *y, int32_t incY);
 
 RINDOW_FUNC_DECL int32_t rindow_matlib_s_transpose(int32_t ndim,int32_t *shape,int32_t *perm,float *a,float *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_d_transpose(int32_t ndim,int32_t *shape,int32_t *perm,double *a,double *b);
@@ -276,6 +266,17 @@ RINDOW_FUNC_DECL int32_t rindow_matlib_i_gather(int32_t reverse,int32_t addMode,
 RINDOW_FUNC_DECL int32_t rindow_matlib_s_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,float *a,float *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_d_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,double *a,double *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_i_reducegather(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t numClass,int32_t dtype,void *x,int32_t data_dtype,void *a,void *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_s_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,float *a,int32_t *x,float *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_d_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,double *a,int32_t *x,double *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_i_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,int32_t dtype,void *a,int32_t *x,void *b);
+
+// ********************************************************
+// This function is unofficial.
+// It may be removed or changed without notice.
+RINDOW_FUNC_DECL int32_t rindow_matlib_s_gathernd(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t indexDepth,int32_t *paramShape,float *a,int32_t *x,float *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_d_gathernd(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t indexDepth,int32_t *paramShape,double *a,int32_t *x,double *b);
+RINDOW_FUNC_DECL int32_t rindow_matlib_i_gathernd(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t indexDepth,int32_t *paramShape,int32_t dtype,void *a,int32_t *x,void *b);
+// ********************************************************
 
 RINDOW_FUNC_DECL void rindow_matlib_s_slice(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t size,float *a, int32_t incA,float *y, int32_t incY,int32_t startAxis0,int32_t sizeAxis0,int32_t startAxis1,int32_t sizeAxis1,int32_t startAxis2,int32_t sizeAxis2);
 RINDOW_FUNC_DECL void rindow_matlib_d_slice(int32_t reverse,int32_t addMode,int32_t m,int32_t n,int32_t k,int32_t size,double *a, int32_t incA,double *y, int32_t incY,int32_t startAxis0,int32_t sizeAxis0,int32_t startAxis1,int32_t sizeAxis1,int32_t startAxis2,int32_t sizeAxis2);

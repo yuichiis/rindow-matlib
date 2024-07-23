@@ -20,7 +20,7 @@ if (MSVC)
     )
     install(
         TARGETS rindowmatlib.seq
-        ARCHIVE DESTINATION lib/serial/import
+        ARCHIVE DESTINATION lib/import/serial
         COMPONENT ${PROJECT_NAME}
     )
 elseif(APPLE)
