@@ -389,7 +389,7 @@ int32_t rindow_matlib_im2col3d(
     int32_t cols_size
     )
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     switch(dtype) {
         case rindow_matlib_dtype_float32: {

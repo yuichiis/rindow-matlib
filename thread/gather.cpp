@@ -117,7 +117,7 @@ int32_t rindow_matlib_s_gather(
     float *b
 )
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     errcode = Gather<float>::execute(reverse,addMode,n,k,numClass,dtype,x,a,b);
     RINDOW_END_CLEAR_EXCEPTION;
@@ -136,7 +136,7 @@ int32_t rindow_matlib_d_gather(
     double *b
 )
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     errcode = Gather<double>::execute(reverse,addMode,n,k,numClass,dtype,x,a,b);
     RINDOW_END_CLEAR_EXCEPTION;
@@ -156,7 +156,7 @@ int32_t rindow_matlib_i_gather(
     void *b
 )
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     switch(data_dtype) {
         case rindow_matlib_dtype_int8: {

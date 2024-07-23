@@ -118,7 +118,7 @@ extern "C" {
 int32_t rindow_matlib_s_onehot(
     int32_t dtype, int32_t m, int32_t n, void *x, int32_t incX, float alpha, float *a, int32_t ldA)
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     errcode = Onehot<float>::execute(dtype, m, n, x, incX, alpha, a, ldA);
     RINDOW_END_CLEAR_EXCEPTION;
@@ -128,7 +128,7 @@ int32_t rindow_matlib_s_onehot(
 int32_t rindow_matlib_d_onehot(
     int32_t dtype, int32_t m, int32_t n, void *x, int32_t incX, double alpha, double *a, int32_t ldA)
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     errcode = Onehot<double>::execute(dtype, m, n, x, incX, alpha, a, ldA);
     RINDOW_END_CLEAR_EXCEPTION;

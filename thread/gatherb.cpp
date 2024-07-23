@@ -283,7 +283,7 @@ int32_t rindow_matlib_s_gatherb(
     float *b                // updates
 )
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     errcode = Gatherb<float>::execute(
         reverse,
@@ -316,7 +316,7 @@ int32_t rindow_matlib_d_gatherb(
     double *b                // updates
 )
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     errcode = Gatherb<double>::execute(
         reverse,
@@ -350,7 +350,7 @@ int32_t rindow_matlib_i_gatherb(
     void *b                // updates
 )
 {
-    int32_t errcode;
+    int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
     RINDOW_BEGIN_CLEAR_EXCEPTION;
     switch(dtype) {
         case rindow_matlib_dtype_int8: {
