@@ -63,7 +63,7 @@ private:
         } else {
             if(addMode) {
                 for(int32_t pos=0;pos<k;++pos) {
-                    *to = *from;
+                    *to += *from;
                     to++;
                     from++;
                 }
