@@ -175,6 +175,7 @@ public:
                 } else {
                     end = (thread_id+1) * cell_size;
                 }
+                std::cout << "thread_id=" << thread_id << ",begin=" << begin << ",end=" << end << std::endl;
 
                 for(int32_t i=0; i<m; i++) {
                     for(int32_t j=begin; j<end; j++) {
@@ -191,6 +192,12 @@ public:
                     }
                 }
             }
+
+            std::cout << "a_buf=" << std::endl;
+            for(int32_t i=0; i<(parallel_n-1)*m*paramSize*k; i++) {
+                std::cout << a_buf[i] << ",";
+            }
+            std::cout << std::endl;
 
             int32_t pos=0;
             #pragma omp parallel for
