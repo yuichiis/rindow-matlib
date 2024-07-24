@@ -57,6 +57,7 @@ jobs:
         run: |
           cd build
           ctest -C Release -R ScatterndAddNormal3Dby3DAxis1
+          cat build/Testing/Temporary/LastTest.log
 
       - name: Packaging
         run: |
