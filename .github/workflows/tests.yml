@@ -56,7 +56,7 @@ jobs:
       - name: GoogleTest Tests
         run: |
           cd build
-          ctest -V -C Release -R ScatterndAddNormal3Dby3DAxis1
+          ctest -V -C Release
 
       - name: Packaging
         run: |
