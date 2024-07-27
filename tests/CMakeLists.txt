@@ -15,7 +15,7 @@ target_link_libraries(test_main GTest::gtest_main)
 if(MSVC)
   target_link_libraries(test_main rindowmatlib.vclib)
 else()
-  target_link_libraries(test_main rindowmatlib)
+  target_link_libraries(test_main rindowmatlib.openmp)
 endif()
 target_include_directories(test_main PUBLIC ${gmock_SOURCE_DIR}/include)
 
