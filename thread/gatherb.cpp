@@ -49,7 +49,7 @@ private:
         } else {
             if(addMode) {
                 for(int32_t pos=0;pos<len;++pos) {
-                    *to = *from;
+                    *to += *from;
                     to++;
                     from++;
                 }
@@ -188,7 +188,7 @@ private:
         std::vector<T> a_buf((parallel_n-1)*blockSize, 0);
 
         errcode = ParallelOperation::executeAndGetCode<int32_t>(
-            parallel_n,scatterAddKernel,
+            n,scatterAddKernel,
             blockSize,a_buf.data(),
             reverse,addMode,batches,m,n,k,len,numClass,a,x,b
         );

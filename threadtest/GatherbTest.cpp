@@ -1516,4 +1516,46 @@ TYPED_TEST(GatherbTest, ScatterbAddNormal1Dby1DDims0Axis0) {
     TypeParam R1[shapeB0] = {0,1,4,0};
     EXPECT_THAT(R1, ContainerEq(B));
 }
+TYPED_TEST(GatherbTest, GatherbErrorSelectorOutOfRange) {
+    // axis = 0
+    // A:   1D [numClass]
+    // X:   1D [n]
+    // res: 1D [n]
+    const int32_t reverse = false; 
+    const int32_t addMode = false;
+    const int32_t batchDims = 0;
+    const int32_t axis = 0;
+    const int32_t detailDepth = axis+1;
+    const int32_t indexDepth = 1; // x.ndim()
+    const int32_t shapeA0 = 4;
+    const int32_t shapeX0 = 3;
+    const int32_t shapeB0 = 3;
+    int32_t batches;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t len;
+    int32_t numClass;
+    int32_t outputSize;
+    int32_t rc;
+
+    TypeParam A[shapeA0];
+    Utils::range<TypeParam>(shapeA0,(TypeParam*)A);
+    int32_t X[shapeX0] = {2,4,1};
+    rc = this->calcGatherbShapes({shapeA0},{shapeX0},axis,batchDims,detailDepth,indexDepth,&batches,&m,&n,&k,&len,&numClass,&outputSize);
+    ASSERT_EQ(0,rc);
+    TypeParam B[shapeB0];
+    
+    ASSERT_EQ(1,        batches);
+    ASSERT_EQ(1,        m);
+    ASSERT_EQ(3,        n);
+    ASSERT_EQ(4,        numClass);
+    ASSERT_EQ(1,        k);
+    ASSERT_EQ(1,        len);
+    ASSERT_EQ(shapeB0,  outputSize);
+
+    rc = this->test_matlib_gatherb(reverse,addMode,batches,m,n,k,len,numClass,(TypeParam*)A,(int32_t*)X,(TypeParam*)B);
+    ASSERT_EQ(RINDOW_MATLIB_E_PERM_OUT_OF_RANGE,rc);
+}
+
 }

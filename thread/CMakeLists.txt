@@ -43,7 +43,8 @@ target_include_directories(rindowmatlib.thread PRIVATE "${CMAKE_CURRENT_BINARY_D
 if (MSVC)
     install(
         TARGETS rindowmatlib.thread
-        RUNTIME DESTINATION bin/thread
+        #RUNTIME DESTINATION bin/thread
+        RUNTIME DESTINATION bin
         COMPONENT ${PROJECT_NAME}
     )
     install(
@@ -54,7 +55,8 @@ if (MSVC)
 elseif(APPLE)
     install(
         TARGETS rindowmatlib.thread
-        DESTINATION lib/thread
+        #DESTINATION lib/thread
+        DESTINATION lib
         RENAME rindowmatlib.dylib
         COMPONENT ${PROJECT_NAME}
     )

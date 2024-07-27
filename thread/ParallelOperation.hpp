@@ -98,7 +98,7 @@ public:
         for(auto && result: results) {
             try {
                 ERRCODE res = result.get();
-                if(resultValue!=0) {
+                if(res!=0) {
                     resultValue = res;
                 }
             } catch(...) {

@@ -5,7 +5,6 @@
 #include <string.h>
 #include <exception>
 #include <stdio.h>
-#include <iostream>
 
 namespace {
 
@@ -53,7 +52,7 @@ private:
         } else {
             if(addMode) {
                 for(int32_t pos=0;pos<len;++pos) {
-                    *to = *from;
+                    *to += *from;
                     to++;
                     from++;
                 }
