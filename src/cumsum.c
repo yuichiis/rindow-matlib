@@ -45,33 +45,3 @@ void rindow_matlib_d_cumsum(
 {
     RINDOW_MATLIB_CUMSUM_TEMPLATE(0,n,x,incX,exclusive,reverse,y,incY,double);
 }
-
-void rindow_matlib_s_cumsumb(
-    int32_t m,
-    int32_t n,
-    float *x, int32_t incX,
-    int32_t exclusive,
-    int32_t reverse,
-    float *y, int32_t incY)
-{
-    int32_t i;
-    #pragma omp parallel for
-    for(i=0;i<m;i++) {
-        RINDOW_MATLIB_CUMSUM_TEMPLATE(i,n,x,incX,exclusive,reverse,y,incY,float);
-    }
-}
-
-void rindow_matlib_d_cumsumb(
-    int32_t m,
-    int32_t n,
-    double *x, int32_t incX,
-    int32_t exclusive,
-    int32_t reverse,
-    double *y, int32_t incY)
-{
-    int32_t i;
-    #pragma omp parallel for
-    for(i=0;i<m;i++) {
-        RINDOW_MATLIB_CUMSUM_TEMPLATE(i,n,x,incX,exclusive,reverse,y,incY,double);
-    }
-}
