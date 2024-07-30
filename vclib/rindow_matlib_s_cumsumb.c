@@ -5,23 +5,21 @@ static char msg_function_not_found[]  = "rindow_matlib_s_cumsumb not found\n";
 typedef void (CALLBACK* PFNrindow_matlib_s_cumsumb)( /* rindow_matlib_s_cumsumb */
     int32_t            /* m */,
     int32_t            /* n */,
-    float *            /* x */,
-    int32_t            /* incX */,
+    int32_t            /* k */,
+    float *            /* a */,
     int32_t            /* exclusive */,
     int32_t            /* reverse */,
-    float *            /* y */,
-    int32_t            /* incY */
+    float *            /* b */
 );
 static PFNrindow_matlib_s_cumsumb _g_rindow_matlib_s_cumsumb = NULL;
 void rindow_matlib_s_cumsumb(
     int32_t            m,
     int32_t            n,
-    float *            x,
-    int32_t            incX,
+    int32_t            k,
+    float *            a,
     int32_t            exclusive,
     int32_t            reverse,
-    float *            y,
-    int32_t            incY
+    float *            b
 )
 {
     if(_g_rindow_matlib_s_cumsumb==NULL) {
@@ -35,11 +33,10 @@ void rindow_matlib_s_cumsumb(
     _g_rindow_matlib_s_cumsumb(
         m,
         n,
-        x,
-        incX,
+        k,
+        a,
         exclusive,
         reverse,
-        y,
-        incY    
+        b    
     );
 }

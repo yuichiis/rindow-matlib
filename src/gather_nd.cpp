@@ -4,7 +4,6 @@
 #include <memory.h>
 #include <string.h>
 #include <exception>
-#include <iostream>
 
 namespace {
 
@@ -103,11 +102,9 @@ public:
             paramSize *= paramShape[h];
         }
         int32_t parallel_n = rindow_matlib_common_get_num_threads();
-        std::cout << "num_threads=" << parallel_n << std::endl;
         if(n<parallel_n) {
             parallel_n = n;
         }
-        std::cout << "parallel_n=" << parallel_n << std::endl;
         bool para_m = false;
         bool scatteradd_mode = false;
         if(reverse&&addMode) {
@@ -130,7 +127,6 @@ public:
 
         if(!scatteradd_mode) {
             if(para_m) { // parallel for batchs
-                std::cout << "parallel for batchs" << std::endl;
                 int32_t i;
                 #pragma omp parallel for
                 for(i=0;i<m;i++) {
@@ -142,7 +138,6 @@ public:
                     }
                 }
             } else { // parallel for broadcast on n
-                std::cout << "parallel for broadcast on n" << std::endl;
                 int32_t j;
                 #pragma omp parallel for
                 for(j=0; j<n; j++) {
@@ -155,7 +150,6 @@ public:
                 }
             }
         } else { // broadcast on reverse and addmode
-            std::cout << "broadcast on reverse and addmode" << std::endl;
             int32_t cell_size = n / parallel_n;
             int32_t remainder = n - cell_size * parallel_n;
             // n*[m,p0,p1,k]
@@ -175,7 +169,6 @@ public:
                 } else {
                     end = (thread_id+1) * cell_size;
                 }
-                std::cout << "thread_id=" << thread_id << ",begin=" << begin << ",end=" << end << std::endl;
 
                 for(int32_t i=0; i<m; i++) {
                     for(int32_t j=begin; j<end; j++) {
@@ -192,12 +185,6 @@ public:
                     }
                 }
             }
-
-            std::cout << "a_buf=" << std::endl;
-            for(int32_t i=0; i<(parallel_n-1)*m*paramSize*k; i++) {
-                std::cout << a_buf[i] << ",";
-            }
-            std::cout << std::endl;
 
             int32_t pos=0;
             #pragma omp parallel for
