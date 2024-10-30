@@ -26,6 +26,9 @@ jobs:
           - name: Linux
             os: ubuntu-latest
             artifact_name: linux
+          - name: Ubuntu-20.04
+            os: ubuntu-20.04
+            artifact_name: ubuntu-2004
           - name: macOS-x86_64
             os: macos-13
             artifact_name: macos-x86_64
