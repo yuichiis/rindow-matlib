@@ -24,7 +24,7 @@ jobs:
             os: windows-latest
             artifact_name: win64
           - name: Linux
-            os: ubuntu-latest
+            os: ubuntu-24.04
             artifact_name: linux
           - name: Ubuntu-20.04
             os: ubuntu-20.04
