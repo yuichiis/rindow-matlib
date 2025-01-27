@@ -10,7 +10,7 @@ using testing::ContainerEq;
 namespace {
 
 template <typename T>
-class SliceTest : public ::testing::Test {
+class AbstractSliceTest : public ::testing::Test {
 protected:
     void calcGatherShapes(
         std::initializer_list<int32_t> shape,
@@ -197,13 +197,45 @@ protected:
             startAxis2,sizeAxis2
         );
     }
-    virtual void test_exec(
+
+    virtual void test_matlib_slice(
+        int32_t reverse,
+        int32_t addMode,
+        int32_t m,
+        int32_t n,
+        int32_t k,
+        int32_t size,
+        uint8_t *a, int32_t incA,
+        uint8_t *y, int32_t incY,
+        int32_t startAxis0,
+        int32_t sizeAxis0,
+        int32_t startAxis1,
+        int32_t sizeAxis1,
+        int32_t startAxis2,
+        int32_t sizeAxis2
+        )
+    {
+        int32_t data_dtype = rindow_matlib_dtype_bool;
+        return rindow_matlib_i_slice(
+            reverse,addMode,
+            m,n,k,size,
+            data_dtype,
+            a, incA,
+            y, incY,
+            startAxis0,sizeAxis0,
+            startAxis1,sizeAxis1,
+            startAxis2,sizeAxis2
+        );
+    }
+
+    template <typename TY>
+    void test_exec(
         bool reverse,
-        T* input,
+        TY* input,
         std::initializer_list<int32_t> shape,
         std::initializer_list<int32_t> begin,
         std::initializer_list<int32_t> size,
-        T* output,
+        TY* output,
         int32_t outBuffSize
     )
     {
@@ -259,6 +291,10 @@ protected:
         );
     }
 };
+
+template <typename T>
+class SliceTest : public AbstractSliceTest<T> {};
+
 typedef ::testing::Types<float, double, int32_t> TestTypes;
 TYPED_TEST_SUITE(SliceTest, TestTypes);
 
@@ -882,4 +918,46 @@ TYPED_TEST(SliceTest, stick4d_axis2_1to2) {
     };
     EXPECT_THAT(R1, ContainerEq(A));
 }
+
+TYPED_TEST(SliceTest, bool_slice3d_axis1_1to2) {
+    const int32_t reverse = false;
+    const int32_t shapeA0 = 2;
+    const int32_t shapeA1 = 4;
+    const int32_t shapeA2 = 3;
+
+    uint8_t A[shapeA0][shapeA1][shapeA2] = {
+        {{ 1, 0, 0},
+         { 1, 1, 0},
+         { 1, 1, 1},
+         { 0, 1, 1}},
+
+        {{ 0, 0, 1},
+         { 0, 1, 1},
+         { 1, 1, 1},
+         { 1, 1, 0}},
+    };
+
+    //         slice axis1
+    //             v
+    uint8_t B[2][2][3];
+
+    this->test_exec(
+        reverse,
+        (uint8_t*)A,
+        {shapeA0,shapeA1,shapeA2}, // shape
+        { 0, 1},    // begin
+        {-1, 2},    // size
+        (uint8_t*)B,
+        (int32_t)(sizeof(B)/sizeof(uint8_t)) // outputSize
+    );
+
+    uint8_t R1[2][2][3] = {
+        {{ 1, 1, 0},
+         { 1, 1, 1}},
+        {{ 0, 1, 1},
+         { 1, 1, 1}},
+    };
+    EXPECT_THAT(R1, ContainerEq(B));
+}
+
 }
