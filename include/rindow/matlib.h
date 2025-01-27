@@ -193,8 +193,6 @@ RINDOW_FUNC_DECL void rindow_matlib_s_add(int32_t trans,int32_t m,int32_t n,floa
 RINDOW_FUNC_DECL void rindow_matlib_d_add(int32_t trans,int32_t m,int32_t n,double alpha,double *x, int32_t incX,double *a, int32_t ldA);
 RINDOW_FUNC_DECL void rindow_matlib_s_duplicate(int32_t trans,int32_t m,int32_t n,float *x, int32_t incX,float *a, int32_t ldA);
 RINDOW_FUNC_DECL void rindow_matlib_d_duplicate(int32_t trans,int32_t m,int32_t n,double *x, int32_t incX,double *a, int32_t ldA);
-// RINDOW_FUNC_DECL void rindow_matlib_s_masking(int32_t trans,int32_t m,int32_t n,uint8_t *x, int32_t incX,float *a, int32_t ldA);
-// RINDOW_FUNC_DECL void rindow_matlib_d_masking(int32_t trans,int32_t m,int32_t n,uint8_t *x, int32_t incX,double *a, int32_t ldA);
 RINDOW_FUNC_DECL void rindow_matlib_s_masking(int32_t m,int32_t n,int32_t k,float fill,uint8_t *x,float *a);
 RINDOW_FUNC_DECL void rindow_matlib_d_masking(int32_t m,int32_t n,int32_t k,double fill,uint8_t *x,double *a);
 RINDOW_FUNC_DECL void rindow_matlib_s_square(int32_t n, float *x, int32_t incX);
