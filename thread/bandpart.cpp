@@ -87,5 +87,54 @@ void rindow_matlib_d_bandpart(
     BandPart<double>::execute(m, n, k, a, lower, upper);
     RINDOW_END_CLEAR_EXCEPTION;
 }
+
+void rindow_matlib_i_bandpart(
+    int32_t m, int32_t n, int32_t k,
+    int32_t dtype,
+    void *a,
+    int32_t lower, int32_t upper)
+{
+    RINDOW_BEGIN_CLEAR_EXCEPTION;
+    switch(dtype) {
+        case rindow_matlib_dtype_int8: {
+            BandPart<int8_t>::execute(m, n, k, (int8_t*)a, lower, upper);
+            break;
+        }
+        case rindow_matlib_dtype_uint8: {
+            BandPart<uint8_t>::execute(m, n, k, (uint8_t*)a, lower, upper);
+            break;
+        }
+        case rindow_matlib_dtype_int16: {
+            BandPart<int16_t>::execute(m, n, k, (int16_t*)a, lower, upper);
+            break;
+        }
+        case rindow_matlib_dtype_uint16: {
+            BandPart<uint16_t>::execute(m, n, k, (uint16_t*)a, lower, upper);
+            break;
+        }
+        case rindow_matlib_dtype_int32: {
+            BandPart<int32_t>::execute(m, n, k, (int32_t*)a, lower, upper);
+            break;
+        }
+        case rindow_matlib_dtype_uint32: {
+            BandPart<uint32_t>::execute(m, n, k, (uint32_t*)a, lower, upper);
+            break;
+        }
+        case rindow_matlib_dtype_int64: {
+            BandPart<int64_t>::execute(m, n, k, (int64_t*)a, lower, upper);
+            break;
+        }
+        case rindow_matlib_dtype_uint64: {
+            BandPart<uint64_t>::execute(m, n, k, (uint64_t*)a, lower, upper);
+            break;
+        }
+        case rindow_matlib_dtype_bool: {
+            BandPart<uint8_t>::execute(m, n, k, (uint8_t*)a, lower, upper);
+            break;
+        }
+    }
+    RINDOW_END_CLEAR_EXCEPTION;
+}
+
 }
 

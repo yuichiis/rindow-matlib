@@ -65,24 +65,41 @@ TYPED_TEST_SUITE(SumTest, TestTypes);
 
 TYPED_TEST(SumTest, normal) {
     const int32_t M = 1;
-    const int32_t N = 6;
+    const int32_t N = 10;
     const int32_t incX = 1;
 
-    TypeParam X[N] = {1,2,-3,-4,5,-6};
+    TypeParam X[N] = {1,2,-3,-4,5,-6, 7, -8, 9, -10};
     //TypeParam inf = std::numeric_limits<TypeParam>::infinity();
 
     int32_t dtype = this->test_get_dtype(X[0]);
     if(dtype==rindow_matlib_dtype_int32) {
         int64_t sum = (int64_t)this->test_matlib_sum(N, X, incX);
-        EXPECT_EQ((1+2-3-4+5-6), sum);
+        EXPECT_EQ((1+2-3-4+5-6+7-8+9-10), sum);
     } else {
         TypeParam sum = (TypeParam)this->test_matlib_sum(N, X, incX);
-        EXPECT_EQ((1+2-3-4+5-6), sum);
+        EXPECT_EQ((1+2-3-4+5-6+7-8+9-10), sum);
     }
 
     // bool
-    bool boolX[N] = {true,false,true,false,true,false};
+    bool boolX[N] = {true,true,true,true,true,true,true,true,true,false};
     int64_t sumbool = this->test_matlib_sum(N, boolX, incX);
-    EXPECT_EQ(3, sumbool);
+    EXPECT_EQ(9, sumbool);
+
+    // bool x 15
+    bool boolXL[15] = {
+        true,true,true,true, true,true,true,true,
+        true,true,true,true, true,true,false
+    };
+    int64_t sumboolL = this->test_matlib_sum(15, boolXL, incX);
+    EXPECT_EQ(14, sumboolL);
+
+    // bool x 2048
+    bool boolXLL[2048];
+    for(int i=0;i<2048;i++) {
+        boolXLL[i] = true;
+    }
+    int64_t sumboolLL = this->test_matlib_sum(2048, boolXLL, incX);
+    EXPECT_EQ(2048, sumboolLL);
+
 }
 }

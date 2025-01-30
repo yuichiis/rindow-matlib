@@ -25,8 +25,16 @@ protected:
     {
         rindow_matlib_d_bandpart(m, n, k, a, lower, upper);
     }
+
+    virtual void test_matlib_bandpart(
+        int32_t m, int32_t n, int32_t k,
+        uint8_t *a,int32_t lower, int32_t upper)
+    {
+        int32_t dtype = rindow_matlib_dtype_uint8;
+        rindow_matlib_i_bandpart(m, n, k, dtype, a, lower, upper);
+    }
 };
-typedef ::testing::Types<float, double> TestTypes;
+typedef ::testing::Types<float, double, uint8_t> TestTypes;
 TYPED_TEST_SUITE(BandpartTest, TestTypes);
 
 TYPED_TEST(BandpartTest, Array3DUpper) {

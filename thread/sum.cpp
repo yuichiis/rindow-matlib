@@ -49,10 +49,10 @@ public:
 
     static int32_t reduce_bool(
         int32_t initialValue,
-        T value
+        int32_t value
     )
     {
-        return initialValue+((value==0) ? 0 : 1);
+        return initialValue+(int32_t)value;
     }
 
     static T execute(int32_t n, T *x, int32_t incX)
