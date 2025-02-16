@@ -6,6 +6,7 @@ typedef void (CALLBACK* PFNrindow_matlib_s_masking)( /* rindow_matlib_s_masking 
     int32_t            /* m */,
     int32_t            /* n */,
     int32_t            /* k */,
+    int32_t            /* len */,
     float            /* fill */,
     uint8_t *            /* x */,
     float *            /* a */
@@ -15,6 +16,7 @@ void rindow_matlib_s_masking(
     int32_t            m,
     int32_t            n,
     int32_t            k,
+    int32_t            len,
     float            fill,
     uint8_t *            x,
     float *            a
@@ -32,6 +34,7 @@ void rindow_matlib_s_masking(
         m,
         n,
         k,
+        len,
         fill,
         x,
         a    

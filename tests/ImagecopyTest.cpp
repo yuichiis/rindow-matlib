@@ -105,7 +105,7 @@ TYPED_TEST(ImagecopyTest, Simple) {
     const int32_t channels = 1;
 
     TypeParam a[height][width][channels];
-    Utils::range<TypeParam>(height*width*channels,(TypeParam*)a);
+    Utils::range<TypeParam>(0,height*width*channels,(TypeParam*)a);
     TypeParam b[height][width][channels];
     Utils::zeros<TypeParam>(height*width*channels,(TypeParam*)b);
 
@@ -290,7 +290,7 @@ TYPED_TEST(ImagecopyTest, Complex) {
     const int32_t channels = 1;
 
     TypeParam a[height][width][channels];
-    Utils::range<TypeParam>(height*width*channels,(TypeParam*)a); 
+    Utils::range<TypeParam>(0,height*width*channels,(TypeParam*)a); 
     TypeParam b[height][width][channels];
     Utils::zeros<TypeParam>(height*width*channels,(TypeParam*)b); 
 

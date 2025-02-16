@@ -19,7 +19,7 @@ private:
     {
         for(int32_t i = cell.begin; i < cell.end; i++) {
             T *ax = &a[i*ldA];
-            T t,max_a,sum_exp;
+            T max_a;
 
             max_a = ax[0];
             for(int j=1;j<n;j++) {
@@ -28,11 +28,15 @@ private:
                 }
             }
 
-            sum_exp = 0;
+            T sum_exp = 0;
+            T c = 0; // Compensation term: Cumulative sum by Kahan summation
             for(int32_t j=0;j<n;j++) {
-                t = std::exp(ax[j]-max_a);
-                sum_exp += t;
-                ax[j] = t;
+                T exp_val = std::exp(ax[j]-max_a);
+                T y = exp_val - c;
+                T t = sum_exp + y;
+                c = (t - sum_exp) - y;
+                sum_exp = t;
+                ax[j] = exp_val;
             }
             for(int32_t j=0;j<n;j++) {
                 ax[j] = ax[j] / sum_exp;

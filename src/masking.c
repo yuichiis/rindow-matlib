@@ -3,10 +3,12 @@
 #include "common.h"
 
 // *** CAUTION ***
-#define RINDOW_MATLIB_MASKING_TEMPLATE(n,k,i,j,fill,x,a) \
+#define RINDOW_MATLIB_MASKING_TEMPLATE(n,k,len,i,j,fill,x,a) \
     for(int32_t h=0; h<k; h++) { \
         if(!x[i*k+h]) { \
-            a[(i*n+j)*k+h] =  fill; \
+            for(int l=0;l<len;l++) { \
+                a[((i*n+j)*k+h)*len+l] =  fill; \
+            } \
         } \
     } \
 
@@ -14,6 +16,7 @@ void rindow_matlib_s_masking(
     int32_t m,
     int32_t n,
     int32_t k,
+    int32_t len,
     float fill,
     uint8_t *x, 
     float *a
@@ -26,7 +29,9 @@ void rindow_matlib_s_masking(
         #pragma omp parallel for
         for(h=0; h<k; h++) {
             if(!x[h]) {
-                a[h] = fill;
+                for(int l=0;l<len;l++) {
+                    a[h*len+l] = fill;
+                }
             }
         }
     } else if(m==1 && n<k) {// broadcast for inner shape and n<k
@@ -35,7 +40,9 @@ void rindow_matlib_s_masking(
         for(h=0; h<k; h++) {
             for(int32_t j=0; j<n; j++) {
                 if(!x[h]) {
-                    a[j*k+h] = fill;
+                    for(int l=0;l<len;l++) {
+                        a[(j*k+h)*len+l] = fill;
+                    }
                 }
             }
         }
@@ -45,7 +52,7 @@ void rindow_matlib_s_masking(
             #pragma omp parallel for
             for(i=0; i<m; i++) {
                 for(int32_t j=0; j<n; j++) {
-                    RINDOW_MATLIB_MASKING_TEMPLATE(n,k,i,j,fill,x,a)
+                    RINDOW_MATLIB_MASKING_TEMPLATE(n,k,len,i,j,fill,x,a)
                 }
             }
         } else {
@@ -53,7 +60,7 @@ void rindow_matlib_s_masking(
             #pragma omp parallel for
             for(j=0; j<n; j++) {
                 for(int32_t i=0;i<m; i++) {
-                    RINDOW_MATLIB_MASKING_TEMPLATE(n,k,i,j,fill,x,a)
+                    RINDOW_MATLIB_MASKING_TEMPLATE(n,k,len,i,j,fill,x,a)
                 }
             }
         }
@@ -64,6 +71,7 @@ void rindow_matlib_d_masking(
     int32_t m,
     int32_t n,
     int32_t k,
+    int32_t len,
     double fill,
     uint8_t *x, 
     double *a
@@ -76,7 +84,9 @@ void rindow_matlib_d_masking(
         #pragma omp parallel for
         for(h=0; h<k; h++) {
             if(!x[h]) {
-                a[h] = fill;
+                for(int l=0;l<len;l++) {
+                    a[h*len+l] = fill;
+                }
             }
         }
     } else if(m==1 && n<k) {// broadcast for inner shape and n<k
@@ -85,7 +95,9 @@ void rindow_matlib_d_masking(
         for(h=0; h<k; h++) {
             for(int32_t j=0; j<n; j++) {
                 if(!x[h]) {
-                    a[j*k+h] = fill;
+                    for(int l=0;l<len;l++) {
+                        a[(j*k+h)*len+l] = fill;
+                    }
                 }
             }
         }
@@ -95,7 +107,7 @@ void rindow_matlib_d_masking(
             #pragma omp parallel for
             for(i=0; i<m; i++) {
                 for(int32_t j=0; j<n; j++) {
-                    RINDOW_MATLIB_MASKING_TEMPLATE(n,k,i,j,fill,x,a)
+                    RINDOW_MATLIB_MASKING_TEMPLATE(n,k,len,i,j,fill,x,a)
                 }
             }
         } else {
@@ -103,7 +115,7 @@ void rindow_matlib_d_masking(
             #pragma omp parallel for
             for(j=0; j<n; j++) {
                 for(int32_t i=0;i<m; i++) {
-                    RINDOW_MATLIB_MASKING_TEMPLATE(n,k,i,j,fill,x,a)
+                    RINDOW_MATLIB_MASKING_TEMPLATE(n,k,len,i,j,fill,x,a)
                 }
             }
         }

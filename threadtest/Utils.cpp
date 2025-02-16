@@ -29,9 +29,9 @@ void Utils::ones(int32_t size, T *x) {
     }
 }
 template <typename T>
-void Utils::range(int32_t size, T *x) {
-    for(int32_t i=0;i<size;++i) {
-        x[i] = (T)i;
+void Utils::range(int32_t begin, int32_t end, T *x) {
+    for(int32_t i=0;i<end-begin;++i) {
+        x[i] = (T)(begin+i);
     }
 }
 
@@ -48,22 +48,22 @@ std::unique_ptr<T[]> Utils::array(std::initializer_list<T> values) {
 template void Utils::fill<float>(int32_t size, float *x, float value);
 template void Utils::zeros<float>(int32_t size, float *x);
 template void Utils::ones<float>(int32_t size, float *x);
-template void Utils::range<float>(int32_t size, float *x);
+template void Utils::range<float>(int32_t begin, int32_t end, float *x);
 template std::unique_ptr<float[]> Utils::array<float>(std::initializer_list<float> values);
 template void Utils::fill<double>(int32_t size, double *x, double value);
 template void Utils::zeros<double>(int32_t size, double *x);
 template void Utils::ones<double>(int32_t size, double *x);
-template void Utils::range<double>(int32_t size, double *x);
+template void Utils::range<double>(int32_t begin, int32_t end, double *x);
 template std::unique_ptr<double[]> Utils::array<double>(std::initializer_list<double> values);
 template void Utils::fill<int32_t>(int32_t size, int32_t *x, int32_t value);
 template void Utils::zeros<int32_t>(int32_t size, int32_t *x);
 template void Utils::ones<int32_t>(int32_t size, int32_t *x);
-template void Utils::range<int32_t>(int32_t size, int32_t *x);
+template void Utils::range<int32_t>(int32_t begin, int32_t end, int32_t *x);
 template std::unique_ptr<int32_t[]> Utils::array<int32_t>(std::initializer_list<int32_t> values);
 template void Utils::fill<uint8_t>(int32_t size, uint8_t *x, uint8_t value);
 template void Utils::zeros<uint8_t>(int32_t size, uint8_t *x);
 template void Utils::ones<uint8_t>(int32_t size, uint8_t *x);
-template void Utils::range<uint8_t>(int32_t size, uint8_t *x);
+template void Utils::range<uint8_t>(int32_t begin, int32_t end, uint8_t *x);
 template std::unique_ptr<uint8_t[]> Utils::array<uint8_t>(std::initializer_list<uint8_t> values);
 
 template <typename T>

@@ -229,7 +229,7 @@ TYPED_TEST(GatherndTest, GatherndNormal2Dby2DAxis0) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1];
-    Utils::range<TypeParam>(shapeA0*shapeA1,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1,(TypeParam*)A);
 
     int32_t X[shapeX0][shapeX1] = {{1},{2}};
     rc = this->calcGatherndShapes({shapeA0,shapeA1},{shapeX0,shapeX1},batchDims,&m,&n,&k,&indexDepth,paramShape,&outputSize);
@@ -279,7 +279,7 @@ TYPED_TEST(GatherndTest, GatherndNormal3Dby2DAxis0) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2,(TypeParam*)A);
 
     int32_t X[shapeX0][shapeX1] = {
         {0,1},
@@ -331,7 +331,7 @@ TYPED_TEST(GatherndTest, GatherndNormal2Dby2DAxis1) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1];
-    Utils::range<TypeParam>(shapeA0*shapeA1,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1,(TypeParam*)A);
 
     int32_t X[shapeX0][shapeX1] = {
         {0},
@@ -388,7 +388,7 @@ TYPED_TEST(GatherndTest, GatherndNormal3Dby2DAxis1) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2,(TypeParam*)A);
 
     int32_t X[shapeX0][shapeX1] = {
         {0},
@@ -447,7 +447,7 @@ TYPED_TEST(GatherndTest, GatherndNormal3Dby3DAxis1) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2,(TypeParam*)A);
 
     int32_t X[shapeX0][shapeX1][shapeX2] = {
         {{0},
@@ -515,7 +515,7 @@ TYPED_TEST(GatherndTest, GatherndNormal4Dby3DAxis1) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2][shapeA3];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2*shapeA3,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2*shapeA3,(TypeParam*)A);
 
     int32_t X[shapeX0][shapeX1][shapeX2] = {
         {{0,0},{0,1},{1,0}},

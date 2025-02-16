@@ -33,6 +33,7 @@ private:
         int32_t m,
         int32_t n,
         int32_t k,
+        int32_t len,
         T fill,
         uint8_t *x,
         T *a
@@ -55,7 +56,9 @@ private:
             for(int32_t i=begin_i; i<end_i; i++) {
                 for(int32_t j=begin_j; j<end_j; j++) {
                     if(!x[i]) {
-                        a[i*n+j] =  fill;
+                        for(int32_t l=0; l<len; l++) {
+                            a[(i*n+j)*len+l] =  fill;
+                        }
                     }
                 }
             }
@@ -64,7 +67,9 @@ private:
                 for(int32_t j=begin_j; j<end_j; j++) {
                     for(int32_t h=0; h<k; h++) {
                         if(!x[i*k+h]) {
-                            a[(i*n+j)*k+h] =  fill;
+                            for(int32_t l=0; l<len; l++) {
+                                a[((i*n+j)*k+h)*len+l] =  fill;
+                            }
                         }
                     }
                 }
@@ -76,6 +81,7 @@ private:
         ParallelOperation::cellInfo cell,
         int32_t n,
         int32_t k,
+        int32_t len,
         T fill,
         uint8_t *x,
         T *a
@@ -88,7 +94,9 @@ private:
         for(int32_t j=0; j<n; j++) {
             for(int32_t h=begin_h; h<end_h; h++) {
                 if(!x[h]) {
-                    a[j*k+h] = fill;
+                    for(int32_t l=0; l<len; l++) {
+                        a[(j*k+h)*len+l] = fill;
+                    }
                 }
             }
         }
@@ -99,6 +107,7 @@ public:
         int32_t m,
         int32_t n,
         int32_t k,
+        int32_t len,
         T fill,
         uint8_t *x, 
         T *a
@@ -108,10 +117,10 @@ public:
             return;
         }
 
-        if(m==1 && n==1) { // simple masking (same shape X and A)
+        if(m==1 && n==1 && len==1) { // simple masking (same shape X and A)
             ParallelOperation::execute(k,kernel_simple,fill,x,a);
         } else if(m==1 && n<k) {
-            ParallelOperation::execute(k,kernel_broadcast_inner_ngtk,n,k,fill,x,a);
+            ParallelOperation::execute(k,kernel_broadcast_inner_ngtk,n,k,len,fill,x,a);
         } else {
             int32_t parallel;
             bool para_m;
@@ -122,7 +131,7 @@ public:
                 parallel = n;
                 para_m = false;
             }
-            ParallelOperation::execute(parallel,kernel_broadcast,para_m,m,n,k,fill,x,a);
+            ParallelOperation::execute(parallel,kernel_broadcast,para_m,m,n,k,len,fill,x,a);
         }
     }
 };
@@ -134,12 +143,13 @@ void rindow_matlib_s_masking(
     int32_t m,
     int32_t n,
     int32_t k,
+    int32_t len,
     float fill,
     uint8_t *x, 
     float *a
 ) {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    Masking<float>::execute(m, n, k, fill, x, a);
+    Masking<float>::execute(m, n, k, len, fill, x, a);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 
@@ -147,12 +157,13 @@ void rindow_matlib_d_masking(
     int32_t m,
     int32_t n,
     int32_t k,
+    int32_t len,
     double fill,
     uint8_t *x, 
     double *a
 ) {
     RINDOW_BEGIN_CLEAR_EXCEPTION;
-    Masking<double>::execute(m, n, k, fill, x, a);
+    Masking<double>::execute(m, n, k, len, fill, x, a);
     RINDOW_END_CLEAR_EXCEPTION;
 }
 }

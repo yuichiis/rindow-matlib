@@ -11,20 +11,20 @@ template <typename T>
 class MaskingTest : public ::testing::Test {
 protected:
     virtual void test_matlib_masking(
-        int32_t m,int32_t n,int32_t k,
+        int32_t m,int32_t n,int32_t k,int32_t len,
         float fill,
         uint8_t *x,
         float *a
     ) {
-        rindow_matlib_s_masking(m,n,k,fill,x,a);
+        rindow_matlib_s_masking(m,n,k,len,fill,x,a);
     }
     virtual void test_matlib_masking(
-        int32_t m,int32_t n,int32_t k,
+        int32_t m,int32_t n,int32_t k,int32_t len,
         double fill,
         uint8_t *x,
         double *a
     ) {
-        rindow_matlib_d_masking(m,n,k,fill,x,a);
+        rindow_matlib_d_masking(m,n,k,len,fill,x,a);
     }
 };
 typedef ::testing::Types<float, double> TestTypes;
@@ -34,6 +34,7 @@ TYPED_TEST(MaskingTest, simple) {
     const int32_t M = 1;
     const int32_t N = 1;
     const int32_t K = 6;
+    const int32_t LEN = 1;
 
     // rows<cols
     uint8_t X[M][K] = {{true,true,false,false,false,true}};
@@ -42,6 +43,7 @@ TYPED_TEST(MaskingTest, simple) {
         M,              // int32_t m,
         N,              // int32_t n,
         K,              // int32_t k,
+        LEN,            // int32_t len,
         (TypeParam)0.0, // fill
         (uint8_t*)X,    // *x,
         (TypeParam *)A  // *a,
@@ -57,6 +59,7 @@ TYPED_TEST(MaskingTest, broadcast_inner_mGTn) {
     const int32_t M = 3;
     const int32_t N = 2;
     const int32_t K = 1;
+    const int32_t LEN = 1;
 
     // m>n
     uint8_t X[M][K] = {{true},{false},{true}};
@@ -69,6 +72,7 @@ TYPED_TEST(MaskingTest, broadcast_inner_mGTn) {
         M,              // int32_t m,
         N,              // int32_t n,
         K,              // int32_t k,
+        LEN,            // int32_t len,
         (TypeParam)0.0, // fill
         (uint8_t*)X,    // *x,
         (TypeParam *)A  // *a,
@@ -88,6 +92,7 @@ TYPED_TEST(MaskingTest, broadcast_inner_mLTn) {
     const int32_t M = 2;
     const int32_t N = 3;
     const int32_t K = 1;
+    const int32_t LEN = 1;
 
     // m<n
     uint8_t X[M][K] = {{true},{false}};
@@ -99,6 +104,7 @@ TYPED_TEST(MaskingTest, broadcast_inner_mLTn) {
         M,              // int32_t m,
         N,              // int32_t n,
         K,              // int32_t k,
+        LEN,            // int32_t len,
         (TypeParam)0,   // fill
         (uint8_t*)X,    // *x,
         (TypeParam *)A  // *a,
@@ -117,6 +123,7 @@ TYPED_TEST(MaskingTest, broadcast_outer_nGTk) {
     const int32_t M = 1;
     const int32_t N = 3;
     const int32_t K = 2;
+    const int32_t LEN = 1;
 
     // n<k
     uint8_t X[M][K] = {{true,false}};
@@ -129,6 +136,7 @@ TYPED_TEST(MaskingTest, broadcast_outer_nGTk) {
         M,              // int32_t m,
         N,              // int32_t n,
         K,              // int32_t k,
+        LEN,            // int32_t len,
         (TypeParam)0.0, // fill
         (uint8_t*)X,    // *x,
         (TypeParam *)A  // *a,
@@ -148,6 +156,7 @@ TYPED_TEST(MaskingTest, broadcast_outer_nLTk) {
     const int32_t M = 1;
     const int32_t N = 2;
     const int32_t K = 3;
+    const int32_t LEN = 1;
 
     // n<k
     uint8_t X[M][K] = {{true,false,true}};
@@ -159,6 +168,7 @@ TYPED_TEST(MaskingTest, broadcast_outer_nLTk) {
         M,              // int32_t m,
         N,              // int32_t n,
         K,              // int32_t k,
+        LEN,            // int32_t len,
         (TypeParam)0.0, // fill
         (uint8_t*)X,    // *x,
         (TypeParam *)A  // *a,
@@ -177,6 +187,7 @@ TYPED_TEST(MaskingTest, broadcast_both_mGTn) {
     const int32_t M = 3;
     const int32_t N = 2;
     const int32_t K = 4;
+    const int32_t LEN = 1;
 
     // n<k
     uint8_t X[M][K] = {
@@ -193,6 +204,7 @@ TYPED_TEST(MaskingTest, broadcast_both_mGTn) {
         M,              // int32_t m,
         N,              // int32_t n,
         K,              // int32_t k,
+        LEN,            // int32_t len,
         (TypeParam)0.0, // fill
         (uint8_t*)X,    // *x,
         (TypeParam *)A  // *a,
@@ -216,6 +228,7 @@ TYPED_TEST(MaskingTest, broadcast_both_mLTn) {
     const int32_t M = 2;
     const int32_t N = 3;
     const int32_t K = 4;
+    const int32_t LEN = 1;
 
     // n<k
     uint8_t X[M][K] = {
@@ -230,6 +243,7 @@ TYPED_TEST(MaskingTest, broadcast_both_mLTn) {
         M,              // int32_t m,
         N,              // int32_t n,
         K,              // int32_t k,
+        LEN,            // int32_t len,
         (TypeParam)0.0, // fill
         (uint8_t*)X,    // *x,
         (TypeParam *)A  // *a,
@@ -242,6 +256,139 @@ TYPED_TEST(MaskingTest, broadcast_both_mLTn) {
     TypeParam R2[M][N][K] = {
         {{ 111, 112,   0,   0},{-121, 122,   0,   0},{-131, 132,   0,   0}},
         {{ 211, 212,-213,   0},{-221, 222, 223,   0},{-231, 232, 233,   0}}
+    };
+    EXPECT_THAT(R2, ContainerEq(A));
+}
+
+TYPED_TEST(MaskingTest, simple_len) {
+    const int32_t M = 1;
+    const int32_t N = 1;
+    const int32_t K = 6;
+    const int32_t LEN = 2;
+
+    // rows<cols
+    uint8_t X[M][K] = {{true,true,false,false,false,true}};
+    TypeParam A[M][N][K][LEN] = {{{{1,-1},{10,-10},{100,-100},{-1,1},{-10,10},{-100,100}}}};
+    this->test_matlib_masking(
+        M,              // int32_t m,
+        N,              // int32_t n,
+        K,              // int32_t k,
+        LEN,            // int32_t len,
+        (TypeParam)0.0, // fill
+        (uint8_t*)X,    // *x,
+        (TypeParam *)A  // *a,
+    );
+    uint8_t R1[M][K] = {{true,true,false,false,false,true}};
+    EXPECT_THAT(R1, ContainerEq(X));
+    TypeParam R2[M][N][K][LEN] = {{{{1,-1},{10,-10},{0,0},{0,0},{0,0},{-100,100}}}};
+    EXPECT_THAT(R2, ContainerEq(A));
+}
+
+TYPED_TEST(MaskingTest, broadcast_outer_nLTk_len) {
+    const int32_t trans = RINDOW_MATLIB_NO_TRANS;
+    const int32_t M = 1;
+    const int32_t N = 2;
+    const int32_t K = 3;
+    const int32_t LEN = 2;
+
+    // n<k
+    uint8_t X[M][K] = {{true,false,true}};
+    TypeParam A[M][N][K][LEN] = {
+        {{{11,-11}, {12,-12}, {-13,13}},
+         {{-21,21}, {22,-22}, {23,-23}}}
+    };
+    this->test_matlib_masking(
+        M,              // int32_t m,
+        N,              // int32_t n,
+        K,              // int32_t k,
+        LEN,            // int32_t len,
+        (TypeParam)0.0, // fill
+        (uint8_t*)X,    // *x,
+        (TypeParam *)A  // *a,
+    );
+    uint8_t R1[M][K] = {{true,false,true}};
+    EXPECT_THAT(R1, ContainerEq(X));
+    TypeParam R2[M][N][K][LEN] = {
+        {{{11,-11}, {0,0}, {-13,13}},
+         {{-21,21}, {0,0}, {23,-23}}}
+    };
+    EXPECT_THAT(R2, ContainerEq(A));
+}
+
+TYPED_TEST(MaskingTest, broadcast_both_mGTn_len) {
+    const int32_t trans = RINDOW_MATLIB_NO_TRANS;
+    const int32_t M = 3;
+    const int32_t N = 2;
+    const int32_t K = 4;
+    const int32_t LEN = 2;
+
+    // n<k
+    uint8_t X[M][K] = {
+        {true,false,false,false},
+        {true,true, false,false},
+        {true,true, true, false}
+    };
+    TypeParam A[M][N][K][LEN] = {
+        {{ {111,-111}, {112,-112},{-113,113}, {114,-114}},{{-121,121}, {122,-122}, {123,-123}, {124,-124}}},
+        {{ {211,-211}, {212,-212},{-213,213}, {214,-214}},{{-221,221}, {222,-222}, {223,-223}, {224,-224}}},
+        {{ {311,-311}, {312,-312},{-313,313}, {314,-314}},{{-321,321}, {322,-322}, {323,-323}, {324,-324}}}
+    };
+    this->test_matlib_masking(
+        M,              // int32_t m,
+        N,              // int32_t n,
+        K,              // int32_t k,
+        LEN,            // int32_t len,
+        (TypeParam)0.0, // fill
+        (uint8_t*)X,    // *x,
+        (TypeParam *)A  // *a,
+    );
+    uint8_t R1[M][K] = {
+        {true,false,false,false},
+        {true,true, false,false},
+        {true,true, true, false}
+    };
+    EXPECT_THAT(R1, ContainerEq(X));
+    TypeParam R2[M][N][K][LEN] = {
+        {{ {111,-111}, {  0,   0},{   0,  0},{0,0}},{{-121,121}, {  0,   0}, {  0,   0},{0,0}}},
+        {{ {211,-211}, {212,-212},{   0,  0},{0,0}},{{-221,221}, {222,-222}, {  0,   0},{0,0}}},
+        {{ {311,-311}, {312,-312},{-313,313},{0,0}},{{-321,321}, {322,-322}, {323,-323},{0,0}}}
+    };
+    EXPECT_THAT(R2, ContainerEq(A));
+}
+
+TYPED_TEST(MaskingTest, broadcast_both_mLTn_len) {
+    const int32_t trans = RINDOW_MATLIB_NO_TRANS;
+    const int32_t M = 2;
+    const int32_t N = 3;
+    const int32_t K = 4;
+    const int32_t LEN = 2;
+
+    // n<k
+    uint8_t X[M][K] = {
+        {true,true, false,false},
+        {true,true, true, false}
+    };
+    TypeParam A[M][N][K][LEN] = {
+        {{{111,-111},{112,-112},{-113,113},{114,-114}},{{-121,121},{122,-122},{123,-123},{124,-124}},{{-131,131},{132,-132},{133,-133},{134,-134}}},
+        {{{211,-211},{212,-212},{-213,213},{214,-214}},{{-221,221},{222,-222},{223,-223},{224,-224}},{{-231,231},{232,-232},{233,-233},{234,-234}}}
+    };
+    this->test_matlib_masking(
+        M,              // int32_t m,
+        N,              // int32_t n,
+        K,              // int32_t k,
+        LEN,            // int32_t len,
+        (TypeParam)0.0, // fill
+        (uint8_t*)X,    // *x,
+        (TypeParam *)A  // *a,
+    );
+    uint8_t R1[M][K] = {
+        {true,true, false,false},
+        {true,true, true, false}
+    };
+    EXPECT_THAT(R1, ContainerEq(X));
+    TypeParam R2[M][N][K][LEN] = {
+        {{ {111,-111},{112,-112},{   0,  0},{0,0}},{{-121,121},{122,-122},{  0,   0},{0,0}},{{-131,131},{132,-132},{  0,   0},{0,0}}},
+        {{ {211,-211},{212,-212},{-213,213},{0,0}},{{-221,221},{222,-222},{223,-223},{0,0}},{{-231,231},{232,-232},{233,-233},{0,0}}}
     };
     EXPECT_THAT(R2, ContainerEq(A));
 }

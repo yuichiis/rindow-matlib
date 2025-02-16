@@ -29,7 +29,7 @@ protected:
             im_d*im_h*im_w*
             channels
         );
-        Utils::range<T>(
+        Utils::range<T>(0,
             batches*
             im_d*im_h*im_w*
             channels,

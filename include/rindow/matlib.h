@@ -193,8 +193,8 @@ RINDOW_FUNC_DECL void rindow_matlib_s_add(int32_t trans,int32_t m,int32_t n,floa
 RINDOW_FUNC_DECL void rindow_matlib_d_add(int32_t trans,int32_t m,int32_t n,double alpha,double *x, int32_t incX,double *a, int32_t ldA);
 RINDOW_FUNC_DECL void rindow_matlib_s_duplicate(int32_t trans,int32_t m,int32_t n,float *x, int32_t incX,float *a, int32_t ldA);
 RINDOW_FUNC_DECL void rindow_matlib_d_duplicate(int32_t trans,int32_t m,int32_t n,double *x, int32_t incX,double *a, int32_t ldA);
-RINDOW_FUNC_DECL void rindow_matlib_s_masking(int32_t m,int32_t n,int32_t k,float fill,uint8_t *x,float *a);
-RINDOW_FUNC_DECL void rindow_matlib_d_masking(int32_t m,int32_t n,int32_t k,double fill,uint8_t *x,double *a);
+RINDOW_FUNC_DECL void rindow_matlib_s_masking(int32_t m,int32_t n,int32_t k,int32_t len,float fill,uint8_t *x,float *a);
+RINDOW_FUNC_DECL void rindow_matlib_d_masking(int32_t m,int32_t n,int32_t k,int32_t len,double fill,uint8_t *x,double *a);
 RINDOW_FUNC_DECL void rindow_matlib_s_square(int32_t n, float *x, int32_t incX);
 RINDOW_FUNC_DECL void rindow_matlib_d_square(int32_t n, double *x, int32_t incX);
 RINDOW_FUNC_DECL void rindow_matlib_s_sqrt(int32_t n, float *x, int32_t incX);
@@ -272,6 +272,35 @@ RINDOW_FUNC_DECL int32_t rindow_matlib_i_reducegather(int32_t reverse,int32_t ad
 RINDOW_FUNC_DECL int32_t rindow_matlib_s_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,float *a,int32_t *x,float *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_d_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,double *a,int32_t *x,double *b);
 RINDOW_FUNC_DECL int32_t rindow_matlib_i_gatherb(int32_t reverse,int32_t addMode,int32_t batches,int32_t m,int32_t n,int32_t k,int32_t len,int32_t numClass,int32_t dtype,void *a,int32_t *x,void *b);
+
+RINDOW_FUNC_DECL int32_t rindow_matlib_s_einsum(
+    int32_t depth,
+    int32_t *sizeOfIndices,
+    float *a,
+    int32_t ndimA,
+    int32_t *labelA,
+    float *b,
+    int32_t ndimB,
+    int32_t *labelB,
+    float *c,
+    int32_t ndimC,
+    int32_t *shapeA,
+    int32_t *shapeB
+);
+RINDOW_FUNC_DECL int32_t rindow_matlib_d_einsum(
+    int32_t depth,
+    int32_t *sizeOfIndices,
+    double *a,
+    int32_t ndimA,
+    int32_t *labelA,
+    double *b,
+    int32_t ndimB,
+    int32_t *labelB,
+    double *c,
+    int32_t ndimC,
+    int32_t *shapeA,
+    int32_t *shapeB
+);
 
 // ********************************************************
 // This function is unofficial.
