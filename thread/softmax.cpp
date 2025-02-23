@@ -29,14 +29,18 @@ private:
             }
 
             T sum_exp = 0;
-            T c = 0; // Compensation term: Cumulative sum by Kahan summation
+            //T c = 0; // Compensation term: Cumulative sum by Kahan summation
             for(int32_t j=0;j<n;j++) {
-                T exp_val = std::exp(ax[j]-max_a);
-                T y = exp_val - c;
-                T t = sum_exp + y;
-                c = (t - sum_exp) - y;
-                sum_exp = t;
-                ax[j] = exp_val;
+                T t = std::exp(ax[j]-max_a); \
+                sum_exp += t;
+                ax[j] = t;
+        
+                //T exp_val = std::exp(ax[j]-max_a);
+                //T y = exp_val - c;
+                //T t = sum_exp + y;
+                //c = (t - sum_exp) - y;
+                //sum_exp = t;
+                //ax[j] = exp_val;
             }
             for(int32_t j=0;j<n;j++) {
                 ax[j] = ax[j] / sum_exp;
