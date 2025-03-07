@@ -3,33 +3,25 @@
 #include "vclib.h"
 static char msg_function_not_found[]  = "rindow_matlib_s_einsum not found\n";
 typedef int32_t (CALLBACK* PFNrindow_matlib_s_einsum)( /* rindow_matlib_s_einsum */
-    int32_t            /* depth */,
-    int32_t *            /* sizeOfIndices */,
-    float *            /* a */,
-    int32_t            /* ndimA */,
-    int32_t *            /* labelA */,
-    float *            /* b */,
-    int32_t            /* ndimB */,
-    int32_t *            /* labelB */,
+    const int32_t            /* depth */,
+    const int32_t *            /* sizeOfIndices */,
+    const float *            /* a */,
+    const int32_t *            /* ldA */,
+    const float *            /* b */,
+    const int32_t *            /* ldB */,
     float *            /* c */,
-    int32_t            /* ndimC */,
-    int32_t *            /* shapeA */,
-    int32_t *            /* shapeB */
+    const int32_t            /* ndimC */
 );
 static PFNrindow_matlib_s_einsum _g_rindow_matlib_s_einsum = NULL;
 int32_t rindow_matlib_s_einsum(
-    int32_t            depth,
-    int32_t *            sizeOfIndices,
-    float *            a,
-    int32_t            ndimA,
-    int32_t *            labelA,
-    float *            b,
-    int32_t            ndimB,
-    int32_t *            labelB,
+    const int32_t            depth,
+    const int32_t *            sizeOfIndices,
+    const float *            a,
+    const int32_t *            ldA,
+    const float *            b,
+    const int32_t *            ldB,
     float *            c,
-    int32_t            ndimC,
-    int32_t *            shapeA,
-    int32_t *            shapeB
+    const int32_t            ndimC
 )
 {
     if(_g_rindow_matlib_s_einsum==NULL) {
@@ -44,14 +36,10 @@ int32_t rindow_matlib_s_einsum(
         depth,
         sizeOfIndices,
         a,
-        ndimA,
-        labelA,
+        ldA,
         b,
-        ndimB,
-        labelB,
+        ldB,
         c,
-        ndimC,
-        shapeA,
-        shapeB    
+        ndimC    
     );
 }

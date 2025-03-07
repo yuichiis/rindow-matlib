@@ -9,61 +9,38 @@ class Einsum
 {
 private:
     static void calc_indices(
-        int32_t depth,
-        int32_t ndim,
-        int32_t index,
-        int32_t *sizeOfIndices,
+        const int32_t depth,
+        const int32_t ndim,
+        const int32_t index,
+        const int32_t *sizeOfIndices,
         std::vector<int32_t> &indices
     )
     {
+        int32_t idx = index;
         for(int32_t axis=ndim-1; axis>=0; axis--) {
             int32_t size = sizeOfIndices[axis];
-            indices[axis] = index % size;
-            index /= size;
+            indices[axis] = idx % size;
+            idx /= size;
         }
     }
 
     static int32_t calc_index(
-        int32_t depth,
+        const int32_t depth,
         std::vector<int32_t> &indices,  
-        int32_t *sizeOfIndices,
-        int32_t ndim,
-        int32_t *label,
-        int32_t *shape
+        const int32_t *lds
     )
     {
         int32_t index = 0;
-        for(int32_t axis=0; axis<ndim; axis++) {
-            int32_t idx;
-            if(label==nullptr) {
-                idx = axis;
-            } else {
-                idx = label[axis];
-            }
-            if(idx>=depth) {
-                return -1; // label number is too large.
-            }
-            int32_t size;
-            if(shape!=nullptr) {
-                size = shape[axis]; // if broadcast then size is 1.
-            } else {
-                size = sizeOfIndices[idx]; // as is shape[$axis];
-            }
-            index *= size;
-            if(size>1) {
-                if(indices[idx]>=size) {
-                    return -2; // indicator number is too large.
-                }
-                index += indices[idx];
-            }
+        for(int32_t axis=0; axis<depth; axis++) {
+            index += indices[axis]*lds[axis];
         }
         return index;
     }
 
     static int32_t next_indices(
-        int32_t depth,
-        int32_t ndim,
-        int32_t *sizeOfIndices,
+        const int32_t depth,
+        const int32_t ndim,
+        const int32_t *sizeOfIndices,
         std::vector<int32_t> &indices
     ) {
         int32_t i = depth - 1;
@@ -85,30 +62,26 @@ private:
     }
 
     static int32_t kernel(
-        int32_t indexC,
-        int32_t depth,
-        int32_t *sizeOfIndices,
-        T *a,
-        int32_t ndimA,
-        int32_t *labelA,
-        T *b,
-        int32_t ndimB,
-        int32_t *labelB,
+        const int32_t indexC,
+        const int32_t depth,
+        const int32_t *sizeOfIndices,
+        const T *a,
+        const int32_t *ldA,
+        const T *b,
+        const int32_t *ldB,
         T *c,
-        int32_t ndimC,
-        int32_t *shapeA,
-        int32_t *shapeB
+        const int32_t ndimC
     )
     {
         std::vector<int32_t> indices(depth,0);
         calc_indices(depth,ndimC,indexC,sizeOfIndices,indices);
         T sumC = 0;
         for(;;) {
-            int32_t indexA = calc_index(depth,indices,sizeOfIndices,ndimA,labelA,shapeA);
+            int32_t indexA = calc_index(depth,indices,ldA);
             if(indexA<0) {
                 return indexA-1000;
             }
-            int32_t indexB = calc_index(depth,indices,sizeOfIndices,ndimB,labelB,shapeB);
+            int32_t indexB = calc_index(depth,indices,ldB);
             if(indexB<0) {
                 return indexB-2000;
             }
@@ -124,21 +97,17 @@ private:
 
     public:
     static int32_t execute(
-        int32_t depth,
-        int32_t *sizeOfIndices,
-        T *a,
-        int32_t ndimA,
-        int32_t *labelA,
-        T *b,
-        int32_t ndimB,
-        int32_t *labelB,
+        const int32_t depth,
+        const int32_t *sizeOfIndices,
+        const T *a,
+        const int32_t *ldA,
+        const T *b,
+        const int32_t *ldB,
         T *c,
-        int32_t ndimC,
-        int32_t *shapeA,
-        int32_t *shapeB
+        const int32_t ndimC
     )
     {
-        if(depth<=0 || ndimA<=0 || ndimB<=0 || ndimC<=0) {
+        if(depth<=0 || ndimC<=0) {
             return RINDOW_MATLIB_E_MEM_ALLOC_FAILURE;
         }
         if(depth<ndimC) {
@@ -158,15 +127,11 @@ private:
                 depth,
                 sizeOfIndices,
                 a,
-                ndimA,
-                labelA,
+                ldA,
                 b,
-                ndimB,
-                labelB,
+                ldB,
                 c,
-                ndimC,
-                shapeA,
-                shapeB
+                ndimC
             );
             if(ec) {
                 errcode = ec;
@@ -179,18 +144,14 @@ private:
 
 extern "C" {
 int32_t rindow_matlib_s_einsum(
-    int32_t depth,
-    int32_t *sizeOfIndices,
-    float *a,
-    int32_t ndimA,
-    int32_t *labelA,
-    float *b,
-    int32_t ndimB,
-    int32_t *labelB,
+    const int32_t depth,
+    const int32_t *sizeOfIndices,
+    const float *a,
+    const int32_t *ldA,
+    const float *b,
+    const int32_t *ldB,
     float *c,
-    int32_t ndimC,
-    int32_t *shapeA,
-    int32_t *shapeB
+    const int32_t ndimC
 )
 {
     int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
@@ -199,33 +160,25 @@ int32_t rindow_matlib_s_einsum(
         depth,
         sizeOfIndices,
         a,
-        ndimA,
-        labelA,
+        ldA,
         b,
-        ndimB,
-        labelB,
+        ldB,
         c,
-        ndimC,
-        shapeA,
-        shapeB
+        ndimC
     );
     RINDOW_END_CLEAR_EXCEPTION;
     return errcode;
 }
 
 int32_t rindow_matlib_d_einsum(
-    int32_t depth,
-    int32_t *sizeOfIndices,
-    double *a,
-    int32_t ndimA,
-    int32_t *labelA,
-    double *b,
-    int32_t ndimB,
-    int32_t *labelB,
+    const int32_t depth,
+    const int32_t *sizeOfIndices,
+    const double *a,
+    const int32_t *ldA,
+    const double *b,
+    const int32_t *ldB,
     double *c,
-    int32_t ndimC,
-    int32_t *shapeA,
-    int32_t *shapeB
+    const int32_t ndimC
     )
 {
     int32_t errcode = RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED;
@@ -234,15 +187,11 @@ int32_t rindow_matlib_d_einsum(
         depth,
         sizeOfIndices,
         a,
-        ndimA,
-        labelA,
+        ldA,
         b,
-        ndimB,
-        labelB,
+        ldB,
         c,
-        ndimC,
-        shapeA,
-        shapeB
+        ndimC
     );
     RINDOW_END_CLEAR_EXCEPTION;
     return errcode;

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <iostream>
 
 #include "rindow/matlib.h"
 #include "Utils.h"
@@ -13,62 +14,77 @@ template <typename T>
 class EinsumTest : public ::testing::Test {
 protected:
     virtual int32_t test_matlib_einsum(
-        int32_t depth,
-        int32_t *sizeOfIndices,
-        float *a,
-        int32_t ndimA,
-        int32_t *labelA,
-        float *b,
-        int32_t ndimB,
-        int32_t *labelB,
+        const int32_t depth,
+        const int32_t *dims,
+        const float *a,
+        const int32_t *ldA,
+        const float *b,
+        const int32_t *ldB,
         float *c,
-        int32_t ndimC,
-        int32_t *shapeA,
-        int32_t *shapeB
+        const int32_t ndimC
     ) {
         return rindow_matlib_s_einsum(
             depth,
-            sizeOfIndices,
+            dims,
             a,
-            ndimA,
-            labelA,
+            ldA,
             b,
-            ndimB,
-            labelB,
+            ldB,
             c,
-            ndimC,
-            shapeA,
-            shapeB
+            ndimC
         );
     }
     virtual int32_t test_matlib_einsum(
-        int32_t depth,
-        int32_t *sizeOfIndices,
-        double *a,
-        int32_t ndimA,
-        int32_t *labelA,
-        double *b,
-        int32_t ndimB,
-        int32_t *labelB,
+        const int32_t depth,
+        const int32_t *dims,
+        const double *a,
+        const int32_t *ldA,
+        const double *b,
+        const int32_t *ldB,
         double *c,
-        int32_t ndimC,
-        int32_t *shapeA,
-        int32_t *shapeB
+        const int32_t ndimC
     ) {
         return rindow_matlib_d_einsum(
             depth,
-            sizeOfIndices,
+            dims,
             a,
-            ndimA,
-            labelA,
+            ldA,
             b,
-            ndimB,
-            labelB,
+            ldB,
             c,
-            ndimC,
-            shapeA,
-            shapeB
+            ndimC
         );
+    }
+    virtual int build_lds(
+        const int32_t depth,
+        const int32_t *sizeOfIndices,
+        const int32_t rank,
+        const int32_t *label,
+        const int32_t *shape,
+        int32_t *lds
+    ) {
+        for(int32_t axis=0;axis<depth;axis++) {
+            lds[axis] = 0;
+        }
+        int32_t ld=1;
+        for(int32_t axis=rank-1;axis>=0;axis--) {
+            if(axis>=depth) {
+                return -1;
+            }
+            const int32_t lbl = label[axis];
+            if(lbl>=depth) {
+                return -2;
+            }
+            bool broadcast = false;
+            if(shape!=nullptr && shape[axis]==1) {
+                broadcast = true;
+            }
+            if(!broadcast) {
+                lds[lbl] += ld;
+            }
+            ld *= sizeOfIndices[lbl];
+        }
+        return 0;
     }
 };
 typedef ::testing::Types<float, double> TestTypes;
@@ -100,20 +116,23 @@ TYPED_TEST(EinsumTest, gemm_simple) {
     int32_t sizeOfIndices[depth] = {M,K,N};
     int32_t labelA[ndimA] = {0,2};
     int32_t labelB[ndimB] = {2,1};
+    int32_t ldA[depth];
+    int32_t ldB[depth];
+
+    rc = this->build_lds(depth,sizeOfIndices,ndimA,labelA,nullptr,ldA);
+    ASSERT_EQ(0, rc);
+    rc = this->build_lds(depth,sizeOfIndices,ndimB,labelB,nullptr,ldB);
+    ASSERT_EQ(0, rc);
 
     rc = this->test_matlib_einsum(
         depth,
-        (int32_t*)sizeOfIndices,
+        sizeOfIndices,
         (TypeParam *)A,
-        ndimA,
-        (int32_t*)labelA,
+        ldA,
         (TypeParam *)B,
-        ndimB,
-        (int32_t*)labelB,
+        ldB,
         (TypeParam *)C,
-        ndimC,
-        nullptr,
-        nullptr
+        ndimC
     );
     ASSERT_EQ(0, rc);
 
@@ -158,20 +177,23 @@ TYPED_TEST(EinsumTest, gemm_cross3d2d) {
     int32_t sizeOfIndices[depth] = {Da,Db,Dd,Dc};
     int32_t labelA[ndimA] = {0,1,3};
     int32_t labelB[ndimB] = {2,3};
+    int32_t ldA[depth];
+    int32_t ldB[depth];
+
+    rc = this->build_lds(depth,sizeOfIndices,ndimA,labelA,nullptr,ldA);
+    ASSERT_EQ(0, rc);
+    rc = this->build_lds(depth,sizeOfIndices,ndimB,labelB,nullptr,ldB);
+    ASSERT_EQ(0, rc);
 
     rc = this->test_matlib_einsum(
         depth,
-        (int32_t*)sizeOfIndices,
+        sizeOfIndices,
         (TypeParam *)A,
-        ndimA,
-        (int32_t*)labelA,
+        ldA,
         (TypeParam *)B,
-        ndimB,
-        (int32_t*)labelB,
+        ldB,
         (TypeParam *)C,
-        ndimC,
-        nullptr,
-        nullptr
+        ndimC
     );
     ASSERT_EQ(0, rc);
 
@@ -215,20 +237,23 @@ TYPED_TEST(EinsumTest, mul_broadcast) {
     int32_t sizeOfIndices[depth] = {Da,Db};
     int32_t labelA[ndimA] = {0,1};
     int32_t labelB[ndimB] = {1};
+    int32_t ldA[depth];
+    int32_t ldB[depth];
+
+    rc = this->build_lds(depth,sizeOfIndices,ndimA,labelA,nullptr,ldA);
+    ASSERT_EQ(0, rc);
+    rc = this->build_lds(depth,sizeOfIndices,ndimB,labelB,nullptr,ldB);
+    ASSERT_EQ(0, rc);
 
     rc = this->test_matlib_einsum(
         depth,
-        (int32_t*)sizeOfIndices,
+        sizeOfIndices,
         (TypeParam *)A,
-        ndimA,
-        (int32_t*)labelA,
+        ldA,
         (TypeParam *)B,
-        ndimB,
-        (int32_t*)labelB,
+        ldB,
         (TypeParam *)C,
-        ndimC,
-        nullptr,
-        nullptr
+        ndimC
     );
     ASSERT_EQ(0, rc);
 
@@ -259,20 +284,23 @@ TYPED_TEST(EinsumTest, mul_broadcastA_withshape) {
     int32_t labelA[ndimA] = {0,1};
     int32_t labelB[ndimB] = {0,1};
     int32_t shapeA[ndimA] = {1,Db};
+    int32_t ldA[depth];
+    int32_t ldB[depth];
+
+    rc = this->build_lds(depth,sizeOfIndices,ndimA,labelA,shapeA,ldA);
+    ASSERT_EQ(0, rc);
+    rc = this->build_lds(depth,sizeOfIndices,ndimB,labelB,nullptr,ldB);
+    ASSERT_EQ(0, rc);
 
     rc = this->test_matlib_einsum(
         depth,
-        (int32_t*)sizeOfIndices,
+        sizeOfIndices,
         (TypeParam *)A,
-        ndimA,
-        (int32_t*)labelA,
+        ldA,
         (TypeParam *)B,
-        ndimB,
-        (int32_t*)labelB,
+        ldB,
         (TypeParam *)C,
-        ndimC,
-        shapeA,
-        nullptr
+        ndimC
     );
     ASSERT_EQ(0, rc);
 
@@ -303,20 +331,23 @@ TYPED_TEST(EinsumTest, mul_broadcastB_withshape) {
     int32_t labelA[ndimA] = {0,1};
     int32_t labelB[ndimB] = {0,1};
     int32_t shapeB[ndimB] = {1,Db};
+    int32_t ldA[depth];
+    int32_t ldB[depth];
+
+    rc = this->build_lds(depth,sizeOfIndices,ndimA,labelA,nullptr,ldA);
+    ASSERT_EQ(0, rc);
+    rc = this->build_lds(depth,sizeOfIndices,ndimB,labelB,shapeB,ldB);
+    ASSERT_EQ(0, rc);
 
     rc = this->test_matlib_einsum(
         depth,
-        (int32_t*)sizeOfIndices,
+        sizeOfIndices,
         (TypeParam *)A,
-        ndimA,
-        (int32_t*)labelA,
+        ldA,
         (TypeParam *)B,
-        ndimB,
-        (int32_t*)labelB,
+        ldB,
         (TypeParam *)C,
-        ndimC,
-        nullptr,
-        shapeB
+        ndimC
     );
     ASSERT_EQ(0, rc);
 

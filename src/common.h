@@ -30,7 +30,11 @@
   #endif
     #include <memory.h>
 #endif
+#ifdef __cplusplus
+  #include <exception>
+#endif
 
+#ifdef __cplusplus
 #define RINDOW_BEGIN_CLEAR_EXCEPTION \
     try { 
 #define RINDOW_END_CLEAR_EXCEPTION \
@@ -40,6 +44,7 @@
     } catch (...) { \
         rindow_matlib_common_console("matlib error: unknown error\n"); \
     }
+#endif
 
 
 #ifdef __cplusplus
