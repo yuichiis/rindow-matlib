@@ -43,19 +43,19 @@ set(CPACK_COMPONENTS_GROUPING ALL_COMPONENTS_IN_ONE)#ONE_PER_GROUP)
 
 if(APPLE)
 elseif(UNIX)
-　execute_process(
+  execute_process(
     COMMAND dpkg-query -W -f=\${Version} libc6
     OUTPUT_VARIABLE LIBC6_VERSION_FULL
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
   string(REGEX MATCH "^([0-9]+\\.[0-9]+)" LIBC6_VERSION "${LIBC6_VERSION_FULL}")
-　execute_process(
+  execute_process(
     COMMAND dpkg-query -W -f=\${Version} libstdc++6
     OUTPUT_VARIABLE LIBSTDCPP6_VERSION_FULL
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
   string(REGEX MATCH "^([0-9]+\\.[0-9]+)" LIBSTDCPP6_VERSION "${LIBSTDCPP6_VERSION_FULL}")
-  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= ${LIBC6_VERSION}), libstdc++6 (>= ${LIBSTDCPP6_VERSION}\\.0)")
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= ${LIBC6_VERSION}), libstdc++6 (>= ${LIBSTDCPP6_VERSION}.0)")
   set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "${PROJECT_BINARY_DIR}/debian/postinst;${PROJECT_BINARY_DIR}/debian/prerm")
   set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 endif()
