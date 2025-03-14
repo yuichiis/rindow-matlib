@@ -4,9 +4,9 @@ Rindow Math Matrix is the fundamental package for scientific matrix operation
 
 - A powerful N-dimensional array object
 - Sophisticated (broadcasting) functions
-- A high-speed calculation library written in C.
+- A high-speed calculation library written in C/C++.
 - Useful linear algebra and random number capabilities
-- Parallel calculation with OpenMP
+- Parallel calculation with native multi-threading or OpenMP
 
 You can call a high-speed calculation library written in C language to speed up matrix calculation processing.
 Rindow Matlib includes many matrix operations functions used in machine learning.
@@ -17,7 +17,7 @@ on [Rindow Mathematics](https://rindow.github.io/mathematics/openblas/mathlibrar
 Requirements
 ============
 
-- Windows 10/11 , Linux(Ubuntu 20.04, Debian 12), MacOS or later
+- Windows(10/11) , Linux(Ubuntu 20.04-, Debian 12-), MacOS(13/14) or later
 
 How to setup pre-build binaries
 ===============================
@@ -30,7 +30,7 @@ Download the pre-build binary file.
 
 Unzip the file for Windows and copy rindowmatlib.dll to the directory set in PATH.
 
-The standard DLLs in the Bin directory are the thread versions. Subdirectories contain OpenMP and Serial versions.
+The standard DLLs in the Bin directory is the thread version. Subdirectories contain OpenMP and Serial versions.
 
 ```shell
 C> PATH %PATH%;C:\path\to\bin
@@ -148,7 +148,7 @@ Download source code from release and extract
 Build with cmake.
 
 ```shell
-$ sudo apt install build-essential cmake libopenblas-dev
+$ sudo apt install build-essential cmake
 $ cd \path\to\here
 $ cmake -S . -B build
 $ cmake --build build --config Release
