@@ -55,6 +55,10 @@ Using the OpenMP version of OpenBLAS can cause conflicts and become unstable and
 This issue does not occur on Windows.
 
 If you have already installed the OpenMP version of OpenBLAS, you can delete it and install pthread version.
+```shell
+$ sudo apt install libopenblas0-pthread liblapacke
+$ sudo apt remove libopenblas0-openmp
+```
 
 But if you can't remove it, you can switch to it using the update-alternatives command.
 
