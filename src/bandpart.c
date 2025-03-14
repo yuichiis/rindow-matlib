@@ -1,5 +1,6 @@
 #include "rindow/matlib.h"
 #include "common.h"
+#include <string.h>
 
 void rindow_matlib_s_bandpart(
     int32_t m, int32_t n, int32_t k,
