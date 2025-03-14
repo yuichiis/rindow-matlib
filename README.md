@@ -17,7 +17,7 @@ on [Rindow Mathematics](https://rindow.github.io/mathematics/openblas/mathlibrar
 Requirements
 ============
 
-- Windows(10/11) , Linux(Ubuntu 20.04-, Debian 12-), MacOS(13/14) or later
+- Windows(10/11) , Linux(Ubuntu 22.04-, Debian 12-), MacOS(13/14) or later
 
 How to setup pre-build binaries
 ===============================
