@@ -74,11 +74,11 @@ There are 2 choices for the alternative librindowmatlib.so (providing /usr/lib/l
   Selection    Path                                             Priority   Status
 ------------------------------------------------------------
 * 0            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        auto mode
-  1            /usr/lib/rindowmatlib-thread/librindowmatlib.so   100       manual mode
-  2            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        manual mode
-  3            /usr/lib/rindowmatlib-serial/librindowmatlib.so   90        manual mode
+  1            /usr/lib/rindowmatlib-openmp/librindowmatlib.so   95        manual mode
+  2            /usr/lib/rindowmatlib-serial/librindowmatlib.so   90        manual mode
+  3            /usr/lib/rindowmatlib-thread/librindowmatlib.so   100       manual mode
 
-Press <enter> to keep the current choice[*], or type selection number: 3
+Press <enter> to keep the current choice[*], or type selection number: 2
 ```
 Choose the "rindowmatlib-serial".
 
@@ -148,7 +148,7 @@ Download source code from release and extract
 Build with cmake.
 
 ```shell
-$ sudo apt install build-essential
+$ sudo apt install build-essential cmake libopenblas-dev
 $ cd \path\to\here
 $ cmake -S . -B build
 $ cmake --build build --config Release
