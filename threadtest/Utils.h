@@ -15,7 +15,7 @@ public:
     template <typename T>
     static void ones(int32_t size, T *x);
     template <typename T>
-    static void range(int32_t size, T *x);
+    static void range(int32_t begin, int32_t end, T *x);
 
     template <typename T>
     static std::unique_ptr<T[]> array(std::initializer_list<T> values);

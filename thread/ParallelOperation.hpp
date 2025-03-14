@@ -47,16 +47,15 @@ public:
         int32_t cell_size = size / num_thread;
         int32_t remainder = size - cell_size * num_thread;
 
-        for(int32_t i = 0; i < num_thread; i++) {
+        int32_t begin=0;
+        for(int32_t id = 0; id < num_thread; id++) {
             cellInfo cell_info;
-            cell_info.id = i;
-            cell_info.size = cell_size;
-            cell_info.begin = i * cell_size;
-            if(i == num_thread - 1) {
-                cell_info.end = (i+1) * cell_size + remainder;
-            } else {
-                cell_info.end = (i+1) * cell_size;
-            }
+            cell_info.id = id;
+            cell_info.size = cell_size + ((remainder>id) ? 1:0);
+            cell_info.begin = begin;
+            begin += cell_info.size;
+            cell_info.end = begin;
+
             results.emplace_back(pool.enqueue(kernel, cell_info, args...));
         }
     }

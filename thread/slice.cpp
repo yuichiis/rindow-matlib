@@ -354,18 +354,18 @@ void rindow_matlib_i_slice(
             );
             break;
         }
-        //case rindow_matlib_dtype_bool: {
-        //    Slice<uint8_t>::execute(
-        //        reverse,addMode,
-        //        m,n,k,size,
-        //        (uint8_t*)a,incA,
-        //        (uint8_t*)y,incY,
-        //        startAxis0,sizeAxis0,
-        //        startAxis1,sizeAxis1,
-        //        startAxis2,sizeAxis2
-        //    );
-        //    break;
-        //}
+        case rindow_matlib_dtype_bool: {
+            Slice<uint8_t>::execute(
+                reverse, addMode,
+                m,n,k,size,
+                (uint8_t*)a,incA,
+                (uint8_t*)y,incY,
+                startAxis0,sizeAxis0,
+                startAxis1,sizeAxis1,
+                startAxis2,sizeAxis2
+            );
+            break;
+        }
         default: {
         }
     }

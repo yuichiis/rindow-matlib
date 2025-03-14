@@ -214,7 +214,7 @@ TYPED_TEST(GatherbTest, GatherbNormal1Dby1DDims0Axis0) {
     int32_t rc;
 
     TypeParam A[shapeA0];
-    Utils::range<TypeParam>(shapeA0,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0,(TypeParam*)A);
     int32_t X[shapeX0] = {2,2,1};
     rc = this->calcGatherbShapes({shapeA0},{shapeX0},axis,batchDims,detailDepth,indexDepth,&batches,&m,&n,&k,&len,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
@@ -260,7 +260,7 @@ TYPED_TEST(GatherbTest, GatherbNormal2Dby1DDims1Axis1) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1];
-    Utils::range<TypeParam>(shapeA0*shapeA1,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1,(TypeParam*)A);
     int32_t X[shapeX0] = {2,2,1,0};
     rc = this->calcGatherbShapes({shapeA0,shapeA1},{shapeX0},axis,batchDims,detailDepth,indexDepth,&batches,&m,&n,&k,&len,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
@@ -308,7 +308,7 @@ TYPED_TEST(GatherbTest, GatherbNormal3Dby1DDims1Axis0) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2,(TypeParam*)A);
     int32_t X[shapeX0] = {2,2,1,0};
     rc = this->calcGatherbShapes({shapeA0,shapeA1,shapeA2},{shapeX0},axis,batchDims,detailDepth,indexDepth,&batches,&m,&n,&k,&len,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
@@ -366,7 +366,7 @@ TYPED_TEST(GatherbTest, GatherbNormal3Dby2DDims1Axis1) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2,(TypeParam*)A);
     int32_t X[shapeX0][shapeX1] = {
         {1,1,1,1},
         {1,1,1,1},
@@ -422,7 +422,7 @@ TYPED_TEST(GatherbTest, GatherbNormal3Dby1DDims1Axis2) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2,(TypeParam*)A);
     int32_t X[shapeX0] = {2,2,1,0};
     rc = this->calcGatherbShapes({shapeA0,shapeA1,shapeA2},{shapeX0},axis,batchDims,detailDepth,indexDepth,&batches,&m,&n,&k,&len,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
@@ -477,7 +477,7 @@ TYPED_TEST(GatherbTest, GatherbNormal4Dby1DDims1Axis2) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2][shapeA3];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2*shapeA3,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2*shapeA3,(TypeParam*)A);
     int32_t X[shapeX0] = {2,2,1,0};
     rc = this->calcGatherbShapes({shapeA0,shapeA1,shapeA2,shapeA3},{shapeX0},axis,batchDims,detailDepth,indexDepth,&batches,&m,&n,&k,&len,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
@@ -530,7 +530,7 @@ TYPED_TEST(GatherbTest, GatherbNormal2Dby2DDims1Axis1) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1];
-    Utils::range<TypeParam>(shapeA0*shapeA1,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1,(TypeParam*)A);
     int32_t X[shapeX0][shapeX1] = {
         {0,1},
         {1,0},
@@ -593,7 +593,7 @@ TYPED_TEST(GatherbTest, GatherbNormal3Dby3DDims1Axis1Detail3ind2) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2,(TypeParam*)A);
     int32_t X[shapeX0][shapeX1][shapeX2] = {
         {{0,1},{0,1},{0,1}},
         {{1,0},{1,0},{1,0}},
@@ -658,7 +658,7 @@ TYPED_TEST(GatherbTest, GatherbNormal4Dby3DDims1Axis1Detail3ind2) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2][shapeA3];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2*shapeA3,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2*shapeA3,(TypeParam*)A);
     int32_t X[shapeX0][shapeX1][shapeX2] = {
         {{0,1},{0,1},{0,1}},
         {{1,0},{1,0},{1,0}},
@@ -733,7 +733,7 @@ TYPED_TEST(GatherbTest, GatherbNormal5Dby3DDims1Axis2Detail4ind2) {
     int32_t rc;
 
     TypeParam A[shapeA0][shapeA1][shapeA2][shapeA3][shapeA4];
-    Utils::range<TypeParam>(shapeA0*shapeA1*shapeA2*shapeA3*shapeA4,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0*shapeA1*shapeA2*shapeA3*shapeA4,(TypeParam*)A);
     int32_t X[shapeX0][shapeX1][shapeX2] = {
         {{0,1},{0,1},{0,1}},
         {{1,0},{1,0},{1,0}},
@@ -1540,7 +1540,7 @@ TYPED_TEST(GatherbTest, GatherbErrorSelectorOutOfRange) {
     int32_t rc;
 
     TypeParam A[shapeA0];
-    Utils::range<TypeParam>(shapeA0,(TypeParam*)A);
+    Utils::range<TypeParam>(0,shapeA0,(TypeParam*)A);
     int32_t X[shapeX0] = {2,4,1};
     rc = this->calcGatherbShapes({shapeA0},{shapeX0},axis,batchDims,detailDepth,indexDepth,&batches,&m,&n,&k,&len,&numClass,&outputSize);
     ASSERT_EQ(0,rc);
