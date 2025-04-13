@@ -95,16 +95,18 @@ Download the pre-build binary file.
 Extract the tar.gz file to the tmp directory and navigate to the directory.
 
 ```shell
-$ tar -xzf rindow-matlib-X.X.X-Darwin.tar.gz -C /tmp
-$ cd /tmp/rindow-matlib-X.X.X-Darwin
+$ tar -xzf rindow-matlib-X.X.X-Darwin-XXX.tar.gz -C /tmp
+$ cd /tmp/rindow-matlib-X.X.X-Darwin-XXX
 ```
+
+The standard dylib in the Lib directory is the thread version. Subdirectories contain OpenMP and Serial versions.
 
 Next, copy the include and lib directories to /usr/local.
 
 ```shell
 $ sudo cp -r usr/include /usr/local/
 $ sudo cp -r usr/lib /usr/local/
-$ brew install libomp
+$ brew install libomp # if you want to use OpenMP
 ```
 
 How to build from source code on Windows
