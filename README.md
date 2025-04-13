@@ -106,8 +106,8 @@ Next, copy the include and lib directories to /usr/local.
 ```shell
 $ sudo cp -r usr/include /usr/local/
 $ sudo cp -r usr/lib /usr/local/
-$ brew install libomp # if you want to use OpenMP
 ```
+If you want to use OpenMP Please type `brew install libomp`
 
 How to build from source code on Windows
 ========================================
