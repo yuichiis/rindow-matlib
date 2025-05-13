@@ -3,6 +3,7 @@
 
 #include "rindow/matlib.h"
 #include <numeric>
+#include <limits>
 
 using testing::ContainerEq;
 
@@ -196,6 +197,48 @@ TYPED_TEST(ReduceArgmaxTest, Array3DAxis1) {
         {1,0,1,0},
     };
     EXPECT_THAT(R1, ContainerEq(B));
+}
+
+TYPED_TEST(ReduceArgmaxTest, Array2DAxis1WithNaN) {
+    const int32_t shapeA0 = 6;
+    const int32_t shapeA1 = 2;
+    const int32_t shapeB = shapeA0;
+    const int32_t axis = 1;
+    const int32_t IndexDtype = rindow_matlib_dtype_int32;
+    int32_t m;
+    int32_t n;
+    int32_t k;
+    int32_t outputSize;
+    TypeParam inf = std::numeric_limits<TypeParam>::infinity();
+
+    TypeParam A[shapeA0][shapeA1] = {
+        {1.0, 2.0},
+        {inf, 1.0},
+        {inf, inf},
+        {-inf,inf},
+        {0.0, NAN},
+        {NAN, inf}
+    };
+    int32_t B[shapeB];
+    this->calcShape({shapeA0,shapeA1},axis,&m,&n,&k,&outputSize);
+    
+    ASSERT_EQ(shapeA0,  m);
+    ASSERT_EQ(shapeA1,  n);
+    ASSERT_EQ(1,        k);
+    ASSERT_EQ(shapeB,   outputSize);
+
+    this->test_matlib_reduceargmax(
+        m,n,k,
+        (TypeParam*)A,
+        IndexDtype,(int32_t*)B
+    );
+
+    ASSERT_EQ(1,       B[0]);
+    ASSERT_EQ(0,       B[1]);
+    ASSERT_EQ(0,       B[2]);
+    ASSERT_EQ(1,       B[3]);
+    ASSERT_EQ(0,       B[4]); // **confusing** 
+    ASSERT_EQ(0,       B[5]); // **confusing**
 }
 
 }
