@@ -3,13 +3,15 @@
 
 #include "rindow/matlib.h"
 #include <limits>
+#include <cmath>
 
 using testing::ContainerEq;
 
 namespace {
 
+// ---- Common Foundation: Abstraction of calling conventions and type-agnostic core logic. ----
 template <typename T>
-class IminTest : public ::testing::Test {
+class IminTestBase : public ::testing::Test {
 protected:
     virtual int32_t test_matlib_imin(int32_t n,float *x, int32_t incX)
     {
@@ -27,6 +29,33 @@ protected:
         return rindow_matlib_i_imin(dtype, n, x, incX);
     }
 
+    // A basic case shared by Int and Float types; called from each TYPED_TEST.
+    void run_normal_case()
+    {
+        const int32_t N = 6;
+        const int32_t incX = 1;
+        T X[N] = {-1, 2,-3,-4, 5,-6};
+
+        int32_t res = this->test_matlib_imin(N, X, incX);
+        EXPECT_EQ(5, res);
+    }
+};
+
+// ==================== Integer-only suite ====================
+template <typename T>
+class IminIntTest : public IminTestBase<T> {};
+
+typedef ::testing::Types<int32_t> IntTestTypes;
+TYPED_TEST_SUITE(IminIntTest, IntTestTypes);
+
+TYPED_TEST(IminIntTest, normal) {
+    this->run_normal_case();
+}
+
+// ==================== Floating-point type-only suite ====================
+template <typename T>
+class IminFloatTest : public IminTestBase<T> {
+protected:
     virtual float get_inf(float value)
     {
         return std::numeric_limits<float>::infinity();
@@ -57,19 +86,15 @@ protected:
         return INT_MAX;
     }
 };
-typedef ::testing::Types<float, double, int32_t> TestTypes;
-TYPED_TEST_SUITE(IminTest, TestTypes);
 
-TYPED_TEST(IminTest, normal) {
-    const int32_t M = 1;
-    const int32_t N = 6;
-    const int32_t incX = 1;
-    TypeParam X[N] = {-1, 2,-3,-4, 5,-6};
+typedef ::testing::Types<float, double> FloatTestTypes;
+TYPED_TEST_SUITE(IminFloatTest, FloatTestTypes);
 
-    int32_t res = this->test_matlib_imin(N, X, incX);
-    EXPECT_EQ(5, res);
+TYPED_TEST(IminFloatTest, normal) {
+    this->run_normal_case();
 }
-TYPED_TEST(IminTest, no_a_number) {
+
+TYPED_TEST(IminFloatTest, with_inf) {
     const int32_t M = 1;
     const int32_t N = 6;
     const int32_t incX = 1;
@@ -88,8 +113,15 @@ TYPED_TEST(IminTest, no_a_number) {
     TypeParam X3[N] = {-inf, -inf,-inf,-inf, -inf,-inf};
     int32_t res3 = this->test_matlib_imin(N, X3, incX);
     EXPECT_EQ(0, res3);
+}
 
-    TypeParam X4[N] = {-1, 2,-3,-4, 5,nan};
+TYPED_TEST(IminFloatTest, with_nan) {
+    const int32_t N = 6;
+    const int32_t incX = 1;
+    TypeParam value = 0;
+    TypeParam nan = this->get_nan(value);
+
+    TypeParam X4[N] = {-1, 2,-3, nan, -4, 5};
     int32_t res4 = this->test_matlib_imin(N, X4, incX);
     EXPECT_EQ(3, res4);
 }

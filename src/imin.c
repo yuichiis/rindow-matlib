@@ -13,16 +13,21 @@ int32_t rindow_matlib_s_imin(int32_t n,float *x, int32_t incX)
         int32_t minIdx=0;
         #pragma omp for
         for(i=0; i<n; i++) {
-            if(minVal>x[i*incX] || isnan(minVal)) {
-                minVal = x[i*incX];
-                minIdx = i;
+            if(!isnan(minVal)) {
+                float xi = x[i*incX];
+                if(minVal>xi || isnan(xi)) {
+                    minVal = xi;
+                    minIdx = i;
+                }
             }
         }
         #pragma omp critical
         {
-            if(resultMin>minVal || isnan(resultMin)) {
-                resultMin = minVal;
-                resultIdx = minIdx;
+            if(!isnan(resultMin)) {
+                if(resultMin>minVal || isnan(minVal)) {
+                    resultMin = minVal;
+                    resultIdx = minIdx;
+                }
             }
         }
     }
@@ -39,17 +44,22 @@ int32_t rindow_matlib_d_imin(int32_t n,double *x, int32_t incX)
         double minVal=x[0];
         int32_t minIdx=0;
         #pragma omp for
-        for(i=1; i<n; i++) {
-            if(minVal>x[i*incX] || isnan(minVal)) {
-                minVal = x[i*incX];
-                minIdx = i;
+        for(i=0; i<n; i++) {
+            if(!isnan(minVal)) {
+                double xi = x[i*incX];
+                if(minVal>xi || isnan(xi)) {
+                    minVal = xi;
+                    minIdx = i;
+                }
             }
         }
         #pragma omp critical
         {
-            if(resultMin>minVal || isnan(resultMin)) {
-                resultMin = minVal;
-                resultIdx = minIdx;
+            if(!isnan(resultMin)) {
+                if(resultMin>minVal || isnan(minVal)) {
+                    resultMin = minVal;
+                    resultIdx = minIdx;
+                }
             }
         }
     }

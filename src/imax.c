@@ -13,16 +13,21 @@ int32_t rindow_matlib_s_imax(int32_t n,float *x, int32_t incX)
         int32_t maxIdx=0;
         #pragma omp for
         for(i=1; i<n; i++) {
-            if(maxVal<x[i*incX] || isnan(maxVal)) {
-                maxVal = x[i*incX];
-                maxIdx = i;
+            if(!isnan(maxVal)) {
+                float xi = x[i*incX];
+                if(maxVal<xi || isnan(xi)) {
+                    maxVal = xi;
+                    maxIdx = i;
+                }
             }
         }
         #pragma omp critical
         {
-            if(resultMax<maxVal || isnan(resultMax)) {
-                resultMax = maxVal;
-                resultIdx = maxIdx;
+            if(!isnan(resultMax)) {
+                if(resultMax<maxVal || isnan(maxVal)) {
+                    resultMax = maxVal;
+                    resultIdx = maxIdx;
+                }
             }
         }
     }
@@ -40,16 +45,21 @@ int32_t rindow_matlib_d_imax(int32_t n,double *x, int32_t incX)
         int32_t maxIdx=0;
         #pragma omp for
         for(i=1; i<n; i++) {
-            if(maxVal<x[i*incX] || isnan(maxVal)) {
-                maxVal = x[i*incX];
-                maxIdx = i;
+            if(!isnan(maxVal)) {
+                double xi = x[i*incX];
+                if(maxVal<xi || isnan(xi)) {
+                    maxVal = xi;
+                    maxIdx = i;
+                }
             }
         }
         #pragma omp critical
         {
-            if(resultMax<maxVal || isnan(resultMax)) {
-                resultMax = maxVal;
-                resultIdx = maxIdx;
+            if(!isnan(resultMax)) {
+                if(resultMax<maxVal || isnan(maxVal)) {
+                    resultMax = maxVal;
+                    resultIdx = maxIdx;
+                }
             }
         }
     }

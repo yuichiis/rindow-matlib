@@ -19,11 +19,15 @@ private:
     )
     {
         T a = x[0];
+        if(isnan(a)) {
+            return NAN;
+        }
         for(int32_t i=1;i<n;i++) {
-            // if NaN set NaN
-            // Compatible with reduce_max of tensorflow 2.6
-            if(!(a>=x[i*incX])) {
-                a = x[i*incX];
+            T xi = x[i*incX];
+            if(isnan(xi)) {
+                return NAN;
+            } else if(xi > a) {
+                a = xi;
             }
         }
         return a;

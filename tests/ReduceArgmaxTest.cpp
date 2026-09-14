@@ -201,7 +201,7 @@ TYPED_TEST(ReduceArgmaxTest, Array3DAxis1) {
 
 TYPED_TEST(ReduceArgmaxTest, Array2DAxis1WithNaN) {
     const int32_t shapeA0 = 6;
-    const int32_t shapeA1 = 2;
+    const int32_t shapeA1 = 3;
     const int32_t shapeB = shapeA0;
     const int32_t axis = 1;
     const int32_t IndexDtype = rindow_matlib_dtype_int32;
@@ -212,12 +212,12 @@ TYPED_TEST(ReduceArgmaxTest, Array2DAxis1WithNaN) {
     TypeParam inf = std::numeric_limits<TypeParam>::infinity();
 
     TypeParam A[shapeA0][shapeA1] = {
-        {1.0, 2.0},
-        {inf, 1.0},
-        {inf, inf},
-        {-inf,inf},
-        {0.0, NAN},
-        {NAN, inf}
+        {1.0, 2.0, -1.0},
+        {inf, 1.0, -1.0},
+        {inf, inf, -1.0},
+        {-inf,inf, -1.0},
+        {0.0, NAN, -1.0},
+        {NAN, inf, -1.0}
     };
     int32_t B[shapeB];
     this->calcShape({shapeA0,shapeA1},axis,&m,&n,&k,&outputSize);
@@ -237,7 +237,7 @@ TYPED_TEST(ReduceArgmaxTest, Array2DAxis1WithNaN) {
     ASSERT_EQ(0,       B[1]);
     ASSERT_EQ(0,       B[2]);
     ASSERT_EQ(1,       B[3]);
-    ASSERT_EQ(0,       B[4]); // **confusing** 
+    ASSERT_EQ(1,       B[4]); // **confusing** 
     ASSERT_EQ(0,       B[5]); // **confusing**
 }
 

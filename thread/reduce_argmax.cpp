@@ -17,10 +17,17 @@ private:
     {
         int32_t idx = 0;
         T a = x[0];
-        for(int32_t i=1;i<n;i++) {
-            if(a<x[i*incX]) {
+        if(isnan(a)) {
+            return 0;
+        }
+        for(int32_t i=1; i<n; i++) {
+            T xi = x[i*incX];
+            if(isnan(xi)) {
+                return i;
+            }
+            if(xi > a) {
                 idx = i;
-                a = x[i*incX];
+                a = xi;
             }
         }
         return idx;

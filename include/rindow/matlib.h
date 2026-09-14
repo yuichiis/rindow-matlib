@@ -224,6 +224,18 @@ RINDOW_FUNC_DECL int32_t rindow_matlib_d_onehot(int32_t dtype, int32_t m, int32_
 RINDOW_FUNC_DECL void rindow_matlib_s_softmax(int32_t m, int32_t n, float *a, int32_t ldA);
 RINDOW_FUNC_DECL void rindow_matlib_d_softmax(int32_t m, int32_t n, double *a, int32_t ldA);
 // ********************************************************
+// NEW FUNCTION
+struct _matlib_complex_float { float real, imag; };
+struct _matlib_complex_double { double real, imag; };
+typedef struct _matlib_complex_float matlib_complex_float;
+typedef struct _matlib_complex_double matlib_complex_double;
+
+RINDOW_FUNC_DECL void rindow_matlib_s_abs(int32_t n, float *x, int32_t incX);
+RINDOW_FUNC_DECL void rindow_matlib_d_abs(int32_t n, double *x, int32_t incX);
+RINDOW_FUNC_DECL void rindow_matlib_c_abs(int32_t n, matlib_complex_float *x, int32_t incX, float *y, int32_t incY);
+RINDOW_FUNC_DECL void rindow_matlib_z_abs(int32_t n, matlib_complex_double *x, int32_t incX, double *y, int32_t incY);
+// ********************************************************
+// ********************************************************
 // This function is unofficial.
 // It may be changed without notice.
 RINDOW_FUNC_DECL void rindow_matlib_s_topk(int32_t m, int32_t n, const float *input, int32_t k, int32_t sorted, float *values, int32_t *indices);
