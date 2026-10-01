@@ -31,18 +31,20 @@ private:
         int32_t incX
     )
     {
-        T maxVal=x[cell.begin];
+        T maxVal=x[cell.begin*incX];
         int32_t maxIdx=cell.begin;
-        if(!std::isnan(maxVal)) {
-            for(int32_t i = cell.begin+1; i < cell.end; i++) {
-                T xi = x[i*incX];
-                if( maxVal<xi || std::isnan(xi)) {
-                    maxVal = xi;
-                    maxIdx = i;
-                }
-                if(std::isnan(xi)) {
-                    break;
-                }
+        if(std::isnan(maxVal)) {
+            RIMax<T> result = {maxIdx,maxVal};
+            return result;
+        }
+        for(int32_t i = cell.begin+1; i < cell.end; i++) {
+            T xi = x[i*incX];
+            if( maxVal<xi || std::isnan(xi)) {
+                maxVal = xi;
+                maxIdx = i;
+            }
+            if(std::isnan(xi)) {
+                break;
             }
         }
         RIMax<T> result = {maxIdx,maxVal};
@@ -73,9 +75,9 @@ private:
         int32_t incX
     )
     {
-        T maxVal=x[0];
-        int32_t maxIdx=0;
-        for(int32_t i = cell.begin; i < cell.end; i++) {
+        T maxVal=x[cell.begin*incX];
+        int32_t maxIdx=cell.begin;
+        for(int32_t i = cell.begin+1; i < cell.end; i++) {
             if(maxVal<x[i*incX]) {
                 maxVal = x[i*incX];
                 maxIdx = i;

@@ -379,6 +379,15 @@ RINDOW_FUNC_DECL void rindow_matlib_i_randomuniform(int32_t n,int32_t dtype,void
 RINDOW_FUNC_DECL void rindow_matlib_s_randomnormal(int32_t n,float *x, int32_t incX,float mean,float scale,int32_t seed);
 RINDOW_FUNC_DECL void rindow_matlib_d_randomnormal(int32_t n,double *x, int32_t incX,double mean,double scale,int32_t seed);
 RINDOW_FUNC_DECL void rindow_matlib_i_randomsequence(int32_t n,int32_t size,int32_t dtype,void *x, int32_t incX,int32_t seed);
+RINDOW_FUNC_DECL void rindow_matlib_s_randomcategorical(int32_t batchSize,int32_t numClasses,int32_t numSamples,const float *logits,int32_t *y,uint64_t seed);
+RINDOW_FUNC_DECL void rindow_matlib_d_randomcategorical(int32_t batchSize,int32_t numClasses,int32_t numSamples,const double *logits,int32_t *y,uint64_t seed);
+
+RINDOW_FUNC_DECL void rindow_matlib_pcg32srand(int64_t *rng,int64_t seed,int64_t sequence);
+RINDOW_FUNC_DECL void rindow_matlib_pcg32step(int64_t *rng);
+RINDOW_FUNC_DECL uint32_t rindow_matlib_pcg32rand(int64_t *rng);
+RINDOW_FUNC_DECL int32_t rindow_matlib_pcg32randint32(int64_t *rng,int32_t min,int32_t max);
+RINDOW_FUNC_DECL int64_t rindow_matlib_pcg32randint64(int64_t *rng,int64_t min,int64_t max);
+
 
 RINDOW_FUNC_DECL int32_t rindow_matlib_im2col1d(
     int32_t dtype,int32_t reverse,

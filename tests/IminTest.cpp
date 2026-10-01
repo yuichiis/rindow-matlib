@@ -38,6 +38,12 @@ protected:
 
         int32_t res = this->test_matlib_imin(N, X, incX);
         EXPECT_EQ(5, res);
+
+        int32_t res2 = this->test_matlib_imin(3, X, 2);
+        EXPECT_EQ(1, res2);
+
+        int32_t res3 = this->test_matlib_imin(2, X, 3);
+        EXPECT_EQ(1, res3);
     }
 };
 

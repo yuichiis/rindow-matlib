@@ -44,6 +44,12 @@ protected:
 
         int32_t res = this->test_matlib_imax(N, X, incX);
         EXPECT_EQ(4, res);
+
+        int32_t res2 = this->test_matlib_imax(3, X, 2);
+        EXPECT_EQ(2, res2);
+
+        int32_t res3 = this->test_matlib_imax(2, X, 3);
+        EXPECT_EQ(0, res3);
     }
 };
 

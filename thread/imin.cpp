@@ -31,18 +31,20 @@ private:
         int32_t incX
     )
     {
-        T minVal=x[cell.begin];
+        T minVal=x[cell.begin*incX];
         int32_t minIdx=cell.begin;
-        if(!std::isnan(minVal)) {
-            for(int32_t i = cell.begin+1; i < cell.end; i++) {
-                T xi = x[i*incX];
-                if(minVal>xi || std::isnan(xi)) {
-                    minVal = xi;
-                    minIdx = i;
-                }
-                if(std::isnan(xi)) {
-                    break;
-                }
+        if(std::isnan(minVal)) {
+            RIMin<T> result = {minIdx,minVal};
+            return result;
+        }
+        for(int32_t i = cell.begin+1; i < cell.end; i++) {
+            T xi = x[i*incX];
+            if(minVal>xi || std::isnan(xi)) {
+                minVal = xi;
+                minIdx = i;
+            }
+            if(std::isnan(xi)) {
+                break;
             }
         }
         RIMin<T> result = {minIdx,minVal};
@@ -73,9 +75,9 @@ private:
         int32_t incX
     )
     {
-        T minVal=x[0];
-        int32_t minIdx=0;
-        for(int32_t i = cell.begin; i < cell.end; i++) {
+        T minVal=x[cell.begin*incX];
+        int32_t minIdx=cell.begin;
+        for(int32_t i = cell.begin+1; i < cell.end; i++) {
             if(minVal>x[i*incX]) {
                 minVal = x[i*incX];
                 minIdx = i;
