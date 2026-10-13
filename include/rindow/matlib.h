@@ -59,10 +59,12 @@ enum rindow_matlib_dtype {
 #define RINDOW_MATLIB_E_COLS_OUT_OF_RANGE     -109
 #define RINDOW_MATLIB_E_SOME_EXCEPTION_OCCURRED -110
 
+#define RINDOW_MATLIB_ROW_MAJOR 101
+#define RINDOW_MATLIB_COL_MAJOR 102
 #define RINDOW_MATLIB_NO_TRANS       111
 #define RINDOW_MATLIB_TRANS          112
-//#define RINDOW_MATLIB_CONJ_TRANS     113
-//#define RINDOW_MATLIB_CONJ_NO_TRANS  114
+#define RINDOW_MATLIB_CONJ_TRANS     113
+#define RINDOW_MATLIB_CONJ_NO_TRANS  114
 
 // Matlib is compiled for sequential use
 #define RINDOW_MATLIB_SEQUENTIAL 0
@@ -224,7 +226,6 @@ RINDOW_FUNC_DECL int32_t rindow_matlib_d_onehot(int32_t dtype, int32_t m, int32_
 RINDOW_FUNC_DECL void rindow_matlib_s_softmax(int32_t m, int32_t n, float *a, int32_t ldA);
 RINDOW_FUNC_DECL void rindow_matlib_d_softmax(int32_t m, int32_t n, double *a, int32_t ldA);
 // ********************************************************
-// NEW FUNCTION
 struct _matlib_complex_float { float real, imag; };
 struct _matlib_complex_double { double real, imag; };
 typedef struct _matlib_complex_float matlib_complex_float;
@@ -234,6 +235,12 @@ RINDOW_FUNC_DECL void rindow_matlib_s_abs(int32_t n, float *x, int32_t incX);
 RINDOW_FUNC_DECL void rindow_matlib_d_abs(int32_t n, double *x, int32_t incX);
 RINDOW_FUNC_DECL void rindow_matlib_c_abs(int32_t n, matlib_complex_float *x, int32_t incX, float *y, int32_t incY);
 RINDOW_FUNC_DECL void rindow_matlib_z_abs(int32_t n, matlib_complex_double *x, int32_t incX, double *y, int32_t incY);
+RINDOW_FUNC_DECL void rindow_matlib_s_range(int32_t n, float *x, int32_t incX, float start, float limit, float delta);
+RINDOW_FUNC_DECL void rindow_matlib_d_range(int32_t n, double *x, int32_t incX, double start, double limit, double delta);
+RINDOW_FUNC_DECL void rindow_matlib_i_range(int32_t dtype, int32_t n,void *x, int32_t incX, int64_t start, int64_t limit, int64_t delta);
+RINDOW_FUNC_DECL void rindow_matlib_s_linspace(int32_t n, float *x, int32_t incX, float start, float stop);
+RINDOW_FUNC_DECL void rindow_matlib_d_linspace(int32_t n, double *x, int32_t incX, double start, double stop);
+
 // ********************************************************
 // ********************************************************
 // This function is unofficial.
@@ -387,6 +394,35 @@ RINDOW_FUNC_DECL void rindow_matlib_pcg32step(int64_t *rng);
 RINDOW_FUNC_DECL uint32_t rindow_matlib_pcg32rand(int64_t *rng);
 RINDOW_FUNC_DECL int32_t rindow_matlib_pcg32randint32(int64_t *rng,int32_t min,int32_t max);
 RINDOW_FUNC_DECL int64_t rindow_matlib_pcg32randint64(int64_t *rng,int64_t min,int64_t max);
+
+RINDOW_FUNC_DECL void rindow_matlib_s_omatcopy(
+    int32_t order, int32_t trans, int32_t m, int32_t n,
+    float alpha, const float *a, int32_t ldA, float *b, int32_t ldB);
+RINDOW_FUNC_DECL void rindow_matlib_d_omatcopy(
+    int32_t order, int32_t trans, int32_t m, int32_t n,
+    double alpha, const double *a, int32_t ldA, double *b, int32_t ldB);
+RINDOW_FUNC_DECL void rindow_matlib_c_omatcopy(
+    int32_t order, int32_t trans, int32_t m, int32_t n,
+    const void *alpha, const void *a, int32_t ldA,
+    void *b, int32_t ldB);
+RINDOW_FUNC_DECL void rindow_matlib_z_omatcopy(
+    int32_t order, int32_t trans, int32_t m, int32_t n,
+    const void *alpha, const void *a, int32_t ldA,
+    void *b, int32_t ldB);
+
+RINDOW_FUNC_DECL void rindow_matlib_s_where(
+    int32_t trans,int32_t m,int32_t n,
+    const uint8_t *cond, int32_t kindC,
+    const float *x, int32_t kindX,
+    const float *y, int32_t kindY,
+    float *out);
+
+RINDOW_FUNC_DECL void rindow_matlib_d_where(
+    int32_t trans,int32_t m,int32_t n,
+    const uint8_t *cond, int32_t kindC,
+    const double *x, int32_t kindX,
+    const double *y, int32_t kindY,
+    double *out);
 
 
 RINDOW_FUNC_DECL int32_t rindow_matlib_im2col1d(
