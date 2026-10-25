@@ -7,6 +7,7 @@ typedef void (CALLBACK* PFNrindow_matlib_i64_bincount)( /* rindow_matlib_i64_bin
     int32_t            /* m */,
     int32_t            /* n */,
     int32_t            /* numClasses */,
+    int32_t            /* addMode */,
     const int64_t *            /* input */,
     int64_t *            /* output */
 );
@@ -16,6 +17,7 @@ void rindow_matlib_i64_bincount(
     int32_t            m,
     int32_t            n,
     int32_t            numClasses,
+    int32_t            addMode,
     const int64_t *            input,
     int64_t *            output
 )
@@ -33,6 +35,7 @@ void rindow_matlib_i64_bincount(
         m,
         n,
         numClasses,
+        addMode,
         input,
         output    
     );

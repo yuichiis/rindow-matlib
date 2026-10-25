@@ -14,13 +14,21 @@ protected:
         int32_t trans, int32_t m, int32_t n, int32_t numClasses,
         const int32_t *input, int32_t *output
     ) {
-        rindow_matlib_i32_bincount(trans, m, n, numClasses, input, output);
+        rindow_matlib_i32_bincount(trans, m, n, numClasses, 0, input, output);
     }
     virtual void test_matlib_bincount(
         int32_t trans, int32_t m, int32_t n, int32_t numClasses,
         const int64_t *input, int64_t *output
     ) {
-        rindow_matlib_i64_bincount(trans, m, n, numClasses, input, output);
+        rindow_matlib_i64_bincount(trans, m, n, numClasses, 0, input, output);
+    }
+    void test_matlib_bincount_add(int32_t trans, int32_t m, int32_t n, int32_t numClasses,
+        const int32_t *input, int32_t *output) {
+        rindow_matlib_i32_bincount(trans, m, n, numClasses, 1, input, output);
+    }
+    void test_matlib_bincount_add(int32_t trans, int32_t m, int32_t n, int32_t numClasses,
+        const int64_t *input, int64_t *output) {
+        rindow_matlib_i64_bincount(trans, m, n, numClasses, 1, input, output);
     }
 };
 typedef ::testing::Types<int32_t, int64_t> TestTypes;
@@ -41,6 +49,26 @@ TYPED_TEST(BincountTest, once) {
     EXPECT_THAT(R1, ContainerEq(X));
     TypeParam R2[M][K] = {{2, 1, 3, 0}};
     EXPECT_THAT(R2, ContainerEq(Y));
+}
+
+TYPED_TEST(BincountTest, addModeAccumulatesExistingOutput) {
+    const int32_t M = 2, N = 3, K = 3;
+    TypeParam X[M][N] = {{0, 1, 1}, {2, 0, 2}};
+    TypeParam Y[M][K] = {{10, 20, 30}, {40, 50, 60}};
+    this->test_matlib_bincount_add(RINDOW_MATLIB_NO_TRANS, M, N, K,
+        (TypeParam *)X, (TypeParam *)Y);
+    TypeParam expected[M][K] = {{11, 22, 30}, {41, 50, 62}};
+    EXPECT_THAT(expected, ContainerEq(Y));
+}
+
+TYPED_TEST(BincountTest, addModeAccumulatesAxisFirst) {
+    const int32_t M = 2, N = 2, K = 3;
+    TypeParam X[M][N] = {{0, 1}, {1, 2}};
+    TypeParam Y[K][N] = {{10, 20}, {30, 40}, {50, 60}};
+    this->test_matlib_bincount_add(RINDOW_MATLIB_TRANS, M, N, K,
+        (TypeParam *)X, (TypeParam *)Y);
+    TypeParam expected[K][N] = {{11, 20}, {31, 41}, {50, 61}};
+    EXPECT_THAT(expected, ContainerEq(Y));
 }
 
 // axis=-1: input [3,4] -> output [3,3]
