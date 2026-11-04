@@ -21,6 +21,7 @@ class OpenBLASClientGenerator
 
     public array $funcDecrWord = [
         'int','char*','void','float','double','CBLAS_INDEX',
+        'uint32_t',
         //'openblas_complex_float','openblas_complex_double',
         'lapack_int',
         //'lapack_complex_float','lapack_complex_double',
@@ -133,8 +134,19 @@ class OpenBLASClientGenerator
     
     public function parser(string $line) : ?array
     {
+        $debug = false;
+        //$watch = 'RINDOW_FUNC_DECL int32_t rindow_matlib_s_gathernd(';
+        //$watch = 'RINDOW_FUNC_DECL uint32_t rindow_matlib_pcg32rand(';
+        //if(str_starts_with($line,$watch)) {
+        //    $debug = true;
+        //    echo "debug: $line\n";
+        //}
         $tmp = explode(' ',$line);
         $head = $tmp[0];
+        if($debug) {
+            var_dump($tmp);
+            echo "head: $head\n";
+        }
         if(in_array($head,$this->funcDecrWord)) {
             $pattern = "/^(".$this->preg_types.") *([A-Za-z0-9_]+) *\\(([^)]+)/";
             preg_match($pattern,$line,$match);
@@ -144,6 +156,9 @@ class OpenBLASClientGenerator
             $prefix = array_shift($match);
         } else {
             return null;
+        }
+        if($debug) {
+            var_dump($match);
         }
         if(array_key_exists(1,$match)) {
             $return = $match[1];

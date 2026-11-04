@@ -13,6 +13,8 @@
 #include <string.h>
 #include "rindow/matlib.h"
 #include "common.hpp"
+#include "pcg32.h"
+#include <time.h>
 
 extern "C" {
 
@@ -615,38 +617,52 @@ int32_t rindow_matlib_common_d_argmax(int32_t n, double *x, int32_t incX)
 }
 
 
+//int32_t rindow_matlib_common_rand()
+//{
+//#ifdef _MSC_VER
+//#if (_MSC_VER % 100 ) <= 16
+//    // VS2017
+//    int32_t number;
+//    number = (((((int32_t)rand())<<17)|(((int32_t)rand())<<2)) ^ (int32_t)rand());
+//    return (int32_t)(number & 0x7fffffff);
+//#else
+//    // VS2019
+//    unsigned int number;
+//    if(rand_s( &number )) {
+//        return 0;
+//    }
+//    return (int32_t)(number & 0x7fffffff);
+//#endif
+//#else
+//    // Linux
+//    return random();
+//#endif
+//}
+//void rindow_matlib_common_srand(int32_t seed)
+//{
+//#ifdef _MSC_VER
+//#if (_MSC_VER % 100 ) <= 16
+//    // VS2017
+//    srand((unsigned int)seed);
+//#endif
+//#else
+//    // Linux
+//    srandom(seed);
+//#endif
+//}
+static pcg32_state_t pcg32_state = {0, 0};
 int32_t rindow_matlib_common_rand()
 {
-#ifdef _MSC_VER
-#if (_MSC_VER % 100 ) <= 16
-    // VS2017
-    int32_t number;
-    number = (((((int32_t)rand())<<17)|(((int32_t)rand())<<2)) ^ (int32_t)rand());
-    return (int32_t)(number & 0x7fffffff);
-#else
-    // VS2019
-    unsigned int number;
-    if(rand_s( &number )) {
-        return 0;
+    if(pcg32_state.state == 0 && pcg32_state.inc == 0) {
+        pcg32_srandom_r(&pcg32_state, time(NULL), 1);
     }
+    uint32_t number = pcg32_random_r(&pcg32_state);
     return (int32_t)(number & 0x7fffffff);
-#endif
-#else
-    // Linux
-    return random();
-#endif
 }
+
 void rindow_matlib_common_srand(int32_t seed)
 {
-#ifdef _MSC_VER
-#if (_MSC_VER % 100 ) <= 16
-    // VS2017
-    srand((unsigned int)seed);
-#endif
-#else
-    // Linux
-    srandom(seed);
-#endif
+    pcg32_srandom_r(&pcg32_state, (uint64_t)seed, (uint64_t)1);
 }
 
 }

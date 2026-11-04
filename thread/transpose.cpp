@@ -226,6 +226,14 @@ int32_t rindow_matlib_i_transpose(
             errcode = Transpose<uint8_t>::execute(ndim,shape,perm,(uint8_t*)a,(uint8_t*)b);
             break;
         }
+        case rindow_matlib_dtype_complex64: {
+            errcode = Transpose<matlib_complex_float>::execute(ndim,shape,perm,(matlib_complex_float*)a,(matlib_complex_float*)b);
+            break;
+        }
+        case rindow_matlib_dtype_complex128: {
+            errcode = Transpose<matlib_complex_double>::execute(ndim,shape,perm,(matlib_complex_double*)a,(matlib_complex_double*)b);
+            break;
+        }
         default: {
             errcode = RINDOW_MATLIB_E_UNSUPPORTED_DATA_TYPE;
         }

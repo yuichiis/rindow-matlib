@@ -241,7 +241,7 @@ TYPED_TEST(ReduceMaxTest, Array2DAxis1WithNaN) {
         {inf, inf},
         {-inf,inf},
         {0.0, NAN},
-        {inf, NAN}
+        {NAN, inf}
     };
     TypeParam B[shapeB];
     this->calcShape({shapeA0,shapeA1},axis,&m,&n,&k,&outputSize);
