@@ -23,15 +23,18 @@ jobs:
           - name: Windows
             os: windows-latest
             artifact_name: win64
-          - name: Linux
+          - name: Ubuntu-26.04
+            os: ubuntu-26.04
+            artifact_name: linux
+          - name: Ubuntu-24.04
             os: ubuntu-24.04
             artifact_name: linux
           - name: Ubuntu-22.04
             os: ubuntu-22.04
             artifact_name: ubuntu-2204
-          - name: macOS-x86_64
-            os: macos-13
-            artifact_name: macos-x86_64
+          #- name: macOS-x86_64
+          #  os: macos-13
+          #  artifact_name: macos-x86_64
           - name: macOS-arm64
             os: macos-latest
             artifact_name: macos-arm64
