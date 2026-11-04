@@ -1,5 +1,6 @@
 #include "rindow/matlib.h"
 #include "common.hpp"
+#include <cmath>
 
 using rindow::matlib::ParallelOperation;
 
@@ -17,12 +18,12 @@ private:
     {
         int32_t idx = 0;
         T a = x[0];
-        if(isnan(a)) {
+        if(std::isnan(a)) {
             return 0;
         }
         for(int32_t i=1; i<n; i++) {
             T xi = x[i*incX];
-            if(isnan(xi)) {
+            if(std::isnan(xi)) {
                 return i;
             }
             if(xi > a) {
