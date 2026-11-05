@@ -25,10 +25,10 @@ jobs:
             artifact_name: win64
           - name: Ubuntu-26.04
             os: ubuntu-26.04
-            artifact_name: linux
+            artifact_name: ubuntu-2604
           - name: Ubuntu-24.04
             os: ubuntu-24.04
-            artifact_name: linux
+            artifact_name: ubuntu-2404
           - name: Ubuntu-22.04
             os: ubuntu-22.04
             artifact_name: ubuntu-2204
