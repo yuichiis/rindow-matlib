@@ -241,6 +241,11 @@ RINDOW_FUNC_DECL void rindow_matlib_i_range(int32_t dtype, int32_t n,void *x, in
 RINDOW_FUNC_DECL void rindow_matlib_s_linspace(int32_t n, float *x, int32_t incX, float start, float stop);
 RINDOW_FUNC_DECL void rindow_matlib_d_linspace(int32_t n, double *x, int32_t incX, double start, double stop);
 
+RINDOW_FUNC_DECL int32_t rindow_matlib_s_iamin(int32_t n,float *x, int32_t incX);
+RINDOW_FUNC_DECL int32_t rindow_matlib_d_iamin(int32_t n,double *x, int32_t incX);
+RINDOW_FUNC_DECL int32_t rindow_matlib_c_iamin(int32_t n,matlib_complex_float *x, int32_t incX);
+RINDOW_FUNC_DECL int32_t rindow_matlib_z_iamin(int32_t n,matlib_complex_double *x, int32_t incX);
+
 // ********************************************************
 // ********************************************************
 // This function is unofficial.
