@@ -26,10 +26,15 @@ class OpenBLASClientGenerator
         'lapack_int',
         //'lapack_complex_float','lapack_complex_double',
         'int32_t','int64_t','void*',
+        'CLBlastStatusCode',
     ];
 
     public array $funcPrefixWord = [
         'RINDOW_FUNC_DECL',
+    ];
+
+    public array $funcModifier = [
+        'PUBLIC_API',
     ];
 
     public string $preg_types;
@@ -53,7 +58,7 @@ class OpenBLASClientGenerator
     public function generator($argv) : void
     {
         if(count($argv)==1) {
-            echo "Usage: php client_generator.php dest-dir [cblas|lapacke|matlib] inputheaders...\n";
+            echo "Usage: php client_generator.php dest-dir [cblas|lapacke|clblast|matlib] inputheaders...\n";
             return;
         }
         $dummy = array_shift($argv);
@@ -77,6 +82,7 @@ class OpenBLASClientGenerator
                 if($fpi==null) {
                     throw new RuntimeException("Error opening input file: $inputfile");
                 }
+                echo "open:{$inputfile}\n";
                 $funcs = array_merge($funcs,$this->generate($fpi,$headertype));
             }
         } finally {
@@ -85,9 +91,10 @@ class OpenBLASClientGenerator
             }
         }
     }
-    
+
     public function generate(mixed $fpi,string $headertype) : array
     {
+        $lineno = 0;
         $excludeFuncs = $this->excludeFuncs;
         $eof = false;
         $funcs = [];
@@ -99,6 +106,7 @@ class OpenBLASClientGenerator
                     $eof = true;
                     break;
                 }
+                $lineno++;
                 $next = trim($next);
                 if(substr($next,0,1)=='#') {
                     break;
@@ -115,8 +123,8 @@ class OpenBLASClientGenerator
                 }
             }
             $declare = $this->parser($line);
-            //var_dump($line);
-            //var_dump($declare);
+            //echo "line {$lineno}:";var_dump($line);
+            //echo "declare:";var_dump($declare);
             //echo "PAUSE>";
             //fgets(STDIN);
             if($declare==null) {
@@ -131,40 +139,58 @@ class OpenBLASClientGenerator
         }
         return $funcs;
     }
-    
+
     public function parser(string $line) : ?array
     {
         $debug = false;
         //$watch = 'RINDOW_FUNC_DECL int32_t rindow_matlib_s_gathernd(';
         //$watch = 'RINDOW_FUNC_DECL uint32_t rindow_matlib_pcg32rand(';
-        //if(str_starts_with($line,$watch)) {
-        //    $debug = true;
-        //    echo "debug: $line\n";
-        //}
+        $watch = 'CLBlastStatusCode PUBLIC_API CLBlastCaxpy(';
+
+        if(str_starts_with($line,$watch)) {
+            $debug = true;
+            echo "debug: $line\n";
+        }
         $tmp = explode(' ',$line);
         $head = $tmp[0];
         if($debug) {
             var_dump($tmp);
             echo "head: $head\n";
         }
+        $fnmod = null;
         if(in_array($head,$this->funcDecrWord)) {
-            $pattern = "/^(".$this->preg_types.") *([A-Za-z0-9_]+) *\\(([^)]+)/";
+            // return_type func_name(args)
+            $pattern = "/^(".$this->preg_types.") *([A-Za-z0-9_]+) *\\(([^)]*)/";
             preg_match($pattern,$line,$match);
+            if(!array_key_exists(1,$match)) {
+                // return_type func_modifier func_name(args)
+                $pattern = "/^(".$this->preg_types.") *([A-Za-z0-9_]+) *([A-Za-z0-9_]+) *\\(([^)]*)/";
+                preg_match($pattern,$line,$match);
+                if(array_key_exists(2,$match)) {
+                    $fnmod = $match[2];
+                    $match = array_merge(array_slice($match,0,2),array_slice($match,3));
+                }
+            }
         } elseif(in_array($head,$this->funcPrefixWord)) {
-            $pattern = "/^(".$this->preg_prefix.")* *(".$this->preg_types.") *([A-Za-z0-9_]+) *\\(([^)]+)/";
+            $pattern = "/^(".$this->preg_prefix.")* *(".$this->preg_types.") *([A-Za-z0-9_]+) *\\(([^)]*)/";
             preg_match($pattern,$line,$match);
             $prefix = array_shift($match);
         } else {
             return null;
         }
         if($debug) {
+            echo "=============\n";
             var_dump($match);
+            echo "=============\n";
         }
         if(array_key_exists(1,$match)) {
             $return = $match[1];
         } else {
             var_dump("unmatch return $line");
             $return = "unknown";
+        }
+        if($fnmod!==null && !in_array($fnmod,$this->funcModifier)) {
+            var_dump("unmatch funcModifier $fnmod");
         }
         if(array_key_exists(2,$match)) {
             $func = $match[2];
@@ -209,7 +235,7 @@ class OpenBLASClientGenerator
         //if($func=='cblas_xerbla') {
         //    var_dump(['return' => $return, 'func'=>$func, 'args'=>$args]);
         //}
-        
+
         return ['return' => $return, 'func'=>$func, 'args'=>$args];
     }
 
@@ -234,6 +260,10 @@ class OpenBLASClientGenerator
                 $header .= "#include <rindow/matlib.h>\n";
                 $header .= "#include \"vclib.h\"\n";
                 break;
+            case 'clblast':
+                $header .= "#include <clblast_c.h>\n";
+                $header .= "#include \"vclib.h\"\n";
+                break;
             default:
                 throw new \Exception("unkown header type");
                 break;
@@ -251,6 +281,9 @@ class OpenBLASClientGenerator
             case 'matlib':
                 $libname = 'rindowmatlib';
                 break;
+            case 'clblast':
+                $libname = 'clblast';
+                break;
             default:
                 throw new \Exception("unkown header type");
                 break;
@@ -262,7 +295,7 @@ class OpenBLASClientGenerator
         $return = $declare['return'];
         $funcname = $declare['func'];
         $libname = $this->libname($type);
-        // typedef 
+        // typedef
         $code  = $this->headersTemplate($type);
         $code .= "static char msg_function_not_found[]  = \"{$funcname} not found\\n\";\n";
         $code .= "typedef {$return} (CALLBACK* PFN{$funcname})( /* {$funcname} */";
@@ -279,10 +312,10 @@ class OpenBLASClientGenerator
         }
         $code .= "\n";
         $code .= ");\n";
-    
+
         // static function pointer
         $code .= "static PFN{$funcname} _g_{$funcname} = NULL;\n";
-    
+
         // proxy function
         $code .= "{$return} {$funcname}(";
         $isNext = false;
@@ -334,7 +367,7 @@ class OpenBLASClientGenerator
         $code .= "}\n";
         return $code;
     }
-    
+
     function beginTemplate(string $type) : string
     {
         $libname = $this->libname($type);
